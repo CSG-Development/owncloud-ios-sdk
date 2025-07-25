@@ -25477,13 +25477,13 @@
         "ca" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Server detection failed, i.e. when the server at a URL is not an CuratorFiles instance."
+            "value" : "Server detection failed, i.e. when the server at a URL is not a CuratorFiles instance."
           }
         },
         "cs" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Server detection failed, i.e. when the server at a URL is not an CuratorFiles instance."
+            "state" : "translated",
+            "value" : "Server detection failed, i.e. when the server at a URL is not a CuratorFiles instance."
           }
         },
         "de" : {
@@ -25495,13 +25495,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Server detection failed, i.e. when the server at a URL is not an CuratorFiles instance."
+            "value" : "Server detection failed, i.e. when the server at a URL is not a CuratorFiles instance."
           }
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Server detection failed, i.e. when the server at a URL is not an CuratorFiles instance."
+            "state" : "translated",
+            "value" : "Server detection failed, i.e. when the server at a URL is not a CuratorFiles instance."
           }
         },
         "es" : {
@@ -25525,19 +25525,19 @@
         "mk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Server detection failed, i.e. when the server at a URL is not an CuratorFiles instance."
+            "value" : "Server detection failed, i.e. when the server at a URL is not a CuratorFiles instance."
           }
         },
         "nb-NO" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Server detection failed, i.e. when the server at a URL is not an CuratorFiles instance."
+            "value" : "Server detection failed, i.e. when the server at a URL is not a CuratorFiles instance."
           }
         },
         "nn-NO" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Server detection failed, i.e. when the server at a URL is not an CuratorFiles instance."
+            "value" : "Server detection failed, i.e. when the server at a URL is not a CuratorFiles instance."
           }
         },
         "pt-BR" : {
@@ -25549,7 +25549,7 @@
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Server detection failed, i.e. when the server at a URL is not an CuratorFiles instance."
+            "value" : "Server detection failed, i.e. when the server at a URL is not a CuratorFiles instance."
           }
         },
         "ru" : {
