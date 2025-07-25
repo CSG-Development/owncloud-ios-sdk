@@ -25477,108 +25477,108 @@
         "ca" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Server detection failed, i.e. when the server at a URL is not an ownCloud instance."
+            "value" : "Server detection failed, i.e. when the server at a URL is not an CuratorFiles instance."
           }
         },
         "cs" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Server detection failed, i.e. when the server at a URL is not an ownCloud instance."
+            "state" : "needs_review",
+            "value" : "Server detection failed, i.e. when the server at a URL is not an CuratorFiles instance."
           }
         },
         "de" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Die Servererkennung ist fehlgeschlagen, was z.B. passiert, wenn der Server unter der URL keine ownCloud-Instanz ist."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Server detection failed, i.e. when the server at a URL is not an ownCloud instance."
+            "value" : "Server detection failed, i.e. when the server at a URL is not an CuratorFiles instance."
           }
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Server detection failed, i.e. when the server at a URL is not an ownCloud instance."
+            "state" : "needs_review",
+            "value" : "Server detection failed, i.e. when the server at a URL is not an CuratorFiles instance."
           }
         },
         "es" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "La detección del servidor falló, p.e. cuando la dirección URL del servidor no contiene una instancia de ownCloud."
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "La détection du serveur a échoué, c.-à-d lorsque le serveur d'une URL n'est pas une instance ownCloud."
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "서버 감지에 실패했습니다. URL의 서버가 클라우드 인스턴스가 아닙니다."
           }
         },
         "mk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Server detection failed, i.e. when the server at a URL is not an ownCloud instance."
+            "value" : "Server detection failed, i.e. when the server at a URL is not an CuratorFiles instance."
           }
         },
         "nb-NO" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Server detection failed, i.e. when the server at a URL is not an ownCloud instance."
+            "state" : "needs_review",
+            "value" : "Server detection failed, i.e. when the server at a URL is not an CuratorFiles instance."
           }
         },
         "nn-NO" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Server detection failed, i.e. when the server at a URL is not an ownCloud instance."
+            "value" : "Server detection failed, i.e. when the server at a URL is not an CuratorFiles instance."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "A detecção do servidor falhou, ou seja, quando o servidor em uma URL não é uma instância do ownCloud."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Server detection failed, i.e. when the server at a URL is not an ownCloud instance."
+            "value" : "Server detection failed, i.e. when the server at a URL is not an CuratorFiles instance."
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Не прошло определение сервера, то есть сервер по ссылке не является экземпляром ownCloud."
           }
         },
         "sq" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Zbulimi i shërbyesit dështoi, domethënë, kur shërbyesi te një URL s’është instancë ownCloud."
           }
         },
         "th-TH" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "การตรวจหาเซิร์ฟเวอร์ล้มเหลวเช่น เมื่อใช้ URL ของเซิร์ฟเวอร์ที่ไม่ใช่อินสแตนซ์ของ ownCloud"
           }
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Sunucu algılama başarısız oldu, bu durum örneğin URL'deki sunucu ownCloud örneği olmadığında olduğu gibi."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "服务器检测失败，可能由于此 URL 上运行的不是 ownCloud 示例。"
           }
         }

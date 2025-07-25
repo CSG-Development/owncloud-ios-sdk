@@ -162,7 +162,7 @@ static NSString *OCErrorIssueKey = @"OCErrorIssue";
 				break;
 
 				case OCErrorServerDetectionFailed:
-					unlocalizedString = @"Server detection failed, i.e. when the server at a URL is not an ownCloud instance.";
+					unlocalizedString = @"Server detection failed, i.e. when the server at a URL is not an CuratorFiles instance.";
 				break;
 
 				case OCErrorServerTooManyRedirects:
