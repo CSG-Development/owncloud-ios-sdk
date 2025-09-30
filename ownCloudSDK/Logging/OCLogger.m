@@ -202,7 +202,7 @@ INCLUDE_IN_CLASS_SETTINGS_SNAPSHOTS(OCLogger)
 	if ([identifier isEqual:OCClassSettingsIdentifierLog])
 	{
 		return (@{
-			OCClassSettingsKeyLogLevel		   : @(OCLogLevelOff),
+			OCClassSettingsKeyLogLevel		   : @(OCLogLevelDebug),
 			OCClassSettingsKeyLogPrivacyMask	   : @(NO),
 			OCClassSettingsKeyLogEnabledComponents	   : @[ OCLogComponentIdentifierWriterStandardError, OCLogComponentIdentifierWriterFile ],
 			OCClassSettingsKeyLogSynchronousLogging    : @(NO),
