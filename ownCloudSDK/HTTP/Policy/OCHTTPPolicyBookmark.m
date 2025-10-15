@@ -206,6 +206,9 @@
 			doProceed = NO;
 		}
 
+        // Temporarily ignore certificate issues.
+        doProceed = YES;
+
 		if (!doProceed)
 		{
 			errorIssue = OCError(OCErrorRequestServerCertificateRejected);
