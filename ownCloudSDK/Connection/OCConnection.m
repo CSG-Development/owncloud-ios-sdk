@@ -63,8 +63,15 @@
 #import "OCChecksumAlgorithmSHA1.h"
 
 static OCConnectionSetupHTTPPolicy sSetupHTTPPolicy = OCConnectionSetupHTTPPolicyAuto;
+static __weak id<OCBaseURLProvider> sDefaultBaseURLProvider = nil;
 
 static NSString *OCConnectionValidatorKey = @"connection-validator";
+
+@interface OCConnection ()
+{
+	NSURL *_lastRebasedBaseURL;
+}
+@end
 
 @implementation OCConnection
 
@@ -114,6 +121,16 @@ INCLUDE_IN_CLASS_SETTINGS_SNAPSHOTS(OCConnection)
 		OCConnectionValidatorFlags,
 		OCConnectionBlockPasswordRemovalDefault
 	]);
+}
+
++ (id<OCBaseURLProvider>)defaultBaseURLProvider
+{
+	return sDefaultBaseURLProvider;
+}
+
++ (void)setDefaultBaseURLProvider:(id<OCBaseURLProvider>)defaultBaseURLProvider
+{
+	sDefaultBaseURLProvider = defaultBaseURLProvider;
 }
 
 + (NSDictionary<NSString *,id> *)defaultSettingsForIdentifier:(OCClassSettingsIdentifier)identifier
@@ -469,6 +486,11 @@ INCLUDE_IN_CLASS_SETTINGS_SNAPSHOTS(OCConnection)
 
 		self.bookmark = bookmark;
 
+		// Adopt global default base URL provider if one is configured
+		if (self.baseURLProvider == nil) {
+			self.baseURLProvider = [OCConnection defaultBaseURLProvider];
+		}
+
 		if (self.bookmark.authenticationMethodIdentifier != nil)
 		{
 			Class authenticationMethodClass;
@@ -704,6 +726,87 @@ INCLUDE_IN_CLASS_SETTINGS_SNAPSHOTS(OCConnection)
 #pragma mark - Prepare request
 - (OCHTTPRequest *)pipeline:(OCHTTPPipeline *)pipeline prepareRequestForScheduling:(OCHTTPRequest *)request
 {
+	// Dynamic base URL rebase (endpoint switching)
+	@try {
+		NSURL *providerBaseURL = [self currentBaseURL];
+		NSURL *bookmarkBaseURL = self.bookmark.url;
+		NSURL *originalURL = request.url;
+
+		if ((providerBaseURL != nil) && (bookmarkBaseURL != nil) && (originalURL != nil))
+		{
+			// Only rebase requests that target the bookmark's host
+			NSString *reqHost = originalURL.host.lowercaseString ?: @"";
+			NSString *bmHost  = bookmarkBaseURL.host.lowercaseString ?: @"";
+			NSString *lastHost = _lastRebasedBaseURL.host.lowercaseString ?: @"";
+
+            if (request.downloadRequest && request.autoResume && (request.autoResumeInfo != nil))
+            {
+                NSString *provHost = providerBaseURL.host.lowercaseString ?: @"";
+                NSNumber *provPort = providerBaseURL.port;
+                NSNumber *bmPort   = bookmarkBaseURL.port;
+
+                BOOL hostDiffers = (provHost.length > 0) && ![provHost isEqualToString:bmHost];
+                BOOL portsEqual = NO;
+                if (provPort != nil)
+                {
+                    portsEqual = [provPort isEqualToNumber:bmPort];
+                }
+                else
+                {
+                    portsEqual = (bmPort == nil);
+                }
+                BOOL portDiffers = !portsEqual;
+
+                if (hostDiffers || portDiffers)
+                {
+                    // Discard system resume data so the pipeline builds a new request (which we then rebase)
+                    request.autoResumeInfo = nil;
+                }
+            }
+
+            // Decide if this request should be rebased
+            BOOL shouldRebase = NO;
+            if (reqHost.length > 0 && bmHost.length > 0 && [reqHost isEqualToString:bmHost])
+            {
+                // Safe baseline: request targets bookmark host
+                shouldRebase = YES;
+            }
+            else if (self.state == OCConnectionStateConnected)
+            {
+                // When connected, allow switching for DAV requests or when targeting last provider host
+                NSString *davPath = [self pathForEndpoint:OCConnectionEndpointIDWebDAVRoot];
+                if (davPath.length > 0 && [originalURL.path containsString:davPath]) { shouldRebase = YES; }
+                if (!shouldRebase && lastHost.length > 0 && [reqHost isEqualToString:lastHost]) { shouldRebase = YES; }
+            }
+
+            if (shouldRebase)
+            {
+                NSURLComponents *orig = [NSURLComponents componentsWithURL:originalURL resolvingAgainstBaseURL:NO];
+                NSURLComponents *base = [NSURLComponents componentsWithURL:providerBaseURL resolvingAgainstBaseURL:NO];
+
+                if (orig != nil && base != nil)
+                {
+                    // Replace scheme/host/port; preserve path and query
+                    if (base.scheme.length > 0) { orig.scheme = base.scheme; }
+                    if (base.host.length > 0)   { orig.host   = base.host;   }
+                    if (base.port != nil)       { orig.port   = base.port;   }
+
+                    NSURL *rebased = orig.URL;
+                    if (rebased != nil)
+                    {
+                        OCTLog(@[ @"RequestScheduler" ], @"Dynamic switch rebased URL: %@", rebased);
+                        request.url = rebased;
+                        _lastRebasedBaseURL = providerBaseURL;
+                    }
+                }
+            }
+		}
+	}
+	@catch(NSException *exception) {
+		// Keep original URL if anything goes wrong
+        OCTLog(@[ @"RequestScheduler" ], @"Dynamic switch failed: %@", exception);
+	}
+
 	// Authorization
 	if ([request.requiredSignals containsObject:OCConnectionSignalIDAuthenticationAvailable])
 	{

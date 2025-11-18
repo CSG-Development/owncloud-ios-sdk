@@ -294,6 +294,7 @@
 
 	if ((connection = [[OCConnection alloc] initWithBookmark:self.bookmark]) != nil)
 	{
+		connection.baseURLProvider = [OCConnection defaultBaseURLProvider];
 		[connection connectWithCompletionHandler:^(NSError * _Nullable error, OCIssue * _Nullable issue) {
 			if (error != nil)
 			{
@@ -363,6 +364,7 @@
 
 	if ((connection = [[OCConnection alloc] initWithBookmark:self.bookmark]) != nil)
 	{
+		connection.baseURLProvider = [OCConnection defaultBaseURLProvider];
 		[connection connectWithCompletionHandler:^(NSError * _Nullable error, OCIssue * _Nullable issue) {
 			if (error != nil)
 			{

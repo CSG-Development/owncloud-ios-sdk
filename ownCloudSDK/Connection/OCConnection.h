@@ -50,6 +50,8 @@
 @class OCTUSJob;
 @class OCShareRole;
 
+@protocol OCBaseURLProvider;
+
 typedef NSString* OCConnectionEndpointID NS_TYPED_ENUM;
 typedef NSString* OCConnectionOptionKey NS_TYPED_ENUM;
 typedef NSString* OCConnectionSetupOptionKey NS_TYPED_ENUM;
@@ -168,6 +170,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(class,readonly,nonatomic) BOOL backgroundURLSessionsAllowed; //!< Indicates whether background URL sessions should be used.
 @property(class,readonly,nonatomic) BOOL allowCellular; //!< Indicates whether cellular may be used (reflecting class settings / MDM configuration)
 @property(class,assign,nonatomic) OCConnectionSetupHTTPPolicy setupHTTPPolicy; //!< Policy to use for setting up with plain-text HTTP URLs.
+@property(class,nullable,weak,nonatomic) id<OCBaseURLProvider> defaultBaseURLProvider; //!< Global default provider used to initialize new connections’ baseURLProvider
 
 @property(nullable,strong) OCBookmark *bookmark;
 @property(nullable,strong,nonatomic) OCAuthenticationMethod *authenticationMethod;
@@ -198,9 +201,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property(nullable,weak) id <OCConnectionHostSimulator> hostSimulator;
 
+@property(nullable,weak,nonatomic) id<OCBaseURLProvider> baseURLProvider; //!< Optional provider to supply a dynamic base URL (for endpoint switching)
+@property(nullable,copy,nonatomic) NSString *deviceCertificateCommonName; //!< Optional: certificate common name propagated from discovery/app layer for dynamic URL switching
+
 #pragma mark - Init
 - (instancetype)init NS_UNAVAILABLE; //!< Always returns nil. Please use the designated initializer instead.
 - (instancetype)initWithBookmark:(OCBookmark *)bookmark;
+
+#pragma mark - Connection validation
+/**
+ Triggers connection validation, optionally providing a URL that caused the validation.
+ This will re-check status/capabilities and is safe to call when best URL switches.
+ */
+- (void)validateConnectionWithReason:(NSString *)validationReason dueToResponseToURL:(nullable NSURL *)triggeringURL NS_SWIFT_NAME(validateConnection(withReason:dueToResponseTo:));
 
 #pragma mark - Connect & Disconnect
 - (nullable NSProgress *)connectWithCompletionHandler:(void(^)(NSError * _Nullable error, OCIssue * _Nullable issue))completionHandler;
@@ -433,6 +446,7 @@ typedef void(^OCConnectionIdentityObjectsDetailsRetrievalCompletionHandler)(NSEr
 - (nullable NSString *)pathForEndpoint:(OCConnectionEndpointID)endpoint; //!< Returns the path of an endpoint identified by its OCConnectionEndpointID
 - (nullable NSURL *)URLForEndpoint:(OCConnectionEndpointID)endpoint options:(nullable NSDictionary <OCConnectionEndpointURLOption,id> *)options; //!< Returns the URL of an endpoint identified by its OCConnectionEndpointID, allowing additional options (reserved for future use)
 - (nullable NSURL *)URLForEndpointPath:(OCPath)endpointPath withAlternativeURL:(nullable NSURL *)alternativeURL; //!< Returns the URL of the endpoint at the supplied endpointPath
+- (nullable NSURL *)currentBaseURL; //!< Returns the provider's current base URL if available, otherwise the bookmark's URL
 
 #pragma mark - Base URL Extract
 + (nullable NSURL *)extractBaseURLFromRedirectionTargetURL:(NSURL *)inRedirectionTargetURL originalURL:(NSURL *)inOriginalURL originalBaseURL:(NSURL *)inOriginalBaseURL fallbackToRedirectionTargetURL:(BOOL)fallbackToRedirectionTargetURL;
@@ -442,6 +456,10 @@ typedef void(^OCConnectionIdentityObjectsDetailsRetrievalCompletionHandler)(NSEr
 + (BOOL)isAlternativeBaseURL:(NSURL *)alternativeBaseURL safeUpgradeForPreviousBaseURL:(NSURL *)baseURL;
 
 
+@end
+
+@protocol OCBaseURLProvider <NSObject>
+- (nullable NSURL *)currentBaseURL;
 @end
 
 #pragma mark - PROGRESS REPORTING

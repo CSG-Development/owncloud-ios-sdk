@@ -861,6 +861,7 @@
 	bookmark.authenticationData = authenticationData;
 
 	OCConnection *connection = [[OCConnection alloc] initWithBookmark:bookmark];
+	connection.baseURLProvider = [OCConnection defaultBaseURLProvider];
 
 	return ([connection.authenticationMethod authorizeRequest:request forConnection:connection]);
 }

@@ -27,6 +27,7 @@
 #import "OCCore+SyncEngine.h"
 #import "NSError+OCError.h"
 #import "OCWaitConditionAvailableOffline.h"
+#import "OCCore+Internal.h"
 
 @implementation OCItemPolicyProcessorAvailableOffline
 
@@ -183,6 +184,7 @@
 	    (matchingItem.type == OCItemTypeFile) && 					// Can only download files
 	    (!matchingItem.isPlaceholder) &&						// Can not download placeholders
 	    (matchingItem.syncActivity == OCItemSyncActivityNone) &&			// Wait for item sync activity to cease
+	    ([matchingItem countOfSyncRecordsWithSyncActivity:OCItemSyncActivityDownloading] == 0) && // Avoid duplicate scheduling while a download is active
 	    (matchingItem.removed == NO)						// Not removed
 	   )
 	{
@@ -194,17 +196,35 @@
 
 		if (matchingItem.cloudStatus == OCItemCloudStatusCloudOnly)
 		{
-			if (self.activeSyncActionCount != nil)
-			{
-				self.activeSyncActionCount = @(self.activeSyncActionCount.integerValue + 1);
-			}
+			// Deduplicate: if a download sync record already exists for this path, skip scheduling another
+			__weak typeof(self) weakSelf = self;
+			OCPath itemPath = matchingItem.path;
+			[self.core.database retrieveSyncRecordsForPath:itemPath action:OCSyncActionIdentifierDownload inProgressSince:nil completionHandler:^(OCDatabase *db, NSError *error, NSArray<OCSyncRecord *> *syncRecords) {
+				BOOL hasExistingDownload = NO;
+				for (OCSyncRecord *record in syncRecords)
+				{
+					if (!record.removed)
+					{
+						hasExistingDownload = YES;
+						break;
+					}
+				}
 
-			[self.core downloadItem:matchingItem options:@{
-				OCCoreOptionDownloadTriggerID : OCItemDownloadTriggerIDAvailableOffline,
-				OCCoreOptionSyncReason : OCSyncReasonAvailableOffline,
-				OCCoreOptionDependsOnCellularSwitch : OCCellularSwitchIdentifierAvailableOffline,
-				OCCoreOptionWaitConditions : @[[OCWaitConditionAvailableOffline new]] // cancels downloads before they start if they are no longer in the AO policy locations
-			} resultHandler:nil];
+				if (!hasExistingDownload)
+				{
+					if (weakSelf.activeSyncActionCount != nil)
+					{
+						weakSelf.activeSyncActionCount = @(weakSelf.activeSyncActionCount.integerValue + 1);
+					}
+
+					[weakSelf.core downloadItem:matchingItem options:@{
+						OCCoreOptionDownloadTriggerID : OCItemDownloadTriggerIDAvailableOffline,
+						OCCoreOptionSyncReason : OCSyncReasonAvailableOffline,
+						OCCoreOptionDependsOnCellularSwitch : OCCellularSwitchIdentifierAvailableOffline,
+						OCCoreOptionWaitConditions : @[[OCWaitConditionAvailableOffline new]] // cancels downloads before they start if they are no longer in the AO policy locations
+					} resultHandler:nil];
+				}
+			}];
 		}
 		else if (matchingItem.cloudStatus == OCItemCloudStatusLocalCopy)
 		{

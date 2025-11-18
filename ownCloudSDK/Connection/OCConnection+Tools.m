@@ -213,6 +213,15 @@
 	return ([[self class] extractBaseURLFromRedirectionTargetURL:inRedirectionTargetURL originalURL:inOriginalURL originalBaseURL:[_bookmark.url absoluteURL] fallbackToRedirectionTargetURL:(BOOL)fallbackToRedirectionTargetURL]);
 }
 
+- (NSURL *)currentBaseURL
+{
+	NSURL *providerURL = nil;
+	id<OCBaseURLProvider> provider = self.baseURLProvider;
+	if (provider == nil) { provider = [OCConnection defaultBaseURLProvider]; }
+	if (provider != nil) { providerURL = [provider currentBaseURL]; }
+	return (providerURL != nil) ? providerURL : _bookmark.url;
+}
+
 + (NSURL *)extractBaseURLFromRedirectionTargetURL:(NSURL *)inRedirectionTargetURL originalURL:(NSURL *)inOriginalURL originalBaseURL:(NSURL *)inOriginalBaseURL fallbackToRedirectionTargetURL:(BOOL)fallbackToRedirectionTargetURL
 {
 	NSURL *originalBaseURL = [inOriginalBaseURL absoluteURL];

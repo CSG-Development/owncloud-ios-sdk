@@ -339,6 +339,8 @@ INCLUDE_IN_CLASS_SETTINGS_SNAPSHOTS(OCCore)
 		_warnedCertificates = [NSMutableArray new];
 
 		_connection = [[OCConnection alloc] initWithBookmark:bookmark];
+		// Ensure dynamic base URL provider is applied (also set in OCConnection init via defaultBaseURLProvider)
+		_connection.baseURLProvider = [OCConnection defaultBaseURLProvider];
 		if (OCTypedCast([self classSettingForOCClassSettingsKey:OCCoreCookieSupportEnabled], NSNumber).boolValue == YES)
 		{
 			// Adding cookie storage enabled cookie support
