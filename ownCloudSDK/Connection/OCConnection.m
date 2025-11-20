@@ -726,86 +726,75 @@ INCLUDE_IN_CLASS_SETTINGS_SNAPSHOTS(OCConnection)
 #pragma mark - Prepare request
 - (OCHTTPRequest *)pipeline:(OCHTTPPipeline *)pipeline prepareRequestForScheduling:(OCHTTPRequest *)request
 {
-	// Dynamic base URL rebase (endpoint switching)
-	@try {
-		NSURL *providerBaseURL = [self currentBaseURL];
-		NSURL *bookmarkBaseURL = self.bookmark.url;
-		NSURL *originalURL = request.url;
+  //  BOOL isValidatorRequest = [request.userInfo[OCConnectionValidatorKey] boolValue];
+//    if (!isValidatorRequest) {
+        // Dynamic base URL rebase (endpoint switching)
+    @try {
+          NSURL *providerBaseURL = [self currentBaseURL];
+          NSURL *originalURL     = request.url;
 
-		if ((providerBaseURL != nil) && (bookmarkBaseURL != nil) && (originalURL != nil))
-		{
-			// Only rebase requests that target the bookmark's host
-			NSString *reqHost = originalURL.host.lowercaseString ?: @"";
-			NSString *bmHost  = bookmarkBaseURL.host.lowercaseString ?: @"";
-			NSString *lastHost = _lastRebasedBaseURL.host.lowercaseString ?: @"";
+        OCTLog(@[@"RequestScheduler"],
+               @"prepareRequest host=%@ path=%@ provider=%@",
+               originalURL.host, originalURL.path, providerBaseURL.absoluteString);
 
-            if (request.downloadRequest && request.autoResume && (request.autoResumeInfo != nil))
-            {
-                NSString *provHost = providerBaseURL.host.lowercaseString ?: @"";
-                NSNumber *provPort = providerBaseURL.port;
-                NSNumber *bmPort   = bookmarkBaseURL.port;
+          if (providerBaseURL != nil && originalURL != nil) {
+              NSString *reqHost    = originalURL.host.lowercaseString ?: @"";
+              NSNumber *reqPort    = originalURL.port;
+              NSString *reqScheme  = originalURL.scheme.lowercaseString ?: @"";
 
-                BOOL hostDiffers = (provHost.length > 0) && ![provHost isEqualToString:bmHost];
-                BOOL portsEqual = NO;
-                if (provPort != nil)
-                {
-                    portsEqual = [provPort isEqualToNumber:bmPort];
-                }
-                else
-                {
-                    portsEqual = (bmPort == nil);
-                }
-                BOOL portDiffers = !portsEqual;
+              NSString *provHost   = providerBaseURL.host.lowercaseString ?: @"";
+              NSNumber *provPort   = providerBaseURL.port;
+              NSString *provScheme = providerBaseURL.scheme.lowercaseString ?: @"";
 
-                if (hostDiffers || portDiffers)
-                {
-                    // Discard system resume data so the pipeline builds a new request (which we then rebase)
-                    request.autoResumeInfo = nil;
-                }
-            }
+              BOOL hostDiffers   = (provHost.length > 0 && ![reqHost isEqualToString:provHost]);
+              BOOL schemeDiffers = (provScheme.length > 0 && ![reqScheme isEqualToString:provScheme]);
+              BOOL portDiffers   = NO;
 
-            // Decide if this request should be rebased
-            BOOL shouldRebase = NO;
-            if (reqHost.length > 0 && bmHost.length > 0 && [reqHost isEqualToString:bmHost])
-            {
-                // Safe baseline: request targets bookmark host
-                shouldRebase = YES;
-            }
-            else if (self.state == OCConnectionStateConnected)
-            {
-                // When connected, allow switching for DAV requests or when targeting last provider host
-                NSString *davPath = [self pathForEndpoint:OCConnectionEndpointIDWebDAVRoot];
-                if (davPath.length > 0 && [originalURL.path containsString:davPath]) { shouldRebase = YES; }
-                if (!shouldRebase && lastHost.length > 0 && [reqHost isEqualToString:lastHost]) { shouldRebase = YES; }
-            }
+              if (provPort != nil) {
+                  // If provider has explicit port, compare directly (nil -> 0)
+                  portDiffers = ![provPort isEqualToNumber:(reqPort ?: @(0))];
+              } else {
+                  // Provider has no explicit port: treat only explicit, different request ports as “different”
+                  portDiffers = (reqPort != nil);
+              }
 
-            if (shouldRebase)
-            {
-                NSURLComponents *orig = [NSURLComponents componentsWithURL:originalURL resolvingAgainstBaseURL:NO];
-                NSURLComponents *base = [NSURLComponents componentsWithURL:providerBaseURL resolvingAgainstBaseURL:NO];
+              if (hostDiffers || schemeDiffers || portDiffers) {
 
-                if (orig != nil && base != nil)
-                {
-                    // Replace scheme/host/port; preserve path and query
-                    if (base.scheme.length > 0) { orig.scheme = base.scheme; }
-                    if (base.host.length > 0)   { orig.host   = base.host;   }
-                    if (base.port != nil)       { orig.port   = base.port;   }
+                  // If we’re resuming a download, clear stale resume data when host/port changes
+                  if (request.downloadRequest && request.autoResume && request.autoResumeInfo != nil) {
+                      request.autoResumeInfo = nil;
+                  }
 
-                    NSURL *rebased = orig.URL;
-                    if (rebased != nil)
-                    {
-                        OCTLog(@[ @"RequestScheduler" ], @"Dynamic switch rebased URL: %@", rebased);
-                        request.url = rebased;
-                        _lastRebasedBaseURL = providerBaseURL;
-                    }
-                }
-            }
-		}
-	}
-	@catch(NSException *exception) {
-		// Keep original URL if anything goes wrong
-        OCTLog(@[ @"RequestScheduler" ], @"Dynamic switch failed: %@", exception);
-	}
+                  NSURLComponents *orig = [NSURLComponents componentsWithURL:originalURL
+                                                     resolvingAgainstBaseURL:NO];
+                  NSURLComponents *base = [NSURLComponents componentsWithURL:providerBaseURL
+                                                     resolvingAgainstBaseURL:NO];
+
+                  if (orig != nil && base != nil) {
+                      // Override scheme/host/port with provider; keep path and query
+                      if (base.scheme.length > 0) { orig.scheme = base.scheme; }
+                      if (base.host.length   > 0) { orig.host   = base.host;   }
+                      if (base.port != nil)       { orig.port   = base.port;   }
+
+                      NSURL *rebased = orig.URL;
+                      if (rebased != nil) {
+                          OCTLog(@[ @"RequestScheduler"],
+                                 @"Dynamic switch %@ -> %@",
+                                 originalURL.absoluteString,
+                                 rebased.absoluteString);
+
+                          request.url = rebased;
+                          _lastRebasedBaseURL = providerBaseURL;
+                      }
+                  }
+              }
+          }
+      }
+      @catch (NSException *exception) {
+          OCTLog(@[ @"RequestScheduler"],
+                 @"Dynamic switch failed: %@", exception);
+      }
+   // }
 
 	// Authorization
 	if ([request.requiredSignals containsObject:OCConnectionSignalIDAuthenticationAvailable])

@@ -85,7 +85,7 @@
 			alternativeBaseURL = options[OCAuthenticationMethodWebFingerAlternativeIDPKey];
 		}
 	}
-
+    alternativeBaseURL = [self currentBaseURL];
 	if ([endpoint isEqual:OCConnectionEndpointIDPreview])
 	{
 		endpoint = OCConnectionEndpointIDWebDAVRoot;
@@ -186,6 +186,20 @@
 {
 	NSURL *bookmarkURL = (alternativeURL != nil) ? alternativeURL : _bookmark.url;
 
+	// If an alternative base URL is provided without a path, inherit the bookmark's base path
+	// to preserve reverse-proxy prefixes (e.g., "/files") for relative endpoints.
+	if ((alternativeURL != nil) &&
+	    ((alternativeURL.path == nil) || [alternativeURL.path isEqualToString:@"/"] || [alternativeURL.path isEqualToString:@""]) &&
+	    (_bookmark.url.path != nil) && ![_bookmark.url.path isEqualToString:@"/"] && ![_bookmark.url.path isEqualToString:@""])
+	{
+		NSURLComponents *components = [NSURLComponents componentsWithURL:alternativeURL resolvingAgainstBaseURL:NO];
+		components.path = _bookmark.url.path;
+		NSURL *hybrid = components.URL;
+		if (hybrid != nil) {
+			bookmarkURL = hybrid;
+		}
+	}
+
 	if (endpointPath != nil)
 	{
 		if ([endpointPath hasPrefix:@"/"]) // Absolute path
@@ -217,9 +231,8 @@
 {
 	NSURL *providerURL = nil;
 	id<OCBaseURLProvider> provider = self.baseURLProvider;
-	if (provider == nil) { provider = [OCConnection defaultBaseURLProvider]; }
 	if (provider != nil) { providerURL = [provider currentBaseURL]; }
-	return (providerURL != nil) ? providerURL : _bookmark.url;
+	return providerURL;
 }
 
 + (NSURL *)extractBaseURLFromRedirectionTargetURL:(NSURL *)inRedirectionTargetURL originalURL:(NSURL *)inOriginalURL originalBaseURL:(NSURL *)inOriginalBaseURL fallbackToRedirectionTargetURL:(BOOL)fallbackToRedirectionTargetURL
