@@ -323,6 +323,11 @@
 {
 	_httpResponse = nil;
 	_effectiveURL = nil;
+	_cancelled = NO;
+	if (_progress != nil)
+	{
+		_progress.cancelled = NO;
+	}
 
 	if (_downloadRequest)
 	{

@@ -165,6 +165,9 @@ NS_ASSUME_NONNULL_BEGIN
 	NSMutableArray <OCConnectionAuthenticationAvailabilityHandler> *_pendingAuthenticationAvailabilityHandlers;
 
 	NSMutableDictionary<OCActionTrackingID, NSProgress *> *_progressByActionTrackingID;
+
+	// Best-URL switch handling
+	NSTimeInterval _rescheduleCancelledRequestsUntil;
 }
 
 @property(class,readonly,nonatomic) BOOL backgroundURLSessionsAllowed; //!< Indicates whether background URL sessions should be used.
@@ -221,6 +224,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)disconnectWithCompletionHandler:(dispatch_block_t)completionHandler invalidate:(BOOL)invalidateConnection;
 
 - (void)cancelNonCriticalRequests;
+- (void)cancelAllRequestsForCurrentPartition;
 
 #pragma mark - Pipelines
 - (void)attachToPipelines; //!< Attaches the connection to its pipelines (can be called repeatedly)

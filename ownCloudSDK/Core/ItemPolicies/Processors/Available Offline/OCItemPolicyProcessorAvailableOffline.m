@@ -213,16 +213,16 @@
 				if (!hasExistingDownload)
 				{
 					if (weakSelf.activeSyncActionCount != nil)
-					{
+			{
 						weakSelf.activeSyncActionCount = @(weakSelf.activeSyncActionCount.integerValue + 1);
-					}
+			}
 
 					[weakSelf.core downloadItem:matchingItem options:@{
-						OCCoreOptionDownloadTriggerID : OCItemDownloadTriggerIDAvailableOffline,
-						OCCoreOptionSyncReason : OCSyncReasonAvailableOffline,
-						OCCoreOptionDependsOnCellularSwitch : OCCellularSwitchIdentifierAvailableOffline,
-						OCCoreOptionWaitConditions : @[[OCWaitConditionAvailableOffline new]] // cancels downloads before they start if they are no longer in the AO policy locations
-					} resultHandler:nil];
+				OCCoreOptionDownloadTriggerID : OCItemDownloadTriggerIDAvailableOffline,
+				OCCoreOptionSyncReason : OCSyncReasonAvailableOffline,
+				OCCoreOptionDependsOnCellularSwitch : OCCellularSwitchIdentifierAvailableOffline,
+				OCCoreOptionWaitConditions : @[[OCWaitConditionAvailableOffline new]] // cancels downloads before they start if they are no longer in the AO policy locations
+			} resultHandler:nil];
 				}
 			}];
 		}

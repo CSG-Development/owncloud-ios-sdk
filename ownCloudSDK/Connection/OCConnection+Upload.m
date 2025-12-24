@@ -42,6 +42,103 @@ static OCUploadInfoTask OCUploadInfoTaskUpload = @"upload";
 
 @implementation OCConnection (Upload)
 
+#pragma mark - Best URL switch helpers
+- (BOOL)_isCancellationDueToBestURLSwitch:(NSError *)error
+{
+	if (error == nil)
+	{
+		return (NO);
+	}
+
+	NSTimeInterval now = [NSDate timeIntervalSinceReferenceDate];
+	if (now > _rescheduleCancelledRequestsUntil)
+	{
+		return (NO);
+	}
+
+	return ([error isOCErrorWithCode:OCErrorRequestCancelled] ||
+		([error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorCancelled));
+}
+
+- (BOOL)_restartTusJobAfterBestURLSwitch:(OCTUSJob *)tusJob
+{
+	if (tusJob == nil)
+	{
+		return (NO);
+	}
+
+	NSURL *webDAVRoot = [self URLForEndpoint:OCConnectionEndpointIDWebDAVRoot options:@{ OCConnectionEndpointURLOptionDriveID : OCNullProtect(tusJob.fileDriveID) }];
+	NSString *parentPath = tusJob.futureItemPath.stringByDeletingLastPathComponent;
+
+	if ((webDAVRoot == nil) || (parentPath == nil))
+	{
+		return (NO);
+	}
+
+	tusJob.creationURL = [webDAVRoot URLByAppendingPathComponent:parentPath];
+	tusJob.uploadURL = nil;
+	tusJob.uploadOffset = nil;
+
+	if (tusJob.trackingID != nil)
+	{
+		[self progressForActionTrackingID:tusJob.trackingID provider:^NSProgress * _Nonnull(NSProgress * _Nonnull progress) {
+			progress.totalUnitCount = tusJob.fileSize.unsignedLongLongValue;
+			progress.completedUnitCount = 0;
+			return (progress);
+		}];
+	}
+
+	OCTLog(@[@"RequestScheduler"], @"Restarting TUS upload after best-URL switch using base %@", webDAVRoot.absoluteString);
+	[self _continueTusJob:tusJob lastTask:nil performCheck:NO];
+
+	return (YES);
+}
+
+- (BOOL)_restartDirectUploadAfterBestURLSwitchForRequest:(OCHTTPRequest *)request
+{
+	NSURL *sourceURL = request.userInfo[@"sourceURL"];
+	NSString *fileName = request.userInfo[@"fileName"];
+	OCItem *parentItem = request.userInfo[@"parentItem"];
+	NSDate *modDate = request.userInfo[@"modDate"];
+	NSNumber *fileSize = request.userInfo[@"fileSize"];
+	OCChecksum *checksum = request.userInfo[@"checksum"];
+	NSDictionary *options = request.userInfo[@"options"] ?: @{};
+	id replacedItemValue = request.userInfo[@"replacedItem"];
+	OCItem *replacedItem = ([replacedItemValue isKindOfClass:OCItem.class]) ? replacedItemValue : nil;
+
+	if ((sourceURL == nil) || (fileName == nil) || (parentItem == nil) || (modDate == nil) || (fileSize == nil))
+	{
+		return (NO);
+	}
+
+	OCTLog(@[@"RequestScheduler"], @"Restarting PUT upload after best-URL switch for %@", request.url.absoluteString);
+	[self _directUploadFileFromURL:sourceURL withName:fileName modificationDate:modDate fileSize:fileSize checksum:checksum to:parentItem replacingItem:replacedItem options:options resultTarget:request.eventTarget];
+
+	return (YES);
+}
+
+#pragma mark - Transient network retry helper
+- (BOOL)_shouldRetryTransientNetworkError:(NSError *)error
+{
+	if (error == nil) { return (NO); }
+	if (![error.domain isEqualToString:NSURLErrorDomain]) { return (NO); }
+
+	switch (error.code)
+	{
+		case NSURLErrorTimedOut:                 // -1001
+		case NSURLErrorCannotFindHost:           // -1003
+		case NSURLErrorCannotConnectToHost:      // -1004
+		case NSURLErrorNetworkConnectionLost:    // -1005
+		case NSURLErrorDNSLookupFailed:          // -1006
+		case NSURLErrorNotConnectedToInternet:   // -1009
+		case NSURLErrorInternationalRoamingOff:  // -1018
+		case NSURLErrorDataNotAllowed:           // -1020
+			return (YES);
+		default:
+			return (NO);
+	}
+}
+
 #pragma mark - File transfer: upload
 - (OCProgress *)uploadFileFromURL:(NSURL *)sourceURL withName:(NSString *)fileName to:(OCItem *)newParentDirectory replacingItem:(OCItem *)replacedItem options:(OCConnectionOptions)options resultTarget:(OCEventTarget *)eventTarget
 {
@@ -579,6 +676,7 @@ static OCUploadInfoTask OCUploadInfoTaskUpload = @"upload";
 //			request.requestObserver = options[OCConnectionOptionRequestObserverKey];
 //		}
 
+		OCTLog(@[@"UploadTest"], @"Enqueue TUS %@ to %@", request.userInfo[OCUploadInfoKeyTask], request.url.absoluteString);
 		[[self transferPipelineForRequest:request withExpectedResponseLength:1000] enqueueRequest:request forPartitionID:self.partitionID];
 	}
 
@@ -590,6 +688,21 @@ static OCUploadInfoTask OCUploadInfoTaskUpload = @"upload";
 	NSString *task = request.userInfo[OCUploadInfoKeyTask];
 	OCTUSJob *tusJob = request.userInfo[OCUploadInfoKeyJob];
 	BOOL isTusResponse = (request.httpResponse.headerFields[OCTUSHeaderNameTusResumable] != nil); // Tus-Resumable header indicates server supports TUS
+
+	if ([self _isCancellationDueToBestURLSwitch:error])
+	{
+		if ([self _restartTusJobAfterBestURLSwitch:tusJob])
+		{
+			return;
+		}
+	}
+	else if ([self _shouldRetryTransientNetworkError:error])
+	{
+		// Force a HEAD to learn current offset, then continue
+		tusJob.uploadOffset = nil;
+		[self _continueTusJob:tusJob lastTask:task performCheck:YES];
+		return;
+	}
 
 	if ([task isEqual:OCUploadInfoTaskCreate])
 	{
@@ -794,9 +907,35 @@ static OCUploadInfoTask OCUploadInfoTaskUpload = @"upload";
 	OCActionTrackingID actionTrackingID = OCConnectionInferActionTrackingID(options, eventTarget);
 	OCProgress *requestProgress = nil;
 	NSURL *uploadURL;
+	NSURL *stagedURL = nil;
 
-	if ((uploadURL = [[[self URLForEndpoint:OCConnectionEndpointIDWebDAVRoot options:@{ OCConnectionEndpointURLOptionDriveID : OCNullProtect(newParentDirectory.driveID) }] URLByAppendingPathComponent:newParentDirectory.path] URLByAppendingPathComponent:fileName]) != nil)
+	// Stage: copy the source file into app temp so retries don't depend on File Provider URL
 	{
+		NSString *tempDir = NSTemporaryDirectory();
+		if (tempDir.length > 0) {
+			NSURL *destURL = [NSURL fileURLWithPathComponents:@[ tempDir, [NSUUID UUID].UUIDString ]];
+			NSError *stageError = nil;
+			if ([[NSFileManager defaultManager] copyItemAtURL:sourceURL toURL:destURL error:&stageError]) {
+				stagedURL = destURL;
+				OCTLog(@[@"UploadTest"], @"Staged upload copy %@ from %@", stagedURL.path, sourceURL.path);
+			} else {
+				OCTLogError(@"Failed to stage upload file from %@ to %@: %@", sourceURL.path, destURL.path, stageError);
+				stagedURL = sourceURL; // fallback
+			}
+		} else {
+			stagedURL = sourceURL;
+		}
+	}
+
+	NSURL *webDAVRoot = [self URLForEndpoint:OCConnectionEndpointIDWebDAVRoot options:@{ OCConnectionEndpointURLOptionDriveID : OCNullProtect(newParentDirectory.driveID) }];
+	if ((uploadURL = [[webDAVRoot URLByAppendingPathComponent:newParentDirectory.path] URLByAppendingPathComponent:fileName]) != nil)
+	{
+		OCTLog(@[@"Upload"], @"Enqueue PUT target=%@ base=%@ bookmark=%@ size=%@",
+		       uploadURL.absoluteString,
+		       [self currentBaseURL].absoluteString,
+		       self.bookmark.url.absoluteString,
+		       fileSize);
+
 		OCHTTPRequest *request = [OCHTTPRequest requestWithURL:uploadURL];
 
 		request.method = OCHTTPMethodPUT;
@@ -838,15 +977,17 @@ static OCUploadInfoTask OCUploadInfoTaskUpload = @"upload";
 		request.requiredSignals = self.actionSignals;
 		request.resultHandlerAction = @selector(_handleDirectUploadFileResult:error:);
 		request.userInfo = @{
-			@"sourceURL" : sourceURL,
+			@"sourceURL" : stagedURL,
 			@"fileName" : fileName,
 			@"parentItem" : newParentDirectory,
 			@"modDate" : modDate,
 			@"fileSize" : fileSize,
-			@"checksum" : (checksum!=nil) ? checksum : @""
+			@"checksum" : (checksum!=nil) ? checksum : @"",
+			@"options" : options ?: @{},
+			@"replacedItem" : (replacedItem != nil) ? replacedItem : NSNull.null
 		};
 		request.eventTarget = eventTarget;
-		request.bodyURL = sourceURL;
+		request.bodyURL = stagedURL;
 		request.forceCertificateDecisionDelegation = YES;
 		request.actionTrackingID = actionTrackingID;
 
@@ -889,6 +1030,22 @@ static OCUploadInfoTask OCUploadInfoTaskUpload = @"upload";
 {
 	NSString *fileName = request.userInfo[@"fileName"];
 	OCItem *parentItem = request.userInfo[@"parentItem"];
+
+	if ([self _isCancellationDueToBestURLSwitch:error])
+	{
+		if ([self _restartDirectUploadAfterBestURLSwitchForRequest:request])
+		{
+			return;
+		}
+	}
+	else if ([self _shouldRetryTransientNetworkError:error] && !request.progress.progress.isCancelled)
+	{
+		// Restart the direct upload after a transient network failure
+		if ([self _restartDirectUploadAfterBestURLSwitchForRequest:request])
+		{
+			return;
+		}
+	}
 
 	OCLogDebug(@"Handling file upload result with error=%@: %@", error, request);
 

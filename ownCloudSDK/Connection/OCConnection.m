@@ -956,11 +956,72 @@ INCLUDE_IN_CLASS_SETTINGS_SNAPSHOTS(OCConnection)
 }
 
 #pragma mark - Rescheduling support
+- (void)_rebaseRequest:(OCHTTPRequest *)request toCurrentBaseURLIfNeeded:(BOOL)forced
+{
+	if (request == nil) { return; }
+
+	NSURL *currentBaseURL = [self currentBaseURL];
+	NSURL *requestURL = request.url;
+
+	if ((currentBaseURL == nil) || (requestURL == nil))
+	{
+		return;
+	}
+
+	if (!forced && [requestURL hasSameSchemeHostAndPortAs:currentBaseURL])
+	{
+		return; // Already on current base
+	}
+
+	NSURLComponents *requestComponents = [NSURLComponents componentsWithURL:requestURL resolvingAgainstBaseURL:NO];
+	NSURLComponents *baseComponents = [NSURLComponents componentsWithURL:currentBaseURL resolvingAgainstBaseURL:NO];
+
+	if ((requestComponents == nil) || (baseComponents == nil))
+	{
+		return;
+	}
+
+	requestComponents.scheme = baseComponents.scheme;
+	requestComponents.host = baseComponents.host;
+	requestComponents.port = baseComponents.port;
+
+	NSURL *rebasedURL = requestComponents.URL;
+
+	if (rebasedURL != nil)
+	{
+		OCTLog(@[@"RequestScheduler"], @"Rebased request URL %@ -> %@ (current base=%@)", requestURL.absoluteString, rebasedURL.absoluteString, currentBaseURL.absoluteString);
+		request.url = rebasedURL;
+		request.effectiveURL = nil; // Force recreation
+	}
+}
+
 - (OCHTTPRequestInstruction)pipeline:(OCHTTPPipeline *)pipeline instructionForFinishedTask:(OCHTTPPipelineTask *)task instruction:(OCHTTPRequestInstruction)incomingInstruction error:(NSError *)error
 {
 	OCHTTPRequestInstruction instruction = OCHTTPRequestInstructionDeliver;
 	NSURL *taskRequestURL = task.request.url;
 	BOOL considerSuccessfulRequest = YES;
+
+	// If we cancelled due to best-URL switch, reschedule once within a short window so the request picks up the new base URL
+	NSTimeInterval now = [NSDate timeIntervalSinceReferenceDate];
+	BOOL withinBestURLSwitchWindow = (now <= _rescheduleCancelledRequestsUntil);
+	if (withinBestURLSwitchWindow)
+	{
+		if ([error isOCErrorWithCode:OCErrorRequestCancelled] ||
+		    ([error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorCancelled))
+		{
+			NSURL *before = task.request.url;
+			// For downloads, drop stale resume data so they restart cleanly on the new host
+			if (task.request.downloadRequest && task.request.autoResume && task.request.autoResumeInfo != nil)
+			{
+				task.request.autoResumeInfo = nil;
+			}
+			[self _rebaseRequest:task.request toCurrentBaseURLIfNeeded:YES];
+			OCTLog(@[@"RequestScheduler"], @"Rescheduling cancelled request: %@ -> %@ (base=%@)", before.absoluteString, task.request.url.absoluteString, [self currentBaseURL].absoluteString);
+			instruction = OCHTTPRequestInstructionReschedule;
+			considerSuccessfulRequest = NO;
+			return instruction;
+		}
+	}
 
 	if ([error isOCErrorWithCode:OCErrorAuthorizationRetry])
 	{
@@ -1059,6 +1120,11 @@ INCLUDE_IN_CLASS_SETTINGS_SNAPSHOTS(OCConnection)
 	if ((_delegate!=nil) && [_delegate respondsToSelector:@selector(connection:instructionForFinishedRequest:withResponse:error:defaultsTo:)])
 	{
 		instruction = [_delegate connection:self instructionForFinishedRequest:task.request withResponse:task.response error:error defaultsTo:instruction];
+	}
+
+	if (instruction == OCHTTPRequestInstructionReschedule)
+	{
+		[self _rebaseRequest:task.request toCurrentBaseURLIfNeeded:YES];
 	}
 
 	return (instruction);
@@ -1757,6 +1823,21 @@ INCLUDE_IN_CLASS_SETTINGS_SNAPSHOTS(OCConnection)
 
 		// Cancel non-critical requests
 		[pipeline cancelNonCriticalRequestsForPartitionID:self.partitionID];
+	}
+}
+
+- (void)cancelAllRequestsForCurrentPartition
+{
+	// Attach to pipelines to ensure handlers are registered
+	[self attachToPipelines];
+
+	// Mark a short window during which cancelled requests should be rescheduled
+	_rescheduleCancelledRequestsUntil = [NSDate timeIntervalSinceReferenceDate] + 5.0; // 5s window
+
+	for (OCHTTPPipeline *pipeline in self.allHTTPPipelines)
+	{
+		OCLogDebug(@"cancelling ALL requests from pipeline %@ for partitionID %@", pipeline, self.partitionID);
+		[pipeline cancelRequestsForPartitionID:self.partitionID queuedOnly:NO];
 	}
 }
 
