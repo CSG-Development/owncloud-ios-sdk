@@ -799,7 +799,15 @@ typedef NSMutableDictionary<OCKeyValueStoreKey, OCKeyValueRecord *> * OCKeyValue
 
 						if (![[NSFileManager defaultManager] copyItemAtURL:newReadingURL toURL:newWritingURL error:&error])
 						{
-							OCLogError(@"Error copying file after not making changes: %@", error);
+							if ([error.domain isEqualToString:NSCocoaErrorDomain] && (error.code == NSFileWriteFileExistsError))
+							{
+								// Destination already exists; nothing to update, so silence the noise
+								OCLogDebug(@"Skip copying key-value store (destination exists): %@", newWritingURL);
+							}
+							else
+							{
+								OCLogError(@"Error copying file after not making changes: %@", error);
+							}
 						}
 					}
 				}
