@@ -64,6 +64,7 @@
 
 static OCConnectionSetupHTTPPolicy sSetupHTTPPolicy = OCConnectionSetupHTTPPolicyAuto;
 static __weak id<OCBaseURLProvider> sDefaultBaseURLProvider = nil;
+static OCCertificateValidationHandler sCertificateValidationHandler = nil;
 
 static NSString *OCConnectionValidatorKey = @"connection-validator";
 
@@ -131,6 +132,16 @@ INCLUDE_IN_CLASS_SETTINGS_SNAPSHOTS(OCConnection)
 + (void)setDefaultBaseURLProvider:(id<OCBaseURLProvider>)defaultBaseURLProvider
 {
 	sDefaultBaseURLProvider = defaultBaseURLProvider;
+}
+
++ (OCCertificateValidationHandler)certificateValidationHandler
+{
+	return sCertificateValidationHandler;
+}
+
++ (void)setCertificateValidationHandler:(OCCertificateValidationHandler)certificateValidationHandler
+{
+	sCertificateValidationHandler = [certificateValidationHandler copy];
 }
 
 + (NSDictionary<NSString *,id> *)defaultSettingsForIdentifier:(OCClassSettingsIdentifier)identifier

@@ -123,6 +123,20 @@
 
 		request.forceCertificateDecisionDelegation = YES;
 		request.ephermalRequestCertificateProceedHandler = ^(OCHTTPRequest *request, OCCertificate *certificate, OCCertificateValidationResult validationResult, NSError *certificateValidationError, OCConnectionCertificateProceedHandler proceedHandler) {
+			// Prefer app‑level certificate validation if configured (ownCloud app / Curator).
+			OCCertificateValidationHandler appHandler = [OCConnection certificateValidationHandler];
+
+			if (appHandler != nil)
+			{
+				// Delegate to the centralized Swift validation (CertificateValidationService +
+				// DeviceCertificateTrustPrompt). This will call proceedHandler(YES/NO, error)
+				// once the user has made a decision, and the current request will either
+				// continue or fail accordingly – no separate retry from here required.
+				appHandler(self, request, certificate, nil, proceedHandler);
+				return;
+			}
+
+			// Fallback to legacy SDK behavior if no app‑level handler is installed.
 			switch (validationResult)
 			{
 				case OCCertificateValidationResultError:

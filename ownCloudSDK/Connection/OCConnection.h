@@ -87,6 +87,12 @@ typedef NS_ENUM(NSUInteger, OCConnectionStatusValidationResult)
 	OCConnectionStatusValidationResultFailure	//!< Validation failed
 };
 
+typedef void(^OCCertificateValidationHandler)(OCConnection * _Nullable connection,
+					      OCHTTPRequest * _Nonnull request,
+					      OCCertificate * _Nonnull certificate,
+					      OCCertificate * _Nullable pinnedCertificate,
+					      OCConnectionCertificateProceedHandler _Nonnull proceedHandler);
+
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol OCConnectionDelegate <NSObject>
@@ -174,6 +180,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(class,readonly,nonatomic) BOOL allowCellular; //!< Indicates whether cellular may be used (reflecting class settings / MDM configuration)
 @property(class,assign,nonatomic) OCConnectionSetupHTTPPolicy setupHTTPPolicy; //!< Policy to use for setting up with plain-text HTTP URLs.
 @property(class,nullable,weak,nonatomic) id<OCBaseURLProvider> defaultBaseURLProvider; //!< Global default provider used to initialize new connections’ baseURLProvider
+@property(class,nullable,copy,nonatomic) OCCertificateValidationHandler certificateValidationHandler; //!< App-provided certificate validation handler
 
 @property(nullable,strong) OCBookmark *bookmark;
 @property(nullable,strong,nonatomic) OCAuthenticationMethod *authenticationMethod;
