@@ -42,7 +42,7 @@ typedef NS_ENUM(NSUInteger, OCError)
 
 	OCErrorResponseUnknownFormat,	//!< Response was in an unknown format
 	
-	OCErrorServerDetectionFailed,	//!< Server detection failed, i.e. when the server at a URL is not a CuratorFiles instance
+	OCErrorServerDetectionFailed,	//!< Server detection failed, i.e. when the server at a URL is not a PersonalCloudFiles instance
 	OCErrorServerTooManyRedirects,	//!< Server detection failed because of too many redirects
 	OCErrorServerBadRedirection,	//!< Server redirection to bad/invalid URL
 	OCErrorServerVersionNotSupported,    //!< This server version is not supported.

@@ -6773,6 +6773,7 @@
     },
     "Certificate changed" : {
       "comment" : "Certificate checks",
+      "extractionState" : "stale",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -25477,13 +25478,13 @@
         "ca" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Server detection failed, i.e. when the server at a URL is not a CuratorFiles instance."
+            "value" : "Server detection failed, i.e. when the server at a URL is not a Personal Cloud Files instance."
           }
         },
         "cs" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Server detection failed, i.e. when the server at a URL is not a CuratorFiles instance."
+            "state" : "needs_review",
+            "value" : "Server detection failed, i.e. when the server at a URL is not a Personal Cloud Files instance."
           }
         },
         "de" : {
@@ -25495,13 +25496,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Server detection failed, i.e. when the server at a URL is not a CuratorFiles instance."
+            "value" : "Server detection failed, i.e. when the server at a URL is not a Personal Cloud Files instance."
           }
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Server detection failed, i.e. when the server at a URL is not a CuratorFiles instance."
+            "state" : "needs_review",
+            "value" : "Server detection failed, i.e. when the server at a URL is not a Personal Cloud Files instance."
           }
         },
         "es" : {
@@ -25524,20 +25525,20 @@
         },
         "mk" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Server detection failed, i.e. when the server at a URL is not a CuratorFiles instance."
+            "state" : "needs_review",
+            "value" : "Server detection failed, i.e. when the server at a URL is not a Personal Cloud Files instance."
           }
         },
         "nb-NO" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Server detection failed, i.e. when the server at a URL is not a CuratorFiles instance."
+            "state" : "translated",
+            "value" : "Server detection failed, i.e. when the server at a URL is not a Personal Cloud Files instance."
           }
         },
         "nn-NO" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Server detection failed, i.e. when the server at a URL is not a CuratorFiles instance."
+            "state" : "needs_review",
+            "value" : "Server detection failed, i.e. when the server at a URL is not a Personal Cloud Files instance."
           }
         },
         "pt-BR" : {
@@ -25548,8 +25549,8 @@
         },
         "pt-PT" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Server detection failed, i.e. when the server at a URL is not a CuratorFiles instance."
+            "state" : "needs_review",
+            "value" : "Server detection failed, i.e. when the server at a URL is not a Personal Cloud Files instance."
           }
         },
         "ru" : {
@@ -27730,6 +27731,7 @@
       }
     },
     "The certificate for %@ passes TLS validation but doesn't pass the acceptance rule to replace the certificate for %@." : {
+      "extractionState" : "stale",
       "localizations" : {
         "ca" : {
           "stringUnit" : {

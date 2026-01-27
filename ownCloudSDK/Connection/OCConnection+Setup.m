@@ -123,7 +123,7 @@
 
 		request.forceCertificateDecisionDelegation = YES;
 		request.ephermalRequestCertificateProceedHandler = ^(OCHTTPRequest *request, OCCertificate *certificate, OCCertificateValidationResult validationResult, NSError *certificateValidationError, OCConnectionCertificateProceedHandler proceedHandler) {
-			// Prefer app‑level certificate validation if configured (ownCloud app / Curator).
+			// Prefer app‑level certificate validation if configured (ownCloud app / Personal Cloud).
 			OCCertificateValidationHandler appHandler = [OCConnection certificateValidationHandler];
 
 			if (appHandler != nil)
