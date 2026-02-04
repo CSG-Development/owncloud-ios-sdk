@@ -39,6 +39,12 @@
             "value" : "\"%@\" ha sido modificada localmente"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "\"%@\" has been modified locally"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -114,7 +120,6 @@
       }
     },
     "\"%@\" metadata for %@ couldn't be updated" : {
-      "comment" : "Update",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -150,6 +155,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Metadatos \"%@\" para %@no pudo ser actualizado"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "\"%@\" metadata for %@ couldn't be updated"
           }
         },
         "fr" : {
@@ -264,6 +275,12 @@
             "value" : "\"%@\" se modificó localmente antes de que se completara la descarga."
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "\"%@\" was modified locally before the download completed."
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -371,6 +388,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "{{itemName}} can't be copied into itself."
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "{{itemName}} can't be copied into itself."
@@ -488,6 +511,12 @@
             "value" : "{{itemName}} can't be moved into itself."
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "{{itemName}} can't be moved into itself."
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -563,7 +592,6 @@
       }
     },
     "{{itemName}} is currently processed on the server and can't be downloaded until it finishes processing." : {
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -596,6 +624,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "{{itemName}} is currently processed on the server and can't be downloaded until it finishes processing."
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "{{itemName}} is currently processed on the server and can't be downloaded until it finishes processing."
@@ -676,8 +710,6 @@
       }
     },
     "%@ (error %ld, %@)" : {
-      "comment" : "OC Errors",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -710,6 +742,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ (error %ld, %@)"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ (error %ld, %@)"
@@ -790,7 +828,6 @@
       }
     },
     "%@ (error %ld)" : {
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -828,10 +865,16 @@
             "value" : "%@ (error %ld)"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ (error %ld)"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ (erreur% ld)"
+            "value" : "%@ (erreur%%%% ld)"
           }
         },
         "ko" : {
@@ -938,6 +981,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ ya existe"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ already exists"
           }
         },
         "fr" : {
@@ -1052,6 +1101,12 @@
             "value" : "%@ no se puede copiar en %@."
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ can't be copied to %@."
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1162,6 +1217,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ no se puede mover a %@."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ can't be moved to %@."
           }
         },
         "fr" : {
@@ -1276,6 +1337,12 @@
             "value" : "%@ couldn't be renamed to %@."
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ couldn't be renamed to %@."
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1351,7 +1418,6 @@
       }
     },
     "%@ changed on the server. Really delete it?" : {
-      "comment" : "Delete",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -1387,6 +1453,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ cambió en el servidor. ¿Está seguro de querer eliminarlo?"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ changed on the server. Really delete it?"
           }
         },
         "fr" : {
@@ -1501,6 +1573,12 @@
             "value" : "%@ no se pudo eliminar"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ couldn't be deleted"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1608,6 +1686,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ couldn't be renamed to %2$@."
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$@ couldn't be renamed to %2$@."
@@ -1725,6 +1809,12 @@
             "value" : "%@ cambió en el servidor desde que solicitó su eliminación."
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ has changed on the server since you requested its deletion."
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1835,6 +1925,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ no encontrado"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ not found"
           }
         },
         "fr" : {
@@ -1949,6 +2045,12 @@
             "value" : "%@ no se encontró en  %@."
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ wasn't found at %@."
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2056,6 +2158,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lu files in %lu folders"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lu files in %lu folders"
@@ -2173,6 +2281,12 @@
             "value" : "Hay una versión modificada y no sincronizada de \"%@\" en su dispositivo. La descarga del archivo del servidor lo sobrescribirá y se perderán las modificaciones."
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A modified, unsynchronized version of \"%@\" is present on your device. Downloading the file from the server will overwrite it and modifications be lost."
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2248,8 +2362,6 @@
       }
     },
     "A newer version already exists." : {
-      "comment" : "OCErrorNewerVersionExists",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -2285,6 +2397,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Una nueva versión ya existe."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A newer version already exists."
           }
         },
         "fr" : {
@@ -2362,8 +2480,6 @@
       }
     },
     "A running operation prevents execution." : {
-      "comment" : "OCErrorRunningOperation",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -2399,6 +2515,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Una operación en ejecución impide la ejecución."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A running operation prevents execution."
           }
         },
         "fr" : {
@@ -2508,6 +2630,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accepting share…"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Accepting share…"
@@ -2625,6 +2753,12 @@
             "value" : "Acción"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Action"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2737,6 +2871,12 @@
             "value" : "ID de acción"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Action ID"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2812,7 +2952,6 @@
       }
     },
     "Allow cellular access" : {
-      "comment" : "Cellular Switches",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -2848,6 +2987,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Permitir el acceso celular"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Allow cellular access"
           }
         },
         "fr" : {
@@ -2957,6 +3102,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An error occured trying to validate the certificate for %@."
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "An error occured trying to validate the certificate for %@."
@@ -3074,6 +3225,12 @@
             "value" : "An exception occured attempting to perform an action (\"%@\"). The action has been removed from the sync queue and may not have completed. If logging is enabled, the exception has been logged."
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An exception occured attempting to perform an action (\"%@\"). The action has been removed from the sync queue and may not have completed. If logging is enabled, the exception has been logged."
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3149,8 +3306,6 @@
       }
     },
     "An exception occured." : {
-      "comment" : "OCErrorException",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -3186,6 +3341,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Se produjo una excepción."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An exception occured."
           }
         },
         "fr" : {
@@ -3263,8 +3424,6 @@
       }
     },
     "An operation failed due to outdated cache information." : {
-      "comment" : "OCErrorOutdatedCache",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -3300,6 +3459,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Error en una operación debido a información de caché desactualizada."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An operation failed due to outdated cache information."
           }
         },
         "fr" : {
@@ -3377,7 +3542,6 @@
       }
     },
     "Another item named %@ already exists in %@." : {
-      "comment" : "Upload",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -3413,6 +3577,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Otro elemento llamado %@ya existe en %@."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Another item named %@ already exists in %@."
           }
         },
         "fr" : {
@@ -3490,8 +3660,6 @@
       }
     },
     "Another item policy of the same kind already includes the item, making the addition of this item policy redundant." : {
-      "comment" : "OCErrorItemPolicyRedundant",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -3527,6 +3695,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Otra política de artículos del mismo tipo ya incluye el artículo, lo que hace que la adición de esta política de artículos sea redundante."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Another item policy of the same kind already includes the item, making the addition of this item policy redundant."
           }
         },
         "fr" : {
@@ -3641,6 +3815,12 @@
             "value" : "Another version of %1$@ already exists in %2$@."
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Another version of %1$@ already exists in %2$@."
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3716,8 +3896,6 @@
       }
     },
     "At least {{min}} {{characterType}}" : {
-      "comment" : "Password Policy Check",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -3750,6 +3928,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "At least {{min}} {{characterType}}"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "At least {{min}} {{characterType}}"
@@ -3830,8 +4014,6 @@
       }
     },
     "At least {{min}} special characters: {{specialCharacters}}" : {
-      "comment" : "Password Policy Check",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -3864,6 +4046,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "At least {{min}} special characters: {{specialCharacters}}"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "At least {{min}} special characters: {{specialCharacters}}"
@@ -3944,8 +4132,6 @@
       }
     },
     "At most {{byteLength}} bytes." : {
-      "comment" : "OCPasswordPolicyRuleByteLength",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -3978,6 +4164,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "At most {{byteLength}} bytes."
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "At most {{byteLength}} bytes."
@@ -4058,8 +4250,6 @@
       }
     },
     "At most {{max}} {{characterType}}" : {
-      "comment" : "Password Policy Check",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -4092,6 +4282,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "At most {{max}} {{characterType}}"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "At most {{max}} {{characterType}}"
@@ -4209,6 +4405,12 @@
             "value" : "Datos de autenticación"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Auth Data"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4319,6 +4521,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Método de autenticación"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Auth Method"
           }
         },
         "fr" : {
@@ -4433,6 +4641,12 @@
             "value" : "Fecha de validación de autenticación"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Auth Validation Date"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4545,6 +4759,12 @@
             "value" : "Autenticando..."
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authenticating…"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4620,8 +4840,6 @@
       }
     },
     "Authentication method not allowed. Re-authentication needed." : {
-      "comment" : "OCErrorAuthorizationMethodNotAllowed",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -4657,6 +4875,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Método de autenticación no permitido. Se necesita una nueva autenticación."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authentication method not allowed. Re-authentication needed."
           }
         },
         "fr" : {
@@ -4734,8 +4958,6 @@
       }
     },
     "Authentication method unknown." : {
-      "comment" : "OCErrorAuthorizationMethodUnknown",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -4771,6 +4993,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Método de autenticación desconocido."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authentication method unknown."
           }
         },
         "fr" : {
@@ -4848,8 +5076,6 @@
       }
     },
     "Authorization failed because data was missing from the secret data for the authentication method." : {
-      "comment" : "OCErrorAuthorizationMissingData",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -4885,6 +5111,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "La autorización falló porque faltaban datos de los datos secretos para ser utilizados por el método de autenticación."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authorization failed because data was missing from the secret data for the authentication method."
           }
         },
         "fr" : {
@@ -4962,8 +5194,6 @@
       }
     },
     "Authorization failed because no authorization data was set for the authentication method." : {
-      "comment" : "OCErrorAuthorizationNoMethodData",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -4996,6 +5226,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authorization failed because no authorization data was set for the authentication method."
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Authorization failed because no authorization data was set for the authentication method."
@@ -5076,8 +5312,6 @@
       }
     },
     "Authorization failed because the server returned a redirect. Authorization may be successful when retried with the redirect URL." : {
-      "comment" : "OCErrorAuthorizationRedirect",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -5113,6 +5347,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "La autorización falló porque el servidor devolvió una redirección. La autorización puede tener éxito cuando se reintenta con la URL de redireccionamiento."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authorization failed because the server returned a redirect. Authorization may be successful when retried with the redirect URL."
           }
         },
         "fr" : {
@@ -5190,8 +5430,6 @@
       }
     },
     "Authorization failed." : {
-      "comment" : "OCErrorAuthorizationFailed",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -5227,6 +5465,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Autorización fallida."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authorization failed."
           }
         },
         "fr" : {
@@ -5304,8 +5548,6 @@
       }
     },
     "Authorization needs to be retried." : {
-      "comment" : "OCErrorAuthorizationRetry",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -5341,6 +5583,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Es necesario reintentar la autorización."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authorization needs to be retried."
           }
         },
         "fr" : {
@@ -5418,8 +5666,6 @@
       }
     },
     "Authorization was cancelled by the user." : {
-      "comment" : "OCErrroAuthorizationCancelled",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -5455,6 +5701,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "La autorización fue cancelada por el usuario."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authorization was cancelled by the user."
           }
         },
         "fr" : {
@@ -5532,7 +5784,6 @@
       }
     },
     "Available Offline" : {
-      "comment" : "Item policy",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -5568,6 +5819,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Disponible offline"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Available Offline"
           }
         },
         "fr" : {
@@ -5645,8 +5902,6 @@
       }
     },
     "Between {{min}} and {{max}} {{characterType}}" : {
-      "comment" : "OCPasswordPolicyRuleCharacters",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -5679,6 +5934,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Between {{min}} and {{max}} {{characterType}}"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Between {{min}} and {{max}} {{characterType}}"
@@ -5759,8 +6020,6 @@
       }
     },
     "Bookmark created with a newer app version. Please update the app." : {
-      "comment" : "OCErrorHostUpdateRequired",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -5796,6 +6055,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Marcador creado con una versión más reciente de la aplicación. Actualiza la aplicación."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bookmark created with a newer app version. Please update the app."
           }
         },
         "fr" : {
@@ -5905,6 +6170,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can edit"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Can edit"
@@ -6022,6 +6293,12 @@
             "value" : "Can upload"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can upload"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6129,6 +6406,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can view"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Can view"
@@ -6246,6 +6529,12 @@
             "value" : "Can't build custom scheme URL from %@."
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can't build custom scheme URL from %@."
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6321,8 +6610,6 @@
       }
     },
     "Can't open authorization URL with custom scheme." : {
-      "comment" : "OCErrorAuthorizationCantOpenCustomSchemeURL",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -6355,6 +6642,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can't open authorization URL with custom scheme."
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Can't open authorization URL with custom scheme."
@@ -6435,7 +6728,6 @@
       }
     },
     "Can't open custom scheme URL %@." : {
-      "comment" : "Custom Scheme Browser Sessions",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -6468,6 +6760,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can't open custom scheme URL %@."
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Can't open custom scheme URL %@."
@@ -6585,6 +6883,12 @@
             "value" : "Cancelar"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6697,6 +7001,12 @@
             "value" : "Certificate"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Certificate"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6772,8 +7082,6 @@
       }
     },
     "Certificate changed" : {
-      "comment" : "Certificate checks",
-      "extractionState" : "stale",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -6809,6 +7117,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Certificado cambiado"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Certificate changed"
           }
         },
         "fr" : {
@@ -6923,6 +7237,12 @@
             "value" : "Fecha del certificado"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Certificate Date"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7030,6 +7350,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Certificate for %@ passed validation."
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Certificate for %@ passed validation."
@@ -7147,6 +7473,12 @@
             "value" : "Certificates"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Certificates"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7222,7 +7554,6 @@
       }
     },
     "characters" : {
-      "comment" : "OCPasswordPolicyRule+StandardRules",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -7255,6 +7586,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "characters"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "characters"
@@ -7372,6 +7709,12 @@
             "value" : "Clases"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Class"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7447,8 +7790,6 @@
       }
     },
     "Client registration failed." : {
-      "comment" : "OCErrorAuthorizationClientRegistrationFailed",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -7484,6 +7825,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Falló el registro del cliente."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Client registration failed."
           }
         },
         "fr" : {
@@ -7593,6 +7940,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Closing vault…"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Closing vault…"
@@ -7710,6 +8063,12 @@
             "value" : "Conectado"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connected"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7822,6 +8181,12 @@
             "value" : "Connecting"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connecting"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7897,7 +8262,6 @@
       }
     },
     "Connecting…" : {
-      "comment" : "Connection Progress",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -7933,6 +8297,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Connectando..."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connecting…"
           }
         },
         "fr" : {
@@ -8047,6 +8417,12 @@
             "value" : "Connection refused"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connection refused"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8122,8 +8498,6 @@
       }
     },
     "Connection validation failed." : {
-      "comment" : "OCErrorServerConnectionValidationFailed",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -8159,6 +8533,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "La validación de la conexión falló."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connection validation failed."
           }
         },
         "fr" : {
@@ -8236,8 +8616,6 @@
       }
     },
     "Construction of URL Session Task failed." : {
-      "comment" : "OCErrorRequestURLSessionTaskConstructionFailed",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -8273,6 +8651,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "La construcción de la URL Session Task falló."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Construction of URL Session Task failed."
           }
         },
         "fr" : {
@@ -8387,6 +8771,12 @@
             "value" : "Contributor"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Contributor"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8462,7 +8852,6 @@
       }
     },
     "copy" : {
-      "comment" : "Copies",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -8498,6 +8887,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Copiar"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "copy"
           }
         },
         "fr" : {
@@ -8612,6 +9007,12 @@
             "value" : "Copiando %@ a %@…"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copying %@ to %@…"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8724,6 +9125,12 @@
             "value" : "No se pudo copiar %@ a %@, porque ya existe un elemento llamado %@ en esa ubicación."
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't copy %@ to %@, because an item called %@ already exists there."
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8831,6 +9238,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't create %@"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Couldn't create %@"
@@ -8948,6 +9361,12 @@
             "value" : "Couldn't delete %@"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't delete %@"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9058,6 +9477,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ no se pudo descargar"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't download %@"
           }
         },
         "fr" : {
@@ -9172,6 +9597,12 @@
             "value" : "No se pudo mover %@ a %@, porque ya existe un elemento llamado %@ en esa ubicación."
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't move %@ to %@, because an item called %@ already exists there."
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9279,6 +9710,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't rename %@ to %@, because another item with that name already exists."
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Couldn't rename %@ to %@, because another item with that name already exists."
@@ -9396,6 +9833,12 @@
             "value" : "Couldn't upload %@"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't upload %@"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9471,7 +9914,6 @@
       }
     },
     "Creating folder %@…" : {
-      "comment" : "Create folder",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -9507,6 +9949,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Creando carpeta %@…"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Creating folder %@…"
           }
         },
         "fr" : {
@@ -9616,6 +10064,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Creating share for %@…"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Creating share for %@…"
@@ -9733,6 +10187,12 @@
             "value" : "Personal"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Custom"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9845,6 +10305,12 @@
             "value" : "Tamaño de la base de datos"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Database size"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9920,8 +10386,6 @@
       }
     },
     "Database upgrade required. Please open the app to perform the upgrade." : {
-      "comment" : "OCErrorDatabaseMigrationRequired",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -9957,6 +10421,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Se requiere actualización de la base de datos. Abra la aplicación para realizar la actualización."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Database upgrade required. Please open the app to perform the upgrade."
           }
         },
         "fr" : {
@@ -10071,6 +10541,12 @@
             "value" : "Versión de la base de datos"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Database Version"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10181,6 +10657,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Eliminar"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete"
           }
         },
         "fr" : {
@@ -10295,6 +10777,12 @@
             "value" : "Eliminar Datos de Autenticación"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete Authentication Data"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10407,6 +10895,12 @@
             "value" : "Eliminar base de datos"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete Database"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10482,7 +10976,6 @@
       }
     },
     "Deleting %@…" : {
-      "comment" : "Delete",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -10518,6 +11011,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Eliminando %@…"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deleting %@…"
           }
         },
         "fr" : {
@@ -10627,6 +11126,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deleting share for %@…"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Deleting share for %@…"
@@ -10744,6 +11249,12 @@
             "value" : "Desprogramar (eliminar)"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deschedule (remove)"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10851,6 +11362,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "digits"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "digits"
@@ -10968,6 +11485,12 @@
             "value" : "Download and preview"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Download and preview"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -11043,7 +11566,6 @@
       }
     },
     "Download, preview and share" : {
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -11076,6 +11598,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Download, preview and share"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Download, preview and share"
@@ -11156,7 +11684,6 @@
       }
     },
     "Downloading %@…" : {
-      "comment" : "Download",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -11192,6 +11719,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Descargando %@…"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Downloading %@…"
           }
         },
         "fr" : {
@@ -11269,7 +11802,6 @@
       }
     },
     "Edit, download, preview and share" : {
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -11302,6 +11834,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit, download, preview and share"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Edit, download, preview and share"
@@ -11419,6 +11957,12 @@
             "value" : "Editor"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Editor"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -11526,6 +12070,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Error"
@@ -11643,6 +12193,12 @@
             "value" : "Error al copiar %@"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error copying %@"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -11750,6 +12306,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error deleting %@"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Error deleting %@"
@@ -11867,6 +12429,12 @@
             "value" : "Error al mover %@"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error moving %@"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -11974,6 +12542,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error renaming %@"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Error renaming %@"
@@ -12091,6 +12665,12 @@
             "value" : "Error actualizando el metadato %@"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error updating %@ metadata"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -12198,6 +12778,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error uploading %@"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Error uploading %@"
@@ -12315,6 +12901,12 @@
             "value" : "Eventos"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Events"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -12422,6 +13014,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exception occured performing action"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Exception occured performing action"
@@ -12539,6 +13137,12 @@
             "value" : "Falló"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -12649,6 +13253,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Obteniendo actualizaciones…"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fetching updates…"
           }
         },
         "fr" : {
@@ -12763,6 +13373,12 @@
             "value" : "Obteniendo información del usuario..."
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fetching user information…"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -12870,6 +13486,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "File"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "File"
@@ -12987,6 +13609,12 @@
             "value" : "Archivo modificado localmente"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "File modified locally"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -13062,8 +13690,6 @@
       }
     },
     "File not found." : {
-      "comment" : "OCErrorFileNotFound",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -13099,6 +13725,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Archivo no encontrado"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "File not found."
           }
         },
         "fr" : {
@@ -13176,7 +13808,6 @@
       }
     },
     "Files" : {
-      "comment" : "Diagnostic",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -13212,6 +13843,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Archivos"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Files"
           }
         },
         "fr" : {
@@ -13326,6 +13963,12 @@
             "value" : "Carpetas"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Folders"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -13401,8 +14044,6 @@
       }
     },
     "Generic graph error." : {
-      "comment" : "OCErrorGraphError",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -13435,6 +14076,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Generic graph error."
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Generic graph error."
@@ -13552,6 +14199,12 @@
             "value" : "Identificador"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Identifier"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -13664,6 +14317,12 @@
             "value" : "En curso desde"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In progress since"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -13739,7 +14398,6 @@
       }
     },
     "Insecure HTTP URL" : {
-      "comment" : "Connection setup",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -13775,6 +14433,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "URL HTTP insegura"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Insecure HTTP URL"
           }
         },
         "fr" : {
@@ -13889,6 +14553,12 @@
             "value" : "URL prohibida, HTTP inseguro"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Insecure HTTP URL forbidden"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -13964,8 +14634,6 @@
       }
     },
     "Insufficient parameters." : {
-      "comment" : "OCErrorInsufficientParameters",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -14001,6 +14669,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Parámetros insuficientes."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Insufficient parameters."
           }
         },
         "fr" : {
@@ -14115,6 +14789,12 @@
             "value" : "Permisos insuficientes"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Insufficient permissions"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -14190,8 +14870,6 @@
       }
     },
     "Internal error." : {
-      "comment" : "OCErrorInternal",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -14227,6 +14905,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Error interno."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Internal error."
           }
         },
         "fr" : {
@@ -14341,6 +15025,12 @@
             "value" : "Suma de comprobación no válida"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invalid checksum"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -14416,8 +15106,6 @@
       }
     },
     "Invalid parameter." : {
-      "comment" : "OCErrorInvalidParameter",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -14450,6 +15138,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invalid parameter."
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Invalid parameter."
@@ -14530,7 +15224,6 @@
       }
     },
     "Invalid rule without minimum and maximum count" : {
-      "comment" : "Password Policy",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -14563,6 +15256,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invalid rule without minimum and maximum count"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Invalid rule without minimum and maximum count"
@@ -14643,8 +15342,6 @@
       }
     },
     "Invalid type." : {
-      "comment" : "OCErrorInvalidType",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -14677,6 +15374,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invalid type."
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Invalid type."
@@ -14794,6 +15497,12 @@
             "value" : "Invalidate"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invalidate"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -14904,6 +15613,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Invalidar datos de inicio de sesión"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invalidate Login Data"
           }
         },
         "fr" : {
@@ -15018,6 +15733,12 @@
             "value" : "Invited people"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invited people"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -15093,7 +15814,6 @@
       }
     },
     "Invited persons" : {
-      "comment" : "Share roles",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -15126,6 +15846,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invited persons"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Invited persons"
@@ -15243,6 +15969,12 @@
             "value" : "Issues were found while validating the certificate for %@."
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Issues were found while validating the certificate for %@."
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -15355,6 +16087,12 @@
             "value" : "Item"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Item"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -15430,8 +16168,6 @@
       }
     },
     "Item is currently processing." : {
-      "comment" : "OCErrorItemProcessing",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -15464,6 +16200,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Item is currently processing."
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Item is currently processing."
@@ -15544,8 +16286,6 @@
       }
     },
     "Item is not a directory." : {
-      "comment" : "OCErrorShareItemNotADirectory",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -15581,6 +16321,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "El elemento NO es un directorio."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Item is not a directory."
           }
         },
         "fr" : {
@@ -15658,8 +16404,6 @@
       }
     },
     "Item not available offline." : {
-      "comment" : "OCErrorItemNotAvailableOffline",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -15695,6 +16439,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Elemento no disponible sin conexión."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Item not available offline."
           }
         },
         "fr" : {
@@ -15772,8 +16522,6 @@
       }
     },
     "Item not found." : {
-      "comment" : "OCErrorShareItemNotFound",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -15809,6 +16557,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Elemento no encontrado"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Item not found."
           }
         },
         "fr" : {
@@ -15886,8 +16640,6 @@
       }
     },
     "itemProperty.isFavorite" : {
-      "comment" : "Item property name (via -localizedNameForProperty:)",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -15923,6 +16675,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Favorito"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favorite"
           }
         },
         "fr" : {
@@ -16000,8 +16758,6 @@
       }
     },
     "itemProperty.lastModified" : {
-      "comment" : "Item property name (via -localizedNameForProperty:)",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -16037,6 +16793,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ultima modificación"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Last modified"
           }
         },
         "fr" : {
@@ -16114,8 +16876,6 @@
       }
     },
     "itemProperty.localAttributes" : {
-      "comment" : "Item property name (via -localizedNameForProperty:)",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -16151,6 +16911,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Atributos locales"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Local attributes"
           }
         },
         "fr" : {
@@ -16265,6 +17031,12 @@
             "value" : "Mantener ambos"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep both"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -16377,6 +17149,12 @@
             "value" : "ID de carril"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lane ID"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -16484,6 +17262,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Link works only for invited people. Login is required."
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Link works only for invited people. Login is required."
@@ -16601,6 +17385,12 @@
             "value" : "ID local"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Local ID"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -16713,6 +17503,12 @@
             "value" : "Descripción localizada"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Localized Description"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -16788,8 +17584,6 @@
       }
     },
     "Lock invalidated." : {
-      "comment" : "OCErrorLockInvalidated",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -16822,6 +17616,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lock invalidated."
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Lock invalidated."
@@ -16939,6 +17739,12 @@
             "value" : "Archivo de registro"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Log file"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -17049,6 +17855,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Registrar peticiones y respuestas HTTP"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Log HTTP requests and responses"
           }
         },
         "fr" : {
@@ -17163,6 +17975,12 @@
             "value" : "Registrar operaciones de archivos internos"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Log internal file operations"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -17275,6 +18093,12 @@
             "value" : "Se requiere iniciar sesión como usuario %@. Por favor, inténtalo de nuevo."
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Login as user %@ required. Please retry."
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -17350,7 +18174,6 @@
       }
     },
     "Longer than {{byteLength}} bytes in {{encoding}} encoding." : {
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -17383,6 +18206,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Longer than {{byteLength}} bytes in {{encoding}} encoding."
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Longer than {{byteLength}} bytes in {{encoding}} encoding."
@@ -17500,6 +18329,12 @@
             "value" : "lower-case characters"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "lower-case characters"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -17607,6 +18442,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Making %1$@ available offline also covers %2$@, which was previously requested as being available offline."
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Making %1$@ available offline also covers %2$@, which was previously requested as being available offline."
@@ -17724,6 +18565,12 @@
             "value" : "Making %1$@ available offline also covers %2$@, whose offline availability has previously been requested."
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Making %1$@ available offline also covers %2$@, whose offline availability has previously been requested."
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -17836,6 +18683,12 @@
             "value" : "Manager"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Manager"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -17911,8 +18764,6 @@
       }
     },
     "Missing Drive ID." : {
-      "comment" : "OCErrorMissingDriveID",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -17945,6 +18796,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Missing Drive ID."
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Missing Drive ID."
@@ -18062,6 +18919,12 @@
             "value" : "Moviendo %@ a %@…"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moving %@ to %@…"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -18172,6 +19035,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nombre"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name"
           }
         },
         "fr" : {
@@ -18286,6 +19155,12 @@
             "value" : "Red no disponible"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Network unavailable"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -18361,8 +19236,6 @@
       }
     },
     "No certificate was returned for a request despite this being a HTTPS connection (should never occur in production, but only if you forgot to provide a certificate during simulated responses to HTTPS requests)." : {
-      "comment" : "OCErrorCertificateMissing",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -18398,6 +19271,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No se devolvió ningún certificado para una solicitud a pesar de ser una conexión HTTPS (nunca debería ocurrir en producción, sino solo si se olvidó de proporcionar un certificado durante las respuestas simuladas a las solicitudes HTTPS)."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No certificate was returned for a request despite this being a HTTPS connection (should never occur in production, but only if you forgot to provide a certificate during simulated responses to HTTPS requests)."
           }
         },
         "fr" : {
@@ -18475,8 +19354,6 @@
       }
     },
     "No data converter available for conversion." : {
-      "comment" : "OCErrorDataConverterUnavailable",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -18509,6 +19386,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No data converter available for conversion."
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "No data converter available for conversion."
@@ -18589,8 +19472,6 @@
       }
     },
     "Not authorized to access shares." : {
-      "comment" : "OCErrorShareUnauthorized:",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -18626,6 +19507,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No esta autorizado a ver los compartidos"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not authorized to access shares."
           }
         },
         "fr" : {
@@ -18703,8 +19590,6 @@
       }
     },
     "Not available offline." : {
-      "comment" : "OCErrorNotAvailableOffline",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -18740,6 +19625,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No disponible sin conexión."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not available offline."
           }
         },
         "fr" : {
@@ -18854,6 +19745,12 @@
             "value" : "No queda suficiente espacio en el servidor para cargar %@."
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not enough space left on the server to upload %@."
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -18929,8 +19826,6 @@
       }
     },
     "Object does not return DataItemType." : {
-      "comment" : "OCErrorDataItemTypeUnavailable",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -18963,6 +19858,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Object does not return DataItemType."
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Object does not return DataItemType."
@@ -19043,7 +19944,6 @@
       }
     },
     "Offline" : {
-      "comment" : "Connection status",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -19079,6 +19979,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Desconectado"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Offline"
           }
         },
         "fr" : {
@@ -19156,7 +20062,6 @@
       }
     },
     "Offline (no WiFi connection)" : {
-      "comment" : "Connection status",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -19192,6 +20097,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Desconectado (sin conexión WIFI)"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Offline (no WiFi connection)"
           }
         },
         "fr" : {
@@ -19269,7 +20180,6 @@
       }
     },
     "Offline availability of %@ is already ensured by having made %@ available offline." : {
-      "comment" : "Available Offline",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -19302,6 +20212,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Offline availability of %1$@ is already ensured by having made %2$@ available offline."
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Offline availability of %1$@ is already ensured by having made %2$@ available offline."
@@ -19419,6 +20335,12 @@
             "value" : "Aceptar"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -19494,7 +20416,6 @@
       }
     },
     "Online" : {
-      "comment" : "Connection status",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -19530,6 +20451,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Conectado"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Online"
           }
         },
         "fr" : {
@@ -19639,6 +20566,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Only invited persons have access. Login required."
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Only invited persons have access. Login required."
@@ -19756,6 +20689,12 @@
             "value" : "Opening vault…"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opening vault…"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -19831,7 +20770,6 @@
       }
     },
     "Operation forbidden" : {
-      "comment" : "Move/Rename/Copy",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -19867,6 +20805,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Operación no permitida"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Operation forbidden"
           }
         },
         "fr" : {
@@ -19981,6 +20925,12 @@
             "value" : "Proceso de origen"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Origin Process"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -20091,6 +21041,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Proceso de origen válido"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Origin Process Valid"
           }
         },
         "fr" : {
@@ -20205,6 +21161,12 @@
             "value" : "URL de origen"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Origin URL"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -20280,8 +21242,6 @@
       }
     },
     "Other item policies of the same kind covering subsets of this item policy become redundant by the addition of this item policy." : {
-      "comment" : "OCErrorItemPolicyMakesRedundant",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -20317,6 +21277,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Otras políticas de artículos del mismo tipo que cubren subconjuntos de esta política de artículos se vuelven redundantes por la adición de esta política de artículos."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Other item policies of the same kind covering subsets of this item policy become redundant by the addition of this item policy."
           }
         },
         "fr" : {
@@ -20431,6 +21397,12 @@
             "value" : "Overwrite modified file"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Overwrite modified file"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -20506,8 +21478,6 @@
       }
     },
     "Password can't be converted to {{encoding}}." : {
-      "comment" : "Password Policy",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -20540,6 +21510,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Password can't be converted to {{encoding}}."
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Password can't be converted to {{encoding}}."
@@ -20620,7 +21596,6 @@
       }
     },
     "Pending" : {
-      "comment" : "Sync Record Status",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -20656,6 +21631,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pendiente"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pending"
           }
         },
         "fr" : {
@@ -20733,7 +21714,6 @@
       }
     },
     "Personal" : {
-      "comment" : "Drives",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -20766,6 +21746,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Personal"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Personal"
@@ -20883,6 +21869,12 @@
             "value" : "Por favor compruebe si tiene suficientes permisos para eliminar %@."
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please check if you have sufficient permissions to delete %@."
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -20958,7 +21950,6 @@
       }
     },
     "Populating database…" : {
-      "comment" : "Account prepopulation",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -20991,6 +21982,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Populating database…"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Populating database…"
@@ -21108,6 +22105,12 @@
             "value" : "Previous token refresh attempts indicated an invalid refresh token."
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Previous token refresh attempts indicated an invalid refresh token."
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -21183,8 +22186,6 @@
       }
     },
     "Private link format invalid." : {
-      "comment" : "OCErrorPrivateLinkInvalidFormat",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -21220,6 +22221,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "El formato de enlace privado no es válido."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Private link format invalid."
           }
         },
         "fr" : {
@@ -21297,7 +22304,6 @@
       }
     },
     "Proceed" : {
-      "comment" : "Issue resolution choice",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -21333,6 +22339,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Proceder"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Proceed"
           }
         },
         "fr" : {
@@ -21447,6 +22459,12 @@
             "value" : "Procesar registros de sincronización"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Process Sync Records"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -21522,8 +22540,6 @@
       }
     },
     "Public upload was disabled by the administrator." : {
-      "comment" : "OCErrorSharePublicUploadDisabled",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -21559,6 +22575,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "La subida pública ha sido deshabilitada por el administrador."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Public upload was disabled by the administrator."
           }
         },
         "fr" : {
@@ -21668,6 +22690,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recipients can upload but existing contents are not revealed."
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Recipients can upload but existing contents are not revealed."
@@ -21785,6 +22813,12 @@
             "value" : "Recipients can view and download contents."
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recipients can view and download contents."
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -21895,6 +22929,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Los recipientes pueden ver, descargar y editar el contenido."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recipients can view, download and edit contents."
           }
         },
         "fr" : {
@@ -22009,6 +23049,12 @@
             "value" : "Los recipientes pueden ver, descargar y subir el contenido."
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recipients can view, download and upload contents."
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -22121,6 +23167,12 @@
             "value" : "Destinatarios pueden ver, descargar, editar, borrar y subir contenido."
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recipients can view, download, edit, delete and upload contents."
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -22228,6 +23280,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Redirection"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Redirection"
@@ -22345,6 +23403,12 @@
             "value" : "Rejecting share…"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rejecting share…"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -22455,6 +23519,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Eliminar la versión de la base de datos"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove Database Version"
           }
         },
         "fr" : {
@@ -22569,6 +23639,12 @@
             "value" : "Artículos eliminados"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Removed Items"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -22676,6 +23752,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Removing local copy of %@…"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Removing local copy of %@…"
@@ -22793,6 +23875,12 @@
             "value" : "Renombrando %@ por %@…"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Renaming %@ to %@…"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -22905,6 +23993,12 @@
             "value" : "Reemplazar"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Replace"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -22980,8 +24074,6 @@
       }
     },
     "Request completed with error." : {
-      "comment" : "OCErrorRequestCompletedWithError",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -23017,6 +24109,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Solicitud completada con error."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Request completed with error."
           }
         },
         "fr" : {
@@ -23094,8 +24192,6 @@
       }
     },
     "Request couldn't be scheduled because the underlying URL session has been invalidated." : {
-      "comment" : "OCErrorRequestURLSessionInvalidated",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -23131,6 +24227,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "La solicitud no se pudo programar porque la sesión de URL subyacente se ha invalidado."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Request couldn't be scheduled because the underlying URL session has been invalidated."
           }
         },
         "fr" : {
@@ -23208,8 +24310,6 @@
       }
     },
     "Request timed out" : {
-      "comment" : "OCErrorRequestTimeout",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -23245,6 +24345,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tiempo de espera agotado"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Request timed out"
           }
         },
         "fr" : {
@@ -23322,8 +24428,6 @@
       }
     },
     "Request was cancelled because the server certificate was rejected." : {
-      "comment" : "OCErrorRequestServerCertificateRejected",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -23359,6 +24463,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "La solicitud fue cancelada porque el certificado del servidor fue rechazado."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Request was cancelled because the server certificate was rejected."
           }
         },
         "fr" : {
@@ -23436,8 +24546,6 @@
       }
     },
     "Request was cancelled." : {
-      "comment" : "OCErrorRequestCancelled",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -23473,6 +24581,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "La solicitud fue cancelada."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Request was cancelled."
           }
         },
         "fr" : {
@@ -23550,8 +24664,6 @@
       }
     },
     "Request was dropped by the NSURLSession." : {
-      "comment" : "OCErrorRequestDroppedByURLSession",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -23587,6 +24699,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "La solicitud fue retirada por NSURLSession."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Request was dropped by the NSURLSession."
           }
         },
         "fr" : {
@@ -23664,8 +24782,6 @@
       }
     },
     "Request was removed before scheduling." : {
-      "comment" : "OCErrorRequestRemovedBeforeScheduling",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -23701,6 +24817,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Solicitud fue eliminada antes de la programación."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Request was removed before scheduling."
           }
         },
         "fr" : {
@@ -23778,8 +24900,6 @@
       }
     },
     "Required value missing." : {
-      "comment" : "OCErrorRequiredValueMissing",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -23812,6 +24932,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Required value missing."
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Required value missing."
@@ -23892,7 +25018,6 @@
       }
     },
     "Reschedule" : {
-      "comment" : "Reschedule a Sync Action ",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -23928,6 +25053,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Reprogramar"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reschedule"
           }
         },
         "fr" : {
@@ -24005,8 +25136,6 @@
       }
     },
     "Resolution of private link failed." : {
-      "comment" : "OCErrorPrivateLinkResolutionFailed",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -24042,6 +25171,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Falló la resolución del enlace privado."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resolution of private link failed."
           }
         },
         "fr" : {
@@ -24119,8 +25254,6 @@
       }
     },
     "Resource does not exist." : {
-      "comment" : "OCErrorResourceDoesNotExist",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -24153,6 +25286,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resource does not exist."
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Resource does not exist."
@@ -24233,8 +25372,6 @@
       }
     },
     "Resource not found." : {
-      "comment" : "OCDAVErrorNotFoundOCErrorResourceNotFound",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -24270,6 +25407,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Recurso no encontrado."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resource not found."
           }
         },
         "fr" : {
@@ -24347,8 +25490,6 @@
       }
     },
     "Response was in an unknown format." : {
-      "comment" : "OCErrorResponseUnknownFormat",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -24384,6 +25525,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "La respuesta en formato desconocido."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Response was in an unknown format."
           }
         },
         "fr" : {
@@ -24498,6 +25645,12 @@
             "value" : "Retrieving capabilities…"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retrieving capabilities…"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -24573,7 +25726,6 @@
       }
     },
     "Retrieving file list for %@…" : {
-      "comment" : "Retrieving file list",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -24609,6 +25761,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Recuperando lista de archivo para %@…"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retrieving file list for %@…"
           }
         },
         "fr" : {
@@ -24723,6 +25881,12 @@
             "value" : "Recuperando elementos para %@"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retrieving items for %@"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -24830,6 +25994,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retrieving metadata…"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Retrieving metadata…"
@@ -24947,6 +26117,12 @@
             "value" : "Reintentar"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retry"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -25057,6 +26233,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ejecutandose"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Running"
           }
         },
         "fr" : {
@@ -25171,6 +26353,12 @@
             "value" : "Programar análisis de carpetas"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scheduled folder scans"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -25283,6 +26471,12 @@
             "value" : "Secret File Drop"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Secret File Drop"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -25358,8 +26552,6 @@
       }
     },
     "Server detection failed because of too many redirects." : {
-      "comment" : "OCErrorServerTooManyRedirects",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -25395,6 +26587,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "La detección del servidor falló debido a demasiadas redirecciones."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Server detection failed because of too many redirects."
           }
         },
         "fr" : {
@@ -25472,8 +26670,6 @@
       }
     },
     "Server detection failed, i.e. when the server at a URL is not an ownCloud instance." : {
-      "comment" : "OCErrorServerDetectionFailed",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -25483,13 +26679,13 @@
         },
         "cs" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Server detection failed, i.e. when the server at a URL is not a Personal Cloud Files instance."
           }
         },
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Die Servererkennung ist fehlgeschlagen, was z.B. passiert, wenn der Server unter der URL keine ownCloud-Instanz ist."
           }
         },
@@ -25501,31 +26697,37 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Server detection failed, i.e. when the server at a URL is not a Personal Cloud Files instance."
           }
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "La detección del servidor falló, p.e. cuando la dirección URL del servidor no contiene una instancia de ownCloud."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Server detection failed, i.e. when the server at a URL is not a Personal Cloud Files instance."
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "La détection du serveur a échoué, c.-à-d lorsque le serveur d'une URL n'est pas une instance ownCloud."
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "서버 감지에 실패했습니다. URL의 서버가 클라우드 인스턴스가 아닙니다."
           }
         },
         "mk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Server detection failed, i.e. when the server at a URL is not a Personal Cloud Files instance."
           }
         },
@@ -25537,56 +26739,55 @@
         },
         "nn-NO" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Server detection failed, i.e. when the server at a URL is not a Personal Cloud Files instance."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "A detecção do servidor falhou, ou seja, quando o servidor em uma URL não é uma instância do ownCloud."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Server detection failed, i.e. when the server at a URL is not a Personal Cloud Files instance."
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Не прошло определение сервера, то есть сервер по ссылке не является экземпляром ownCloud."
           }
         },
         "sq" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Zbulimi i shërbyesit dështoi, domethënë, kur shërbyesi te një URL s’është instancë ownCloud."
           }
         },
         "th-TH" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "การตรวจหาเซิร์ฟเวอร์ล้มเหลวเช่น เมื่อใช้ URL ของเซิร์ฟเวอร์ที่ไม่ใช่อินสแตนซ์ของ ownCloud"
           }
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Sunucu algılama başarısız oldu, bu durum örneğin URL'deki sunucu ownCloud örneği olmadığında olduğu gibi."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "服务器检测失败，可能由于此 URL 上运行的不是 ownCloud 示例。"
           }
         }
       }
     },
     "Server doesn't seem to support any authentication method supported by this app." : {
-      "comment" : "OCErrorServerNoSupportedAuthMethods",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -25622,6 +26823,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "El servidor parece no dar soporte a ningún método de autenticación soportado por esta aplicación."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Server doesn't seem to support any authentication method supported by this app."
           }
         },
         "fr" : {
@@ -25736,6 +26943,12 @@
             "value" : "Servidor inactivo por mantenimiento"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Server down for maintenance"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -25811,8 +27024,6 @@
       }
     },
     "Server down for maintenance." : {
-      "comment" : "OCDAVErrorServiceUnavailable",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -25848,6 +27059,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Servidor inactivo por mantenimiento."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Server down for maintenance."
           }
         },
         "fr" : {
@@ -25925,8 +27142,6 @@
       }
     },
     "Server redirection to bad/invalid URL." : {
-      "comment" : "OCErrorServerBadRedirection",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -25962,6 +27177,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Redireccionamiento del servidor a una URL incorrecta/inválida."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Server redirection to bad/invalid URL."
           }
         },
         "fr" : {
@@ -26076,6 +27297,12 @@
             "value" : "El servidor devuelve el estado %ld"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Server returns status %ld"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -26183,6 +27410,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Server software %@ not supported."
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Server software %@ not supported."
@@ -26300,6 +27533,12 @@
             "value" : "Set detailed permissions"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Set detailed permissions"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -26375,8 +27614,6 @@
       }
     },
     "Share not found." : {
-      "comment" : "OCErrorShareNotFound",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -26412,6 +27649,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Compatido NO encontrado"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share not found."
           }
         },
         "fr" : {
@@ -26526,6 +27769,12 @@
             "value" : "Compartido conmigo"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shared with me"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -26601,7 +27850,6 @@
       }
     },
     "Shares" : {
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -26637,6 +27885,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Compartidos"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shares"
           }
         },
         "fr" : {
@@ -26714,8 +27968,6 @@
       }
     },
     "Shares are unavailable." : {
-      "comment" : "OCErrorShareUnavailable",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -26751,6 +28003,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Compartidos No disponibles"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shares are unavailable."
           }
         },
         "fr" : {
@@ -26828,7 +28086,6 @@
       }
     },
     "Sharing requires an active connection." : {
-      "comment" : "Sharing",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -26864,6 +28121,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Compartir necesita una conexión activa."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sharing requires an active connection."
           }
         },
         "fr" : {
@@ -26941,7 +28204,6 @@
       }
     },
     "special characters" : {
-      "comment" : "Password Policy",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -26974,6 +28236,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "special characters"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "special characters"
@@ -27054,7 +28322,6 @@
       }
     },
     "Standard error output" : {
-      "comment" : "Logging",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -27090,6 +28357,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Salida de error estándar"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standard error output"
           }
         },
         "fr" : {
@@ -27204,6 +28477,12 @@
             "value" : "Estado"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "State"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -27316,6 +28595,12 @@
             "value" : "Sincronizar ID de registro"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sync Record ID"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -27391,8 +28676,6 @@
       }
     },
     "The action couldn't be performed on the targeted item because the client lacks permissions." : {
-      "comment" : "OCErrorItemInsufficientPermissions",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -27428,6 +28711,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "La acción no se pudo realizar en el elemento de destino porque el cliente carece de permisos."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The action couldn't be performed on the targeted item because the client lacks permissions."
           }
         },
         "fr" : {
@@ -27505,8 +28794,6 @@
       }
     },
     "The action couldn't be performed on the targeted item because the client lacks permisssions." : {
-      "comment" : "OCErrorItemInsufficientPermissions",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -27539,6 +28826,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The action couldn't be performed on the targeted item because the client lacks permisssions."
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "The action couldn't be performed on the targeted item because the client lacks permisssions."
@@ -27656,6 +28949,12 @@
             "value" : "The certificate for %@ has previously been rejected by the user."
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The certificate for %@ has previously been rejected by the user."
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -27731,7 +29030,6 @@
       }
     },
     "The certificate for %@ passes TLS validation but doesn't pass the acceptance rule to replace the certificate for %@." : {
-      "extractionState" : "stale",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -27764,6 +29062,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The certificate for %1$@ passes TLS validation but doesn't pass the acceptance rule to replace the certificate for %2$@."
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "The certificate for %1$@ passes TLS validation but doesn't pass the acceptance rule to replace the certificate for %2$@."
@@ -27844,8 +29148,6 @@
       }
     },
     "The certificate is invalid or contains errors" : {
-      "comment" : "OCErrorCertificateInvalid",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -27881,6 +29183,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "El certificado es inválido o contiene errores"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The certificate is invalid or contains errors"
           }
         },
         "fr" : {
@@ -27990,6 +29298,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The connection is redirected from %1$@ to %2$@."
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "The connection is redirected from %1$@ to %2$@."
@@ -28107,6 +29421,12 @@
             "value" : "El contenido del archivo en el servidor ha cambiado desde que se inició la descarga, o el archivo ya no está disponible en el servidor."
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The contents of the file on the server has changed since initiating download - or the file is no longer available on the server."
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -28182,8 +29502,6 @@
       }
     },
     "The destination item has not been found." : {
-      "comment" : "OCErrorItemDestinationNotFound",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -28216,6 +29534,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The destination item has not been found."
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "The destination item has not been found."
@@ -28333,6 +29657,12 @@
             "value" : "La suma de comprobación del archivo descargado no coincide con la suma de comprobación proporcionada por el servidor."
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The downloaded file's checksum does not match the checksum provided by the server."
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -28445,6 +29775,12 @@
             "value" : "The file no longer exists on the server in this location."
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The file no longer exists on the server in this location."
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -28520,8 +29856,6 @@
       }
     },
     "The logged in user is not matching the required user ID." : {
-      "comment" : "OCErrorAuthorizationNotMatchingRequiredUserID",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -28557,6 +29891,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "El usuario que inició sesión no coincide con el ID de usuario requerido."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The logged in user is not matching the required user ID."
           }
         },
         "fr" : {
@@ -28634,8 +29974,6 @@
       }
     },
     "The operation on the targeted item is not allowed." : {
-      "comment" : "OCErrorItemOperationForbidden",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -28671,6 +30009,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "La operación en el artículo apuntado no está permitida."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The operation on the targeted item is not allowed."
           }
         },
         "fr" : {
@@ -28748,8 +30092,6 @@
       }
     },
     "The operation was cancelled." : {
-      "comment" : "OCErrorCancelled",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -28785,6 +30127,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "La operación fue cancelada."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The operation was cancelled."
           }
         },
         "fr" : {
@@ -28862,8 +30210,6 @@
       }
     },
     "The provided path is not normalized." : {
-      "comment" : "OCErrorUnnormalizedPath",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -28899,6 +30245,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "La ruta proporcionada no está normalizada."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The provided path is not normalized."
           }
         },
         "fr" : {
@@ -29013,6 +30365,12 @@
             "value" : "Parece que no existe el directorio destino %@."
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The target directory %@ doesn't seem to exist."
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -29088,8 +30446,6 @@
       }
     },
     "The target location has not been found." : {
-      "comment" : "OCErrorItemDestinationNotFound",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -29122,6 +30478,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The target location has not been found."
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "The target location has not been found."
@@ -29202,8 +30564,6 @@
       }
     },
     "The targeted item has changed." : {
-      "comment" : "OCErrorItemChanged",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -29239,6 +30599,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "El elemento de destino ha cambiado."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The targeted item has changed."
           }
         },
         "fr" : {
@@ -29316,8 +30682,6 @@
       }
     },
     "The targeted item has not been found." : {
-      "comment" : "OCErrorItemNotFound",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -29353,6 +30717,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "El elemento apuntado no ha sido encontrado."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The targeted item has not been found."
           }
         },
         "fr" : {
@@ -29467,6 +30837,12 @@
             "value" : "La URL usa HTTP en lugar de HTTPS. Si Vd. continua, la comunicación no será encriptada."
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The URL you provided uses the HTTP rather than the HTTPS scheme, so your communication would not be encrypted."
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -29579,6 +30955,12 @@
             "value" : "La URL usa HTTP en lugar de HTTPS. Si Vd. continua, la comunicación no será encriptada."
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The URL you provided uses the HTTP rather than the HTTPS scheme. If you continue, your communication will not be encrypted."
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -29654,8 +31036,6 @@
       }
     },
     "There already is an item at the destination of this action." : {
-      "comment" : "OCErrorItemAlreadyExists",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -29691,6 +31071,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ya hay un elemento en el destino de esta acción."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "There already is an item at the destination of this action."
           }
         },
         "fr" : {
@@ -29768,8 +31154,6 @@
       }
     },
     "This feature is currently not implemented" : {
-      "comment" : "OCErrorFeatureNotImplemented",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -29805,6 +31189,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Esta función no está actualmente implementada"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This feature is currently not implemented"
           }
         },
         "fr" : {
@@ -29882,8 +31272,6 @@
       }
     },
     "This feature is not supported for this item." : {
-      "comment" : "OCErrorFeatureNotSupportedForItem",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -29919,6 +31307,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Esta función no es compatible con este elemento."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This feature is not supported for this item."
           }
         },
         "fr" : {
@@ -29996,8 +31390,6 @@
       }
     },
     "This feature is not supported for this server (version)." : {
-      "comment" : "OCErrorFeatureNotSupportedByServer",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -30033,6 +31425,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Esta función no está soportada en este servidor (versión)."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This feature is not supported for this server (version)."
           }
         },
         "fr" : {
@@ -30110,7 +31508,6 @@
       }
     },
     "This file is currently being processed and is not yet available for use. Please try again shortly." : {
-      "comment" : "App Provider",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -30143,6 +31540,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This file is currently being processed and is not yet available for use. Please try again shortly."
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "This file is currently being processed and is not yet available for use. Please try again shortly."
@@ -30260,6 +31663,12 @@
             "value" : "Este servidor ejecuta una versión no soportada (%@). La versión %@o posterior es necesaria para utilizar esta aplicación."
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This server runs an unsupported version (%@). Version %@ or later is required by this app."
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -30335,8 +31744,6 @@
       }
     },
     "This server version is not supported." : {
-      "comment" : "OCErrorServerVersionNotSupported",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -30372,6 +31779,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Esta versión del servidor no es compatible."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This server version is not supported."
           }
         },
         "fr" : {
@@ -30486,6 +31899,12 @@
             "value" : "Tamaño de la base de datos de miniaturas"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thumbnail database size"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -30598,6 +32017,12 @@
             "value" : "Marca de tiempo"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Timestamp"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -30673,8 +32098,6 @@
       }
     },
     "Too few {{localizedName}}" : {
-      "comment" : "Password Policy",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -30707,6 +32130,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Too few {{localizedName}}"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Too few {{localizedName}}"
@@ -30787,8 +32216,6 @@
       }
     },
     "Too many {{localizedName}}" : {
-      "comment" : "Password Policy",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -30821,6 +32248,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Too many {{localizedName}}"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Too many {{localizedName}}"
@@ -30938,6 +32371,12 @@
             "value" : "Artículos totales"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Total Items"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -31013,8 +32452,6 @@
       }
     },
     "Unknown share type." : {
-      "comment" : "OCErrorShareUnknownType",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -31050,6 +32487,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tipo de compartido desconocido."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unknown share type."
           }
         },
         "fr" : {
@@ -31127,8 +32570,6 @@
       }
     },
     "Unknown user" : {
-      "comment" : "OCErrorUnknownUser",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -31164,6 +32605,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Usuario desconocido"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unknown user"
           }
         },
         "fr" : {
@@ -31273,6 +32720,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Update failed with status code %lu"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Update failed with status code %lu"
@@ -31390,6 +32843,12 @@
             "value" : "Updating metadata for '%@'…"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Updating metadata for '%@'…"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -31502,6 +32961,12 @@
             "value" : "Updating share…"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Updating share…"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -31577,7 +33042,6 @@
       }
     },
     "Upgrading database…" : {
-      "comment" : "Database upgrades",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -31613,6 +33077,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Actualizando la base de datos…"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Upgrading database…"
           }
         },
         "fr" : {
@@ -31722,6 +33192,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Upload only, existing content is not revealed"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Upload only, existing content is not revealed"
@@ -31839,6 +33315,12 @@
             "value" : "Upload, edit, delete, download and preview"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Upload, edit, delete, download and preview"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -31914,7 +33396,6 @@
       }
     },
     "Upload, edit, delete, download, preview and share" : {
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -31947,6 +33428,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Upload, edit, delete, download, preview and share"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Upload, edit, delete, download, preview and share"
@@ -32064,6 +33551,12 @@
             "value" : "Uploader"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uploader"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -32171,6 +33664,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uploading %@…"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Uploading %@…"
@@ -32288,6 +33787,12 @@
             "value" : "No se permiten cargas a esta carpeta."
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uploads to this folder are not allowed."
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -32363,7 +33868,6 @@
       }
     },
     "upper-case characters" : {
-      "comment" : "Password Policy",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -32396,6 +33900,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "upper-case characters"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "upper-case characters"
@@ -32513,6 +34023,12 @@
             "value" : "URL"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "URL"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -32623,6 +34139,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Usar URL de origen como URL"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use Origin URL as URL"
           }
         },
         "fr" : {
@@ -32737,6 +34259,12 @@
             "value" : "Nombre de usuario"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "User Name"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -32849,6 +34377,12 @@
             "value" : "Información de usuario"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "UserInfo"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -32956,6 +34490,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "UUID"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "UUID"
@@ -33073,6 +34613,12 @@
             "value" : "Aspiradora"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vacuum"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -33180,6 +34726,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "View, download"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "View, download"
@@ -33297,6 +34849,12 @@
             "value" : "View, upload, download"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "View, upload, download"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -33404,6 +34962,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "View, upload, edit, download, delete"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "View, upload, edit, download, delete"
@@ -33521,6 +35085,12 @@
             "value" : "Viewer"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Viewer"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -33631,6 +35201,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Condiciones de espera"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wait Conditions"
           }
         },
         "fr" : {
@@ -33745,6 +35321,12 @@
             "value" : "Esperando la actualización de los metadatos"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Waiting for metadata refresh"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -33855,6 +35437,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Esperando al usuario"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Waiting for user"
           }
         },
         "fr" : {
@@ -33969,6 +35557,12 @@
             "value" : "Esperando reintentar (%ld de %ld)"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Waiting to retry (%ld of %ld)"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -34044,8 +35638,6 @@
       }
     },
     "Web finger response lacks server instance relation." : {
-      "comment" : "OCErrorWebFingerLacksServerInstanceRelation",
-      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -34078,6 +35670,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Web finger response lacks server instance relation."
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Web finger response lacks server instance relation."
@@ -34193,6 +35791,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ha iniciado sesión como usuario %@, pero debe iniciar sesión como usuario %@. Por favor, inténtalo de nuevo."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You logged in as user %@, but must log in as user %@. Please retry."
           }
         },
         "fr" : {
