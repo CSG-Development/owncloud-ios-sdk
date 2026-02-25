@@ -2,6 +2,7 @@
   "sourceLanguage" : "en",
   "strings" : {
     "\"%@\" has been modified locally" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -120,6 +121,7 @@
       }
     },
     "\"%@\" metadata for %@ couldn't be updated" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -238,6 +240,7 @@
       }
     },
     "\"%@\" was modified locally before the download completed." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -356,6 +359,7 @@
       }
     },
     "{{itemName}} can't be copied into itself." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -474,6 +478,7 @@
       }
     },
     "{{itemName}} can't be moved into itself." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -592,6 +597,7 @@
       }
     },
     "{{itemName}} is currently processed on the server and can't be downloaded until it finishes processing." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -710,6 +716,7 @@
       }
     },
     "%@ (error %ld, %@)" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -828,6 +835,7 @@
       }
     },
     "%@ (error %ld)" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -946,6 +954,7 @@
       }
     },
     "%@ already exists" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -1064,6 +1073,7 @@
       }
     },
     "%@ can't be copied to %@." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -1182,6 +1192,7 @@
       }
     },
     "%@ can't be moved to %@." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -1300,6 +1311,7 @@
       }
     },
     "%@ can't be renamed to %@." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -1418,6 +1430,7 @@
       }
     },
     "%@ changed on the server. Really delete it?" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -1536,6 +1549,7 @@
       }
     },
     "%@ couldn't be deleted" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -1654,6 +1668,7 @@
       }
     },
     "%@ couldn't be renamed to %@." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -1772,6 +1787,7 @@
       }
     },
     "%@ has changed on the server since you requested its deletion." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -1890,6 +1906,7 @@
       }
     },
     "%@ not found" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -2008,6 +2025,7 @@
       }
     },
     "%@ wasn't found at %@." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -2126,6 +2144,7 @@
       }
     },
     "%lu files in %lu folders" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -2244,6 +2263,7 @@
       }
     },
     "A modified, unsynchronized version of \"%@\" is present on your device. Downloading the file from the server will overwrite it and modifications be lost." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -2362,6 +2382,7 @@
       }
     },
     "A newer version already exists." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -2480,6 +2501,7 @@
       }
     },
     "A running operation prevents execution." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -2598,6 +2620,7 @@
       }
     },
     "Accepting share…" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -2716,6 +2739,7 @@
       }
     },
     "Action" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -2834,6 +2858,7 @@
       }
     },
     "Action ID" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -2952,6 +2977,7 @@
       }
     },
     "Allow cellular access" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -3070,6 +3096,7 @@
       }
     },
     "An error occured trying to validate the certificate for %@." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -3188,6 +3215,7 @@
       }
     },
     "An exception occured attempting to perform an action (\"%@\"). The action has been removed from the sync queue and may not have completed. If logging is enabled, the exception has been logged." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -3306,6 +3334,7 @@
       }
     },
     "An exception occured." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -3424,6 +3453,7 @@
       }
     },
     "An operation failed due to outdated cache information." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -3542,6 +3572,7 @@
       }
     },
     "Another item named %@ already exists in %@." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -3660,6 +3691,7 @@
       }
     },
     "Another item policy of the same kind already includes the item, making the addition of this item policy redundant." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -3778,6 +3810,7 @@
       }
     },
     "Another version of %@ already exists in %@." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -3896,6 +3929,7 @@
       }
     },
     "At least {{min}} {{characterType}}" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -4014,6 +4048,7 @@
       }
     },
     "At least {{min}} special characters: {{specialCharacters}}" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -4132,6 +4167,7 @@
       }
     },
     "At most {{byteLength}} bytes." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -4250,6 +4286,7 @@
       }
     },
     "At most {{max}} {{characterType}}" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -4368,6 +4405,7 @@
       }
     },
     "Auth Data" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -4486,6 +4524,7 @@
       }
     },
     "Auth Method" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -4604,6 +4643,7 @@
       }
     },
     "Auth Validation Date" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -4722,6 +4762,7 @@
       }
     },
     "Authenticating…" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -4840,6 +4881,7 @@
       }
     },
     "Authentication method not allowed. Re-authentication needed." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -4958,6 +5000,7 @@
       }
     },
     "Authentication method unknown." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -5076,6 +5119,7 @@
       }
     },
     "Authorization failed because data was missing from the secret data for the authentication method." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -5194,6 +5238,7 @@
       }
     },
     "Authorization failed because no authorization data was set for the authentication method." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -5312,6 +5357,7 @@
       }
     },
     "Authorization failed because the server returned a redirect. Authorization may be successful when retried with the redirect URL." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -5430,6 +5476,7 @@
       }
     },
     "Authorization failed." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -5548,6 +5595,7 @@
       }
     },
     "Authorization needs to be retried." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -5666,6 +5714,7 @@
       }
     },
     "Authorization was cancelled by the user." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -5784,6 +5833,7 @@
       }
     },
     "Available Offline" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -5902,6 +5952,7 @@
       }
     },
     "Between {{min}} and {{max}} {{characterType}}" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -6020,6 +6071,7 @@
       }
     },
     "Bookmark created with a newer app version. Please update the app." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -6138,6 +6190,7 @@
       }
     },
     "Can edit" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -6256,6 +6309,7 @@
       }
     },
     "Can upload" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -6374,6 +6428,7 @@
       }
     },
     "Can view" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -6492,6 +6547,7 @@
       }
     },
     "Can't build custom scheme URL from %@." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -6610,6 +6666,7 @@
       }
     },
     "Can't open authorization URL with custom scheme." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -6728,6 +6785,7 @@
       }
     },
     "Can't open custom scheme URL %@." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -6846,6 +6904,7 @@
       }
     },
     "Cancel" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -6964,6 +7023,7 @@
       }
     },
     "Certificate" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -7082,6 +7142,7 @@
       }
     },
     "Certificate changed" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -7200,6 +7261,7 @@
       }
     },
     "Certificate Date" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -7318,6 +7380,7 @@
       }
     },
     "Certificate for %@ passed validation." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -7436,6 +7499,7 @@
       }
     },
     "Certificates" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -7554,6 +7618,7 @@
       }
     },
     "characters" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -7672,6 +7737,7 @@
       }
     },
     "Class" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -7790,6 +7856,7 @@
       }
     },
     "Client registration failed." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -7908,6 +7975,7 @@
       }
     },
     "Closing vault…" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -8026,6 +8094,7 @@
       }
     },
     "Connected" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -8144,6 +8213,7 @@
       }
     },
     "Connecting" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -8262,6 +8332,7 @@
       }
     },
     "Connecting…" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -8380,6 +8451,7 @@
       }
     },
     "Connection refused" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -8498,6 +8570,7 @@
       }
     },
     "Connection validation failed." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -8616,6 +8689,7 @@
       }
     },
     "Construction of URL Session Task failed." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -8734,6 +8808,7 @@
       }
     },
     "Contributor" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -8852,6 +8927,7 @@
       }
     },
     "copy" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -8970,6 +9046,7 @@
       }
     },
     "Copying %@ to %@…" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -9088,6 +9165,7 @@
       }
     },
     "Couldn't copy %@ to %@, because an item called %@ already exists there." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -9206,6 +9284,7 @@
       }
     },
     "Couldn't create %@" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -9324,6 +9403,7 @@
       }
     },
     "Couldn't delete %@" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -9442,6 +9522,7 @@
       }
     },
     "Couldn't download %@" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -9560,6 +9641,7 @@
       }
     },
     "Couldn't move %@ to %@, because an item called %@ already exists there." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -9678,6 +9760,7 @@
       }
     },
     "Couldn't rename %@ to %@, because another item with that name already exists." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -9796,6 +9879,7 @@
       }
     },
     "Couldn't upload %@" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -9914,6 +9998,7 @@
       }
     },
     "Creating folder %@…" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -10032,6 +10117,7 @@
       }
     },
     "Creating share for %@…" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -10150,6 +10236,7 @@
       }
     },
     "Custom" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -10268,6 +10355,7 @@
       }
     },
     "Database size" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -10386,6 +10474,7 @@
       }
     },
     "Database upgrade required. Please open the app to perform the upgrade." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -10504,6 +10593,7 @@
       }
     },
     "Database Version" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -10622,6 +10712,7 @@
       }
     },
     "Delete" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -10740,6 +10831,7 @@
       }
     },
     "Delete Authentication Data" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -10858,6 +10950,7 @@
       }
     },
     "Delete Database" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -10976,6 +11069,7 @@
       }
     },
     "Deleting %@…" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -11094,6 +11188,7 @@
       }
     },
     "Deleting share for %@…" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -11212,6 +11307,7 @@
       }
     },
     "Deschedule (remove)" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -11330,6 +11426,7 @@
       }
     },
     "digits" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -11448,6 +11545,7 @@
       }
     },
     "Download and preview" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -11566,6 +11664,7 @@
       }
     },
     "Download, preview and share" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -11684,6 +11783,7 @@
       }
     },
     "Downloading %@…" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -11802,6 +11902,7 @@
       }
     },
     "Edit, download, preview and share" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -11920,6 +12021,7 @@
       }
     },
     "Editor" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -12038,6 +12140,7 @@
       }
     },
     "Error" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -12156,6 +12259,7 @@
       }
     },
     "Error copying %@" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -12274,6 +12378,7 @@
       }
     },
     "Error deleting %@" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -12392,6 +12497,7 @@
       }
     },
     "Error moving %@" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -12510,6 +12616,7 @@
       }
     },
     "Error renaming %@" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -12628,6 +12735,7 @@
       }
     },
     "Error updating %@ metadata" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -12746,6 +12854,7 @@
       }
     },
     "Error uploading %@" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -12864,6 +12973,7 @@
       }
     },
     "Events" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -12982,6 +13092,7 @@
       }
     },
     "Exception occured performing action" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -13100,6 +13211,7 @@
       }
     },
     "Failed" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -13218,6 +13330,7 @@
       }
     },
     "Fetching updates…" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -13336,6 +13449,7 @@
       }
     },
     "Fetching user information…" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -13454,6 +13568,7 @@
       }
     },
     "File" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -13572,6 +13687,7 @@
       }
     },
     "File modified locally" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -13690,6 +13806,7 @@
       }
     },
     "File not found." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -13808,6 +13925,7 @@
       }
     },
     "Files" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -13926,6 +14044,7 @@
       }
     },
     "Folders" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -14044,6 +14163,7 @@
       }
     },
     "Generic graph error." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -14162,6 +14282,7 @@
       }
     },
     "Identifier" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -14280,6 +14401,7 @@
       }
     },
     "In progress since" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -14398,6 +14520,7 @@
       }
     },
     "Insecure HTTP URL" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -14516,6 +14639,7 @@
       }
     },
     "Insecure HTTP URL forbidden" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -14634,6 +14758,7 @@
       }
     },
     "Insufficient parameters." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -14752,6 +14877,7 @@
       }
     },
     "Insufficient permissions" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -14870,6 +14996,7 @@
       }
     },
     "Internal error." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -14988,6 +15115,7 @@
       }
     },
     "Invalid checksum" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -15106,6 +15234,7 @@
       }
     },
     "Invalid parameter." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -15224,6 +15353,7 @@
       }
     },
     "Invalid rule without minimum and maximum count" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -15342,6 +15472,7 @@
       }
     },
     "Invalid type." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -15460,6 +15591,7 @@
       }
     },
     "Invalidate" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -15578,6 +15710,7 @@
       }
     },
     "Invalidate Login Data" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -15696,6 +15829,7 @@
       }
     },
     "Invited people" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -15814,6 +15948,7 @@
       }
     },
     "Invited persons" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -15932,6 +16067,7 @@
       }
     },
     "Issues were found while validating the certificate for %@." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -16050,6 +16186,7 @@
       }
     },
     "Item" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -16168,6 +16305,7 @@
       }
     },
     "Item is currently processing." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -16286,6 +16424,7 @@
       }
     },
     "Item is not a directory." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -16404,6 +16543,7 @@
       }
     },
     "Item not available offline." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -16522,6 +16662,7 @@
       }
     },
     "Item not found." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -16640,6 +16781,7 @@
       }
     },
     "itemProperty.isFavorite" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -16758,6 +16900,7 @@
       }
     },
     "itemProperty.lastModified" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -16876,6 +17019,7 @@
       }
     },
     "itemProperty.localAttributes" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -16994,6 +17138,7 @@
       }
     },
     "Keep both" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -17112,6 +17257,7 @@
       }
     },
     "Lane ID" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -17230,6 +17376,7 @@
       }
     },
     "Link works only for invited people. Login is required." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -17348,6 +17495,7 @@
       }
     },
     "Local ID" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -17466,6 +17614,7 @@
       }
     },
     "Localized Description" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -17584,6 +17733,7 @@
       }
     },
     "Lock invalidated." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -17702,6 +17852,7 @@
       }
     },
     "Log file" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -17820,6 +17971,7 @@
       }
     },
     "Log HTTP requests and responses" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -17938,6 +18090,7 @@
       }
     },
     "Log internal file operations" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -18056,6 +18209,7 @@
       }
     },
     "Login as user %@ required. Please retry." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -18174,6 +18328,7 @@
       }
     },
     "Longer than {{byteLength}} bytes in {{encoding}} encoding." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -18292,6 +18447,7 @@
       }
     },
     "lower-case characters" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -18410,6 +18566,7 @@
       }
     },
     "Making %@ available offline also covers %@, which was previously requested as being available offline." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -18528,6 +18685,7 @@
       }
     },
     "Making %@ available offline also covers %@, whose offline availability has previously been requested." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -18646,6 +18804,7 @@
       }
     },
     "Manager" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -18764,6 +18923,7 @@
       }
     },
     "Missing Drive ID." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -18882,6 +19042,7 @@
       }
     },
     "Moving %@ to %@…" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -19000,6 +19161,7 @@
       }
     },
     "Name" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -19118,6 +19280,7 @@
       }
     },
     "Network unavailable" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -19236,6 +19399,7 @@
       }
     },
     "No certificate was returned for a request despite this being a HTTPS connection (should never occur in production, but only if you forgot to provide a certificate during simulated responses to HTTPS requests)." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -19354,6 +19518,7 @@
       }
     },
     "No data converter available for conversion." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -19472,6 +19637,7 @@
       }
     },
     "Not authorized to access shares." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -19590,6 +19756,7 @@
       }
     },
     "Not available offline." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -19708,6 +19875,7 @@
       }
     },
     "Not enough space left on the server to upload %@." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -19826,6 +19994,7 @@
       }
     },
     "Object does not return DataItemType." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -19944,6 +20113,7 @@
       }
     },
     "Offline" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -20062,6 +20232,7 @@
       }
     },
     "Offline (no WiFi connection)" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -20180,6 +20351,7 @@
       }
     },
     "Offline availability of %@ is already ensured by having made %@ available offline." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -20298,6 +20470,7 @@
       }
     },
     "OK" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -20416,6 +20589,7 @@
       }
     },
     "Online" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -20534,6 +20708,7 @@
       }
     },
     "Only invited persons have access. Login required." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -20652,6 +20827,7 @@
       }
     },
     "Opening vault…" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -20770,6 +20946,7 @@
       }
     },
     "Operation forbidden" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -20888,6 +21065,7 @@
       }
     },
     "Origin Process" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -21006,6 +21184,7 @@
       }
     },
     "Origin Process Valid" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -21124,6 +21303,7 @@
       }
     },
     "Origin URL" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -21242,6 +21422,7 @@
       }
     },
     "Other item policies of the same kind covering subsets of this item policy become redundant by the addition of this item policy." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -21360,6 +21541,7 @@
       }
     },
     "Overwrite modified file" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -21478,6 +21660,7 @@
       }
     },
     "Password can't be converted to {{encoding}}." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -21596,6 +21779,7 @@
       }
     },
     "Pending" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -21714,6 +21898,7 @@
       }
     },
     "Personal" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -21832,6 +22017,7 @@
       }
     },
     "Please check if you have sufficient permissions to delete %@." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -21950,6 +22136,7 @@
       }
     },
     "Populating database…" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -22068,6 +22255,7 @@
       }
     },
     "Previous token refresh attempts indicated an invalid refresh token." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -22186,6 +22374,7 @@
       }
     },
     "Private link format invalid." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -22304,6 +22493,7 @@
       }
     },
     "Proceed" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -22422,6 +22612,7 @@
       }
     },
     "Process Sync Records" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -22540,6 +22731,7 @@
       }
     },
     "Public upload was disabled by the administrator." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -22658,6 +22850,7 @@
       }
     },
     "Recipients can upload but existing contents are not revealed." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -22776,6 +22969,7 @@
       }
     },
     "Recipients can view and download contents." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -22894,6 +23088,7 @@
       }
     },
     "Recipients can view, download and edit contents." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -23012,6 +23207,7 @@
       }
     },
     "Recipients can view, download and upload contents." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -23130,6 +23326,7 @@
       }
     },
     "Recipients can view, download, edit, delete and upload contents." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -23248,6 +23445,7 @@
       }
     },
     "Redirection" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -23366,6 +23564,7 @@
       }
     },
     "Rejecting share…" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -23484,6 +23683,7 @@
       }
     },
     "Remove Database Version" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -23602,6 +23802,7 @@
       }
     },
     "Removed Items" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -23720,6 +23921,7 @@
       }
     },
     "Removing local copy of %@…" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -23838,6 +24040,7 @@
       }
     },
     "Renaming %@ to %@…" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -23956,6 +24159,7 @@
       }
     },
     "Replace" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -24074,6 +24278,7 @@
       }
     },
     "Request completed with error." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -24192,6 +24397,7 @@
       }
     },
     "Request couldn't be scheduled because the underlying URL session has been invalidated." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -24310,6 +24516,7 @@
       }
     },
     "Request timed out" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -24428,6 +24635,7 @@
       }
     },
     "Request was cancelled because the server certificate was rejected." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -24546,6 +24754,7 @@
       }
     },
     "Request was cancelled." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -24664,6 +24873,7 @@
       }
     },
     "Request was dropped by the NSURLSession." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -24782,6 +24992,7 @@
       }
     },
     "Request was removed before scheduling." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -24900,6 +25111,7 @@
       }
     },
     "Required value missing." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -25018,6 +25230,7 @@
       }
     },
     "Reschedule" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -25136,6 +25349,7 @@
       }
     },
     "Resolution of private link failed." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -25254,6 +25468,7 @@
       }
     },
     "Resource does not exist." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -25372,6 +25587,7 @@
       }
     },
     "Resource not found." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -25490,6 +25706,7 @@
       }
     },
     "Response was in an unknown format." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -25608,6 +25825,7 @@
       }
     },
     "Retrieving capabilities…" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -25726,6 +25944,7 @@
       }
     },
     "Retrieving file list for %@…" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -25844,6 +26063,7 @@
       }
     },
     "Retrieving items for %@" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -25962,6 +26182,7 @@
       }
     },
     "Retrieving metadata…" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -26080,6 +26301,7 @@
       }
     },
     "Retry" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -26198,6 +26420,7 @@
       }
     },
     "Running" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -26316,6 +26539,7 @@
       }
     },
     "Scheduled folder scans" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -26434,6 +26658,7 @@
       }
     },
     "Secret File Drop" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -26552,6 +26777,7 @@
       }
     },
     "Server detection failed because of too many redirects." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -26670,6 +26896,7 @@
       }
     },
     "Server detection failed, i.e. when the server at a URL is not an ownCloud instance." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -26788,6 +27015,7 @@
       }
     },
     "Server doesn't seem to support any authentication method supported by this app." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -26906,6 +27134,7 @@
       }
     },
     "Server down for maintenance" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -27024,6 +27253,7 @@
       }
     },
     "Server down for maintenance." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -27142,6 +27372,7 @@
       }
     },
     "Server redirection to bad/invalid URL." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -27260,6 +27491,7 @@
       }
     },
     "Server returns status %ld" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -27378,6 +27610,7 @@
       }
     },
     "Server software %@ not supported." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -27496,6 +27729,7 @@
       }
     },
     "Set detailed permissions" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -27614,6 +27848,7 @@
       }
     },
     "Share not found." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -27732,6 +27967,7 @@
       }
     },
     "Shared with me" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -27850,6 +28086,7 @@
       }
     },
     "Shares" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -27968,6 +28205,7 @@
       }
     },
     "Shares are unavailable." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -28086,6 +28324,7 @@
       }
     },
     "Sharing requires an active connection." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -28204,6 +28443,7 @@
       }
     },
     "special characters" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -28322,6 +28562,7 @@
       }
     },
     "Standard error output" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -28440,6 +28681,7 @@
       }
     },
     "State" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -28558,6 +28800,7 @@
       }
     },
     "Sync Record ID" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -28676,6 +28919,7 @@
       }
     },
     "The action couldn't be performed on the targeted item because the client lacks permissions." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -28794,6 +29038,7 @@
       }
     },
     "The action couldn't be performed on the targeted item because the client lacks permisssions." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -28912,6 +29157,7 @@
       }
     },
     "The certificate for %@ has previously been rejected by the user." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -29030,6 +29276,7 @@
       }
     },
     "The certificate for %@ passes TLS validation but doesn't pass the acceptance rule to replace the certificate for %@." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -29148,6 +29395,7 @@
       }
     },
     "The certificate is invalid or contains errors" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -29266,6 +29514,7 @@
       }
     },
     "The connection is redirected from %@ to %@." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -29384,6 +29633,7 @@
       }
     },
     "The contents of the file on the server has changed since initiating download - or the file is no longer available on the server." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -29502,6 +29752,7 @@
       }
     },
     "The destination item has not been found." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -29620,6 +29871,7 @@
       }
     },
     "The downloaded file's checksum does not match the checksum provided by the server." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -29738,6 +29990,7 @@
       }
     },
     "The file no longer exists on the server in this location." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -29856,6 +30109,7 @@
       }
     },
     "The logged in user is not matching the required user ID." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -29974,6 +30228,7 @@
       }
     },
     "The operation on the targeted item is not allowed." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -30092,6 +30347,7 @@
       }
     },
     "The operation was cancelled." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -30210,6 +30466,7 @@
       }
     },
     "The provided path is not normalized." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -30328,6 +30585,7 @@
       }
     },
     "The target directory %@ doesn't seem to exist." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -30446,6 +30704,7 @@
       }
     },
     "The target location has not been found." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -30564,6 +30823,7 @@
       }
     },
     "The targeted item has changed." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -30682,6 +30942,7 @@
       }
     },
     "The targeted item has not been found." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -30800,6 +31061,7 @@
       }
     },
     "The URL you provided uses the HTTP rather than the HTTPS scheme, so your communication would not be encrypted." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -30918,6 +31180,7 @@
       }
     },
     "The URL you provided uses the HTTP rather than the HTTPS scheme. If you continue, your communication will not be encrypted." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -31036,6 +31299,7 @@
       }
     },
     "There already is an item at the destination of this action." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -31154,6 +31418,7 @@
       }
     },
     "This feature is currently not implemented" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -31272,6 +31537,7 @@
       }
     },
     "This feature is not supported for this item." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -31390,6 +31656,7 @@
       }
     },
     "This feature is not supported for this server (version)." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -31508,6 +31775,7 @@
       }
     },
     "This file is currently being processed and is not yet available for use. Please try again shortly." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -31626,6 +31894,7 @@
       }
     },
     "This server runs an unsupported version (%@). Version %@ or later is required by this app." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -31744,6 +32013,7 @@
       }
     },
     "This server version is not supported." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -31862,6 +32132,7 @@
       }
     },
     "Thumbnail database size" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -31980,6 +32251,7 @@
       }
     },
     "Timestamp" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -32098,6 +32370,7 @@
       }
     },
     "Too few {{localizedName}}" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -32216,6 +32489,7 @@
       }
     },
     "Too many {{localizedName}}" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -32334,6 +32608,7 @@
       }
     },
     "Total Items" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -32452,6 +32727,7 @@
       }
     },
     "Unknown share type." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -32570,6 +32846,7 @@
       }
     },
     "Unknown user" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -32688,6 +32965,7 @@
       }
     },
     "Update failed with status code %lu" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -32806,6 +33084,7 @@
       }
     },
     "Updating metadata for '%@'…" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -32924,6 +33203,7 @@
       }
     },
     "Updating share…" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -33042,6 +33322,7 @@
       }
     },
     "Upgrading database…" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -33160,6 +33441,7 @@
       }
     },
     "Upload only, existing content is not revealed" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -33278,6 +33560,7 @@
       }
     },
     "Upload, edit, delete, download and preview" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -33396,6 +33679,7 @@
       }
     },
     "Upload, edit, delete, download, preview and share" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -33514,6 +33798,7 @@
       }
     },
     "Uploader" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -33632,6 +33917,7 @@
       }
     },
     "Uploading %@…" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -33750,6 +34036,7 @@
       }
     },
     "Uploads to this folder are not allowed." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -33868,6 +34155,7 @@
       }
     },
     "upper-case characters" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -33986,6 +34274,7 @@
       }
     },
     "URL" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -34104,6 +34393,7 @@
       }
     },
     "Use Origin URL as URL" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -34222,6 +34512,7 @@
       }
     },
     "User Name" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -34340,6 +34631,7 @@
       }
     },
     "UserInfo" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -34458,6 +34750,7 @@
       }
     },
     "UUID" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -34576,6 +34869,7 @@
       }
     },
     "Vacuum" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -34694,6 +34988,7 @@
       }
     },
     "View, download" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -34812,6 +35107,7 @@
       }
     },
     "View, upload, download" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -34930,6 +35226,7 @@
       }
     },
     "View, upload, edit, download, delete" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -35048,6 +35345,7 @@
       }
     },
     "Viewer" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -35166,6 +35464,7 @@
       }
     },
     "Wait Conditions" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -35284,6 +35583,7 @@
       }
     },
     "Waiting for metadata refresh" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -35402,6 +35702,7 @@
       }
     },
     "Waiting for user" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -35520,6 +35821,7 @@
       }
     },
     "Waiting to retry (%ld of %ld)" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -35638,6 +35940,7 @@
       }
     },
     "Web finger response lacks server instance relation." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
@@ -35756,6 +36059,7 @@
       }
     },
     "You logged in as user %@, but must log in as user %@. Please retry." : {
+      "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
