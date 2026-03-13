@@ -20,6 +20,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/// Posted on main when a request fails with @c isNetworkFailureError (ex.: status.php polling).
+/// @c userInfo[@"error"] is the @c NSError. Does not replace @c OCCoreDelegate handleError (still not called for these).
+FOUNDATION_EXPORT NSNotificationName const OCNetworkingFailureReachabilityNotification;
+
 @interface NSError (OCNetworkFailure)
 
 @property(readonly,nonatomic) BOOL isNetworkFailureError;

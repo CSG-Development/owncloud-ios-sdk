@@ -18,6 +18,8 @@
 
 #import "NSError+OCNetworkFailure.h"
 
+NSNotificationName const OCNetworkingFailureReachabilityNotification = @"OCNetworkingFailureReachabilityNotification";
+
 @implementation NSError (OCNetworkFailure)
 
 - (BOOL)isNetworkFailureError

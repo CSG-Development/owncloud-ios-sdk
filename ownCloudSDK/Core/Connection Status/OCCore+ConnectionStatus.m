@@ -414,6 +414,20 @@
 		{
 			[_serverStatusSignalProvider reportConnectionRefusedError:error];
 
+			// These failures (status.php poll, etc.) never call -sendError: on the core delegate.
+			// Notify so the app can reprobe alternate device URLs / RA paths.
+			{
+				static NSDate *s_lastReachabilityNoteDate = nil;
+				NSDate *now = [NSDate date];
+				if (s_lastReachabilityNoteDate == nil || [now timeIntervalSinceDate:s_lastReachabilityNoteDate] >= 2.0)
+				{
+					s_lastReachabilityNoteDate = now;
+					dispatch_async(dispatch_get_main_queue(), ^{
+						[[NSNotificationCenter defaultCenter] postNotificationName:OCNetworkingFailureReachabilityNotification object:nil userInfo:@{ @"error" : error }];
+					});
+				}
+			}
+
 			if ([request.requiredSignals containsObject:OCConnectionSignalIDCoreOnline])
 			{
 				return (OCHTTPRequestInstructionReschedule);
