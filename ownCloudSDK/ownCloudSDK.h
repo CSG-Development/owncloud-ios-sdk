@@ -239,6 +239,8 @@ FOUNDATION_EXPORT const unsigned char ownCloudSDKVersionString[];
 #import <ownCloudSDK/OCItem+OCTypeAlias.h>
 #import <ownCloudSDK/OCItemVersionIdentifier.h>
 
+#import <ownCloudSDK/OCSystemTag.h>
+#import <ownCloudSDK/OCConnection+Tags.h>
 #import <ownCloudSDK/OCShare.h>
 #import <ownCloudSDK/OCShare+OCDataItem.h>
 #import <ownCloudSDK/OCShareRole.h>

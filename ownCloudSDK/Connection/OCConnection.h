@@ -519,6 +519,8 @@ extern OCConnectionEndpointID OCConnectionEndpointIDPermissionsList;
 extern OCConnectionEndpointID OCConnectionEndpointIDWebDAV;
 extern OCConnectionEndpointID OCConnectionEndpointIDWebDAVMeta;
 extern OCConnectionEndpointID OCConnectionEndpointIDWebDAVSpaces; //!< Spaces DAV endpoint, used for f.ex. search (see ocis#9367)
+extern OCConnectionEndpointID OCConnectionEndpointIDWebDAVSystemTags; //!< Tags API endpoint – list, create, update, delete tags
+extern OCConnectionEndpointID OCConnectionEndpointIDWebDAVSystemTagsRelations; //!< Tags API endpoint – file-tag relations (append /files/<fileId>)
 extern OCConnectionEndpointID OCConnectionEndpointIDWebDAVRoot; //!< Virtual, non-configurable endpoint, builds the root URL based on OCConnectionEndpointIDWebDAV and the username found in connection.loggedInUser
 extern OCConnectionEndpointID OCConnectionEndpointIDPreview; //!< Virtual, non-configurable endpoint, builds the root URL for requesting previews based on OCConnectionEndpointIDWebDAV, the username found in connection.loggedInUser and the drive ID
 extern OCConnectionEndpointID OCConnectionEndpointIDStatus;

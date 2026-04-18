@@ -160,6 +160,8 @@ INCLUDE_IN_CLASS_SETTINGS_SNAPSHOTS(OCConnection)
 		OCConnectionEndpointIDRemoteShares		: @"ocs/v2.php/apps/files_sharing/api/v1/remote_shares",// Polled in intervals to detect changes if OCShareQuery is used with the interval option
 		OCConnectionEndpointIDRecipients		: @"ocs/v2.php/apps/files_sharing/api/v1/sharees",	// Requested once per search string change when searching for recipients
 		OCConnectionEndpointIDAvatars			: @"remote.php/dav/avatars",				// Requested once per user per session (adding /[user]/[size-in-pixels])
+		OCConnectionEndpointIDWebDAVSystemTags		: @"remote.php/dav/systemtags",			// Tags API - list, create, update, delete tags
+		OCConnectionEndpointIDWebDAVSystemTagsRelations	: @"remote.php/dav/systemtags-relations",		// Tags API - file-tag relations (append /files/<fileId>)
 
 		OCConnectionEndpointIDGraphMe			: @"graph/v1.0/me",					// Me endpoint
 		OCConnectionEndpointIDGraphMeDrives		: @"graph/v1.0/me/drives",				// Drives of the user
@@ -3598,6 +3600,8 @@ OCConnectionEndpointID OCConnectionEndpointIDShares = @"endpoint-shares";
 OCConnectionEndpointID OCConnectionEndpointIDRemoteShares = @"endpoint-remote-shares";
 OCConnectionEndpointID OCConnectionEndpointIDRecipients = @"endpoint-recipients";
 OCConnectionEndpointID OCConnectionEndpointIDAvatars = @"endpoint-avatars";
+OCConnectionEndpointID OCConnectionEndpointIDWebDAVSystemTags = @"endpoint-webdav-systemtags";
+OCConnectionEndpointID OCConnectionEndpointIDWebDAVSystemTagsRelations = @"endpoint-webdav-systemtags-relations";
 OCConnectionEndpointID OCConnectionEndpointIDAppProviderList = @"app-provider-list";
 OCConnectionEndpointID OCConnectionEndpointIDAppProviderOpen = @"app-provider-open";
 OCConnectionEndpointID OCConnectionEndpointIDAppProviderOpenWeb = @"app-provider-open-web";
