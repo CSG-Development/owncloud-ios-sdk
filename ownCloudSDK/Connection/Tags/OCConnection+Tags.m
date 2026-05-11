@@ -176,8 +176,15 @@
 			case OCHTTPStatusCodeCONFLICT:
 				completionHandler(OCError(OCErrorItemAlreadyExists), nil);
 			break;
-			default:
-				completionHandler(response.bodyParsedAsDAVError ?: response.status.error ?: OCError(OCErrorInternal), nil);
+			default: {
+				NSError *davError = response.bodyParsedAsDAVError;
+				NSString *davMessage = davError.davExceptionMessage;
+				if (davMessage != nil && [davMessage rangeOfString:@"already exists" options:NSCaseInsensitiveSearch].location != NSNotFound) {
+					completionHandler(OCError(OCErrorItemAlreadyExists), nil);
+				} else {
+					completionHandler(davError ?: response.status.error ?: OCError(OCErrorInternal), nil);
+				}
+			}
 			break;
 		}
 	}];
@@ -218,9 +225,19 @@
 		}
 		if (response.status.code == OCHTTPStatusCodeMULTI_STATUS || response.status.isSuccess) {
 			completionHandler(nil);
-		} else {
-			completionHandler(response.bodyParsedAsDAVError ?: response.status.error ?: OCError(OCErrorInternal));
+			return;
 		}
+		if (response.status.code == OCHTTPStatusCodeCONFLICT) {
+			completionHandler(OCError(OCErrorItemAlreadyExists));
+			return;
+		}
+		NSError *davError = response.bodyParsedAsDAVError;
+		NSString *davMessage = davError.davExceptionMessage;
+		if (davMessage != nil && [davMessage rangeOfString:@"already exists" options:NSCaseInsensitiveSearch].location != NSNotFound) {
+			completionHandler(OCError(OCErrorItemAlreadyExists));
+			return;
+		}
+		completionHandler(davError ?: response.status.error ?: OCError(OCErrorInternal));
 	}];
 }
 
