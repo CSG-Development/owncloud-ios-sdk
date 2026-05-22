@@ -393,7 +393,7 @@
 
 #pragma mark - Create and assign tag in one request
 
-- (nullable NSProgress *)createAndAssignTagWithName:(NSString *)name userVisible:(BOOL)userVisible userAssignable:(BOOL)userAssignable toFileWithID:(OCFileID)fileID completionHandler:(OCConnectionTagCompletionHandler)completionHandler
+- (nullable NSProgress *)createAndAssignTagWithName:(NSString *)name userVisible:(BOOL)userVisible userAssignable:(BOOL)userAssignable canAssign:(BOOL)canAssign userEditable:(BOOL)userEditable toFileWithID:(OCFileID)fileID completionHandler:(OCConnectionTagCompletionHandler)completionHandler
 {
 	if (name.length == 0 || fileID.length == 0) {
 		completionHandler(OCError(OCErrorInvalidParameter), nil);
@@ -408,8 +408,10 @@
 	NSURL *url = [[baseURL URLByAppendingPathComponent:@"files" isDirectory:YES] URLByAppendingPathComponent:fileID];
 
 	NSDictionary *body = @{
+		@"canAssign" : (canAssign ? @YES : @NO),
 		@"name" : name,
 		@"userVisible" : (userVisible ? @YES : @NO),
+		@"userEditable" : (userEditable ? @YES : @NO),
 		@"userAssignable" : (userAssignable ? @YES : @NO)
 	};
 	NSData *jsonData = [NSJSONSerialization dataWithJSONObject:body options:0 error:nil];

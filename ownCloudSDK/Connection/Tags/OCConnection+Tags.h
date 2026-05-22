@@ -51,7 +51,7 @@ typedef void(^OCConnectionFileTagsCompletionHandler)(NSError * _Nullable error, 
 - (nullable NSProgress *)unassignTag:(OCSystemTag *)tag fromFileWithID:(OCFileID)fileID completionHandler:(OCConnectionTagModificationCompletionHandler)completionHandler;
 
 #pragma mark - Create and Assign Tag to File
-- (nullable NSProgress *)createAndAssignTagWithName:(NSString *)name userVisible:(BOOL)userVisible userAssignable:(BOOL)userAssignable toFileWithID:(OCFileID)fileID completionHandler:(OCConnectionTagCompletionHandler)completionHandler;
+- (nullable NSProgress *)createAndAssignTagWithName:(NSString *)name userVisible:(BOOL)userVisible userAssignable:(BOOL)userAssignable canAssign:(BOOL)canAssign userEditable:(BOOL)userEditable toFileWithID:(OCFileID)fileID completionHandler:(OCConnectionTagCompletionHandler)completionHandler;
 
 #pragma mark - Retrieve Files by Tag
 - (nullable OCProgress *)retrieveFilesWithTag:(OCSystemTag *)tag resultTarget:(OCEventTarget *)eventTarget;
