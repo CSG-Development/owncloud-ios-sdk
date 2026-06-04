@@ -194,6 +194,10 @@
 		_state = [decoder decodeIntegerForKey:@"state"];
 
 		_localAttributes = [decoder decodeObjectOfClasses:OCEvent.safeClasses forKey:@"localAttributes"];
+		if (_localAttributes != nil)
+		{
+			_localAttributes = [_localAttributes mutableCopy];
+		}
 		_localAttributesLastModified = [decoder decodeDoubleForKey:@"localAttributesLastModified"];
 
 		_shareTypesMask = [decoder decodeIntegerForKey:@"shareTypesMask"];
@@ -377,6 +381,25 @@
 	return (localAttributesCopy);
 }
 
+- (void)setLocalAttributes:(NSDictionary<OCLocalAttribute,id> *)localAttributes
+{
+	@synchronized(self)
+	{
+		if (localAttributes == nil || localAttributes.count == 0)
+		{
+			_localAttributes = nil;
+		}
+		else if ([localAttributes isKindOfClass:[NSMutableDictionary class]])
+		{
+			_localAttributes = (NSMutableDictionary<OCLocalAttribute,id> *)localAttributes;
+		}
+		else
+		{
+			_localAttributes = [localAttributes mutableCopy];
+		}
+	}
+}
+
 - (id)valueForLocalAttribute:(OCLocalAttribute)localAttribute
 {
 	@synchronized(self)
@@ -391,18 +414,32 @@
 	{
 		if (value != nil)
 		{
-			if (_localAttributes==nil)
+			if (_localAttributes == nil)
 			{
 				_localAttributes = [NSMutableDictionary new];
+			}
+			else if (![_localAttributes isKindOfClass:[NSMutableDictionary class]])
+			{
+				_localAttributes = [_localAttributes mutableCopy];
 			}
 
 			_localAttributes[localAttribute] = value;
 		}
 		else
 		{
+			if (_localAttributes == nil)
+			{
+				return;
+			}
+
+			if (![_localAttributes isKindOfClass:[NSMutableDictionary class]])
+			{
+				_localAttributes = [_localAttributes mutableCopy];
+			}
+
 			[_localAttributes removeObjectForKey:localAttribute];
 
-			if (_localAttributes.count==0)
+			if (_localAttributes.count == 0)
 			{
 				_localAttributes = nil;
 			}

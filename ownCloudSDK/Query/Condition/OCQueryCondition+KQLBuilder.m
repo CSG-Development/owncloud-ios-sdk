@@ -100,6 +100,8 @@
 		OCItemPropertyNameTypeAlias:	@"mediatype", // conversion from local typeAlias to server-side alias taking place via typeAliasToKQLTypeMap
 		OCItemPropertyNameType:		@"mediatype", // conversion from OCItemType taking place in -kqlStringWithColumnNameMap:typeAliasToKQLTypeMap:
 		OCItemPropertyNameSize: 	@"size",
+		@"tag":				@"tag",
+		@"tags":			@"tag",
 	} typeAliasToKQLTypeMap:typeAliasToKQLTypeMap targetContent:targetContent];
 
 	return (kqlString);
