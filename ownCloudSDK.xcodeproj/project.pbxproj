@@ -672,6 +672,8 @@
 		DCB0A45A21B7F76800FAC4E9 /* NSError+OCDAVError.m in Sources */ = {isa = PBXBuildFile; fileRef = DCB0A45821B7F76800FAC4E9 /* NSError+OCDAVError.m */; };
 		DCB0A45C21B813A000FAC4E9 /* ExtensionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = DCB0A45B21B813A000FAC4E9 /* ExtensionTests.m */; };
 		DCB0A45F21B828F400FAC4E9 /* OCCore+ConnectionStatus.h in Headers */ = {isa = PBXBuildFile; fileRef = DCB0A45D21B828F400FAC4E9 /* OCCore+ConnectionStatus.h */; };
+		99AB1A1A2F06000000000002 /* OCCoreDeviceAvailabilityGate.h in Headers */ = {isa = PBXBuildFile; fileRef = 99AB1A1A2F06000000000001 /* OCCoreDeviceAvailabilityGate.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		99AB1A1A2F06000000000004 /* OCCoreDeviceAvailabilityGate.m in Sources */ = {isa = PBXBuildFile; fileRef = 99AB1A1A2F06000000000003 /* OCCoreDeviceAvailabilityGate.m */; };
 		DCB0A46021B828F400FAC4E9 /* OCCore+ConnectionStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = DCB0A45E21B828F400FAC4E9 /* OCCore+ConnectionStatus.m */; };
 		DCB0A46421B922A400FAC4E9 /* OCCoreConnectionStatusSignalProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = DCB0A46221B922A400FAC4E9 /* OCCoreConnectionStatusSignalProvider.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DCB0A46521B922A400FAC4E9 /* OCCoreConnectionStatusSignalProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = DCB0A46321B922A400FAC4E9 /* OCCoreConnectionStatusSignalProvider.m */; };
@@ -1784,6 +1786,8 @@
 		DCB0A45821B7F76800FAC4E9 /* NSError+OCDAVError.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSError+OCDAVError.m"; sourceTree = "<group>"; };
 		DCB0A45B21B813A000FAC4E9 /* ExtensionTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ExtensionTests.m; sourceTree = "<group>"; };
 		DCB0A45D21B828F400FAC4E9 /* OCCore+ConnectionStatus.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "OCCore+ConnectionStatus.h"; sourceTree = "<group>"; };
+		99AB1A1A2F06000000000001 /* OCCoreDeviceAvailabilityGate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OCCoreDeviceAvailabilityGate.h; sourceTree = "<group>"; };
+		99AB1A1A2F06000000000003 /* OCCoreDeviceAvailabilityGate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OCCoreDeviceAvailabilityGate.m; sourceTree = "<group>"; };
 		DCB0A45E21B828F400FAC4E9 /* OCCore+ConnectionStatus.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "OCCore+ConnectionStatus.m"; sourceTree = "<group>"; };
 		DCB0A46221B922A400FAC4E9 /* OCCoreConnectionStatusSignalProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OCCoreConnectionStatusSignalProvider.h; sourceTree = "<group>"; };
 		DCB0A46321B922A400FAC4E9 /* OCCoreConnectionStatusSignalProvider.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OCCoreConnectionStatusSignalProvider.m; sourceTree = "<group>"; };
@@ -4021,6 +4025,8 @@
 			children = (
 				DCB0A45E21B828F400FAC4E9 /* OCCore+ConnectionStatus.m */,
 				DCB0A45D21B828F400FAC4E9 /* OCCore+ConnectionStatus.h */,
+				99AB1A1A2F06000000000001 /* OCCoreDeviceAvailabilityGate.h */,
+				99AB1A1A2F06000000000003 /* OCCoreDeviceAvailabilityGate.m */,
 				DCB0A46321B922A400FAC4E9 /* OCCoreConnectionStatusSignalProvider.m */,
 				DCB0A46221B922A400FAC4E9 /* OCCoreConnectionStatusSignalProvider.h */,
 				DC98BDF221E73EB0003B5658 /* Network Monitor */,
@@ -4991,6 +4997,7 @@
 				DC66C6B420540DBD00189B9A /* NSDate+OCDateParser.h in Headers */,
 				DCA35D4D24CF685B00DBE2B0 /* OCDiagnosticNode.h in Headers */,
 				DCB0A45F21B828F400FAC4E9 /* OCCore+ConnectionStatus.h in Headers */,
+				99AB1A1A2F06000000000002 /* OCCoreDeviceAvailabilityGate.h in Headers */,
 				DC9219E12964CB4500F538EE /* GAApplication.h in Headers */,
 				DC0376F2271B1D4600151E8C /* OCLocaleFilterVariables.h in Headers */,
 				DC45ABAE231018250065669D /* OCKeyValueRecord.h in Headers */,
@@ -5641,6 +5648,7 @@
 				DC446C84206B8DB500189B9A /* OCRunLoopThread.m in Sources */,
 				DC6CF8212195D56C0013B9F9 /* OCCore+CommandUpdate.m in Sources */,
 				DCB0A46021B828F400FAC4E9 /* OCCore+ConnectionStatus.m in Sources */,
+				99AB1A1A2F06000000000004 /* OCCoreDeviceAvailabilityGate.m in Sources */,
 				DC188994218B031600CFB3F9 /* OCLogSource.m in Sources */,
 				DC9C59722B7D1D1A005DE8F7 /* OCPasswordPolicyRuleByteLength.m in Sources */,
 				DCC8FA26202B259D00EB6701 /* OCSyncRecord.m in Sources */,
