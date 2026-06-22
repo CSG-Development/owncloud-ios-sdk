@@ -32,6 +32,35 @@
 
 @implementation OCConnection (Tags)
 
+#pragma mark - File ID conversion
+
+/// Converts an OCFileID to the identifier expected by the systemtags-relations WebDAV endpoint.
+/// OC10 file IDs are an 8-digit zero-padded number plus an instance suffix (e.g. "00009660ochq4xhi7j4e").
+/// The tags API uses the numeric storage ID only (e.g. "9660"), matching the web client.
+- (NSString *)_fileIDForSystemTagsRelations:(OCFileID)fileID
+{
+	if (fileID.length <= 8)
+	{
+		return (fileID);
+	}
+
+	static NSRegularExpression *oc10FileIDRegex = nil;
+	static dispatch_once_t onceToken;
+
+	dispatch_once(&onceToken, ^{
+		oc10FileIDRegex = [NSRegularExpression regularExpressionWithPattern:@"^[0-9]{8}oc[a-z0-9]+$" options:0 error:NULL];
+	});
+
+	if (oc10FileIDRegex != nil &&
+	    [oc10FileIDRegex numberOfMatchesInString:fileID options:0 range:NSMakeRange(0, fileID.length)] == 1)
+	{
+		NSString *numericPrefix = [fileID substringToIndex:8];
+		return ([NSString stringWithFormat:@"%lld", [numericPrefix longLongValue]]);
+	}
+
+	return (fileID);
+}
+
 #pragma mark - PROPFIND helpers
 
 - (NSArray<OCXMLNode *> *)_tagPropfindProperties
@@ -290,7 +319,8 @@
 		completionHandler(OCError(OCErrorInternal), nil);
 		return nil;
 	}
-	NSURL *url = [[baseURL URLByAppendingPathComponent:@"files" isDirectory:YES] URLByAppendingPathComponent:fileID];
+	NSString *relationsFileID = [self _fileIDForSystemTagsRelations:fileID];
+	NSURL *url = [[baseURL URLByAppendingPathComponent:@"files" isDirectory:YES] URLByAppendingPathComponent:relationsFileID];
 
 	OCHTTPDAVRequest *request = [OCHTTPDAVRequest propfindRequestWithURL:url depth:OCPropfindDepthItemAndImmediateChildren];
 	[request.xmlRequestPropAttribute addChildren:[self _tagPropfindProperties]];
@@ -324,7 +354,8 @@
 		completionHandler(OCError(OCErrorInternal));
 		return nil;
 	}
-	NSURL *url = [[[baseURL URLByAppendingPathComponent:@"files" isDirectory:YES] URLByAppendingPathComponent:fileID] URLByAppendingPathComponent:tag.identifier];
+	NSString *relationsFileID = [self _fileIDForSystemTagsRelations:fileID];
+	NSURL *url = [[[baseURL URLByAppendingPathComponent:@"files" isDirectory:YES] URLByAppendingPathComponent:relationsFileID] URLByAppendingPathComponent:tag.identifier];
 
 	OCHTTPRequest *request = [OCHTTPRequest requestWithURL:url];
 	request.method = OCHTTPMethodPUT;
@@ -369,7 +400,8 @@
 		completionHandler(OCError(OCErrorInternal));
 		return nil;
 	}
-	NSURL *url = [[[baseURL URLByAppendingPathComponent:@"files" isDirectory:YES] URLByAppendingPathComponent:fileID] URLByAppendingPathComponent:tag.identifier];
+	NSString *relationsFileID = [self _fileIDForSystemTagsRelations:fileID];
+	NSURL *url = [[[baseURL URLByAppendingPathComponent:@"files" isDirectory:YES] URLByAppendingPathComponent:relationsFileID] URLByAppendingPathComponent:tag.identifier];
 
 	OCHTTPRequest *request = [OCHTTPRequest requestWithURL:url];
 	request.method = OCHTTPMethodDELETE;
@@ -405,7 +437,8 @@
 		completionHandler(OCError(OCErrorInternal), nil);
 		return nil;
 	}
-	NSURL *url = [[baseURL URLByAppendingPathComponent:@"files" isDirectory:YES] URLByAppendingPathComponent:fileID];
+	NSString *relationsFileID = [self _fileIDForSystemTagsRelations:fileID];
+	NSURL *url = [[baseURL URLByAppendingPathComponent:@"files" isDirectory:YES] URLByAppendingPathComponent:relationsFileID];
 
 	NSDictionary *body = @{
 		@"canAssign" : (canAssign ? @YES : @NO),
