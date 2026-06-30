@@ -19,6 +19,7 @@
 #import "OCConnection+GraphAPI.h"
 #import "OCConnection+OData.h"
 #import "OCHTTPRequest.h"
+#import "NSProgress+OCEvent.h"
 #import "OCLogger.h"
 #import "OCDrive.h"
 #import "OCEvent.h"
@@ -1070,6 +1071,27 @@ static NSString * const OCTrashPreviewRestoreFolderName = @".owncloud-ios-trash-
 
 #pragma mark - Restore
 
+- (nullable OCProgress *)_enqueueTrashSyncRequest:(OCHTTPRequest *)request
+				       eventType:(OCEventType)eventType
+			    localizedDescription:(NSString *)localizedDescription
+{
+	if (request == nil) { return (nil); }
+
+	request.forceCertificateDecisionDelegation = YES;
+	[self attachToPipelines];
+	[self.commandPipeline enqueueRequest:request forPartitionID:self.partitionID];
+
+	OCProgress *requestProgress = request.progress;
+
+	if ((requestProgress.progress != nil) && (localizedDescription.length > 0))
+	{
+		requestProgress.progress.eventType = eventType;
+		requestProgress.progress.localizedDescription = localizedDescription;
+	}
+
+	return (requestProgress);
+}
+
 - (void)_handleTrashRestoreResult:(OCHTTPRequest *)request error:(NSError *)error
 {
 	OCEvent *event;
@@ -1097,7 +1119,7 @@ static NSString * const OCTrashPreviewRestoreFolderName = @".owncloud-ios-trash-
 	}
 }
 
-- (nullable NSProgress *)restoreTrashedItem:(OCItem *)item resultTarget:(OCEventTarget *)eventTarget
+- (nullable OCProgress *)restoreTrashedItem:(OCItem *)item resultTarget:(OCEventTarget *)eventTarget
 {
 	if (item == nil)
 	{
@@ -1121,7 +1143,7 @@ static NSString * const OCTrashPreviewRestoreFolderName = @".owncloud-ios-trash-
 		request.eventTarget = eventTarget;
 		request.resultHandlerAction = @selector(_handleTrashRestoreResult:error:);
 
-		return ([self sendRequest:request ephermalCompletionHandler:nil]);
+		return ([self _enqueueTrashSyncRequest:request eventType:OCEventTypeMove localizedDescription:[NSString stringWithFormat:OCLocalizedString(@"Restoring %@…", nil), item.name]]);
 	}
 
 	NSString *originalLocation = [item valueForLocalAttribute:OCLocalAttributeTrashOriginalLocation];
@@ -1145,7 +1167,7 @@ static NSString * const OCTrashPreviewRestoreFolderName = @".owncloud-ios-trash-
 	[request setValue:[destinationURL absoluteString] forHeaderField:OCHTTPHeaderFieldNameDestination];
 	[request setValue:@"T" forHeaderField:OCHTTPHeaderFieldNameOverwrite];
 
-	return ([self sendRequest:request ephermalCompletionHandler:nil]);
+	return ([self _enqueueTrashSyncRequest:request eventType:OCEventTypeMove localizedDescription:[NSString stringWithFormat:OCLocalizedString(@"Restoring %@…", nil), item.name]]);
 }
 
 - (nullable NSProgress *)restoreTrashedItem:(OCItem *)item completionHandler:(OCConnectionTrashModificationCompletionHandler)completionHandler
@@ -1245,7 +1267,7 @@ static NSString * const OCTrashPreviewRestoreFolderName = @".owncloud-ios-trash-
 	}
 }
 
-- (nullable NSProgress *)permanentlyDeleteTrashedItem:(OCItem *)item resultTarget:(OCEventTarget *)eventTarget
+- (nullable OCProgress *)permanentlyDeleteTrashedItem:(OCItem *)item resultTarget:(OCEventTarget *)eventTarget
 {
 	if (item == nil)
 	{
@@ -1267,7 +1289,7 @@ static NSString * const OCTrashPreviewRestoreFolderName = @".owncloud-ios-trash-
 		request.eventTarget = eventTarget;
 		request.resultHandlerAction = @selector(_handleTrashPurgeResult:error:);
 
-		return ([self sendRequest:request ephermalCompletionHandler:nil]);
+		return ([self _enqueueTrashSyncRequest:request eventType:OCEventTypeDelete localizedDescription:[NSString stringWithFormat:OCLocalizedString(@"Deleting %@…", nil), item.name]]);
 	}
 
 	NSURL *trashItemURL = [self _trashItemURLForItem:item];
@@ -1283,7 +1305,7 @@ static NSString * const OCTrashPreviewRestoreFolderName = @".owncloud-ios-trash-
 	request.eventTarget = eventTarget;
 	request.resultHandlerAction = @selector(_handleTrashPurgeResult:error:);
 
-	return ([self sendRequest:request ephermalCompletionHandler:nil]);
+	return ([self _enqueueTrashSyncRequest:request eventType:OCEventTypeDelete localizedDescription:[NSString stringWithFormat:OCLocalizedString(@"Deleting %@…", nil), item.name]]);
 }
 
 - (nullable NSProgress *)permanentlyDeleteTrashedItem:(OCItem *)item completionHandler:(OCConnectionTrashModificationCompletionHandler)completionHandler

@@ -78,11 +78,11 @@ typedef void(^OCConnectionTrashDownloadCompletionHandler)(NSError * _Nullable er
 
 - (nullable NSProgress *)restoreTrashedItem:(OCItem *)item completionHandler:(OCConnectionTrashModificationCompletionHandler)completionHandler;
 
-- (nullable NSProgress *)restoreTrashedItem:(OCItem *)item resultTarget:(OCEventTarget *)eventTarget;
+- (nullable OCProgress *)restoreTrashedItem:(OCItem *)item resultTarget:(OCEventTarget *)eventTarget;
 
 - (nullable NSProgress *)permanentlyDeleteTrashedItem:(OCItem *)item completionHandler:(OCConnectionTrashModificationCompletionHandler)completionHandler;
 
-- (nullable NSProgress *)permanentlyDeleteTrashedItem:(OCItem *)item resultTarget:(OCEventTarget *)eventTarget;
+- (nullable OCProgress *)permanentlyDeleteTrashedItem:(OCItem *)item resultTarget:(OCEventTarget *)eventTarget;
 
 @end
 

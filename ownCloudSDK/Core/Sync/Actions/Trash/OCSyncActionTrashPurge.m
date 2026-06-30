@@ -68,8 +68,9 @@ OCSYNCACTION_REGISTER_ISSUETEMPLATES
 {
 	if ([OCTrashPendingItems isPendingTrashItem:self.localItem])
 	{
-		[syncContext completeWithError:nil core:self.core item:self.localItem parameter:nil];
 		[syncContext transitionToState:OCSyncRecordStateCompleted withWaitConditions:nil];
+		[syncContext completeWithError:nil core:self.core item:self.localItem parameter:nil];
+		syncContext.updateStoredSyncRecordAfterItemUpdates = NO;
 
 		return (OCCoreSyncInstructionDeleteLast);
 	}
@@ -91,20 +92,23 @@ OCSYNCACTION_REGISTER_ISSUETEMPLATES
 	OCEvent *event = syncContext.event;
 	OCCoreSyncInstruction resultInstruction = OCCoreSyncInstructionNone;
 
-	[syncContext completeWithError:event.error core:self.core item:self.localItem parameter:event.result];
-
 	if (event.error == nil)
 	{
 		[syncContext transitionToState:OCSyncRecordStateCompleted withWaitConditions:nil];
+		[syncContext completeWithError:nil core:self.core item:self.localItem parameter:event.result];
+		syncContext.updateStoredSyncRecordAfterItemUpdates = NO;
 		resultInstruction = OCCoreSyncInstructionDeleteLast;
 	}
 	else if (event.error.isOCError && event.error.code == OCErrorResourceDoesNotExist)
 	{
 		[syncContext transitionToState:OCSyncRecordStateCompleted withWaitConditions:nil];
+		[syncContext completeWithError:nil core:self.core item:self.localItem parameter:event.result];
+		syncContext.updateStoredSyncRecordAfterItemUpdates = NO;
 		resultInstruction = OCCoreSyncInstructionDeleteLast;
 	}
 	else if (event.error != nil)
 	{
+		[syncContext completeWithError:event.error core:self.core item:self.localItem parameter:event.result];
 		[self _addIssueForCancellationAndDeschedulingToContext:syncContext title:[NSString stringWithFormat:OCLocalizedString(@"Couldn't delete %@", nil), self.localItem.name] description:event.error.localizedDescription impact:OCSyncIssueChoiceImpactDataLoss];
 		[syncContext transitionToState:OCSyncRecordStateProcessing withWaitConditions:nil];
 	}

@@ -9,6 +9,7 @@
 #import "OCConnection+Trash.h"
 #import "OCDatabase+Trash.h"
 #import "OCTrashPendingItems.h"
+#import "OCCore+Internal.h"
 #import "OCCore+SyncEngine.h"
 #import "OCMacros.h"
 #import "NSError+OCError.h"
@@ -69,20 +70,23 @@ OCSYNCACTION_REGISTER_ISSUETEMPLATES
 	if ([OCTrashPendingItems isPendingTrashItem:self.localItem])
 	{
 		OCSyncRecordID pendingSyncRecordID = [OCTrashPendingItems pendingSyncRecordIDForTrashItem:self.localItem];
+		OCCore *core = self.core;
 
-		OCSyncExec(trashRestorePending, {
-			[self.core.vault.database retrieveSyncRecordForID:pendingSyncRecordID completionHandler:^(OCDatabase *db, NSError *error, OCSyncRecord *deleteSyncRecord) {
-				if (deleteSyncRecord != nil)
-				{
-					[self.core descheduleSyncRecord:deleteSyncRecord completeWithError:nil parameter:nil];
-				}
-
-				OCSyncExecDone(trashRestorePending);
-			}];
-		});
-
-		[syncContext completeWithError:nil core:self.core item:self.localItem parameter:nil];
 		[syncContext transitionToState:OCSyncRecordStateCompleted withWaitConditions:nil];
+		[syncContext completeWithError:nil core:core item:self.localItem parameter:nil];
+		syncContext.updateStoredSyncRecordAfterItemUpdates = NO;
+
+		if (pendingSyncRecordID != nil)
+		{
+			[core queueBlock:^{
+				[core.vault.database retrieveSyncRecordForID:pendingSyncRecordID completionHandler:^(OCDatabase *db, NSError *error, OCSyncRecord *deleteSyncRecord) {
+					if (deleteSyncRecord != nil)
+					{
+						[core descheduleSyncRecord:deleteSyncRecord completeWithError:nil parameter:nil];
+					}
+				}];
+			}];
+		}
 
 		return (OCCoreSyncInstructionDeleteLast);
 	}
@@ -104,20 +108,23 @@ OCSYNCACTION_REGISTER_ISSUETEMPLATES
 	OCEvent *event = syncContext.event;
 	OCCoreSyncInstruction resultInstruction = OCCoreSyncInstructionNone;
 
-	[syncContext completeWithError:event.error core:self.core item:self.localItem parameter:event.result];
-
 	if (event.error == nil)
 	{
 		[syncContext transitionToState:OCSyncRecordStateCompleted withWaitConditions:nil];
+		[syncContext completeWithError:nil core:self.core item:self.localItem parameter:event.result];
+		syncContext.updateStoredSyncRecordAfterItemUpdates = NO;
 		resultInstruction = OCCoreSyncInstructionDeleteLast;
 	}
 	else if (event.error.isOCError && event.error.code == OCErrorResourceDoesNotExist)
 	{
 		[syncContext transitionToState:OCSyncRecordStateCompleted withWaitConditions:nil];
+		[syncContext completeWithError:nil core:self.core item:self.localItem parameter:event.result];
+		syncContext.updateStoredSyncRecordAfterItemUpdates = NO;
 		resultInstruction = OCCoreSyncInstructionDeleteLast;
 	}
 	else if (event.error != nil)
 	{
+		[syncContext completeWithError:event.error core:self.core item:self.localItem parameter:event.result];
 		[self _addIssueForCancellationAndDeschedulingToContext:syncContext title:[NSString stringWithFormat:OCLocalizedString(@"Couldn't restore %@", nil), self.localItem.name] description:event.error.localizedDescription impact:OCSyncIssueChoiceImpactNonDestructive];
 		[syncContext transitionToState:OCSyncRecordStateProcessing withWaitConditions:nil];
 	}
