@@ -77,6 +77,7 @@ FOUNDATION_EXPORT const unsigned char ownCloudSDKVersionString[];
 #import <ownCloudSDK/OCCore+DirectURL.h>
 #import <ownCloudSDK/OCCore+NameConflicts.h>
 #import <ownCloudSDK/OCCore+Search.h>
+#import <ownCloudSDK/OCCore+Trash.h>
 #import <ownCloudSDK/OCSearchResult.h>
 #import <ownCloudSDK/OCScanJobActivity.h>
 #import <ownCloudSDK/NSString+NameConflicts.h>
@@ -242,6 +243,7 @@ FOUNDATION_EXPORT const unsigned char ownCloudSDKVersionString[];
 
 #import <ownCloudSDK/OCSystemTag.h>
 #import <ownCloudSDK/OCConnection+Tags.h>
+#import <ownCloudSDK/OCConnection+Trash.h>
 #import <ownCloudSDK/OCShare.h>
 #import <ownCloudSDK/OCShare+OCDataItem.h>
 #import <ownCloudSDK/OCShareRole.h>

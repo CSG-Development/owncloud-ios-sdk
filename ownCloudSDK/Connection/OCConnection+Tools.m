@@ -46,6 +46,26 @@
 				endpointPath = nil;
 			}
 		}
+		else if ([endpoint isEqualToString:OCConnectionEndpointIDWebDAVTrashBinRoot])
+		{
+			endpointPath = [self classSettingForOCClassSettingsKey:OCConnectionEndpointIDWebDAVTrashBin];
+
+			NSString *userIdentifier = _loggedInUser.identifier;
+			if (userIdentifier == nil) { userIdentifier = _bookmark.user.identifier; }
+			if (userIdentifier == nil) { userIdentifier = _loggedInUser.userName; }
+			if (userIdentifier == nil) { userIdentifier = _bookmark.user.userName; }
+			if (userIdentifier == nil) { userIdentifier = _bookmark.userName; }
+
+			if (userIdentifier != nil)
+			{
+				endpointPath = [endpointPath stringByAppendingPathComponent:userIdentifier];
+			}
+			else
+			{
+				OCLogError(@"Could not generate path for endpoint %@ because the user identifier is missing", endpoint);
+				endpointPath = nil;
+			}
+		}
 		else if ([endpoint isEqual:OCConnectionEndpointIDAppProviderList])
 		{
 			endpointPath = self.capabilities.latestSupportedAppProvider.appsURLPath;

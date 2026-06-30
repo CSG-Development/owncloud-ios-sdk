@@ -61,6 +61,16 @@
 	return (fileID);
 }
 
+- (NSURL *)_systemTagsRelationsURLForFileID:(OCFileID)fileID baseURL:(NSURL *)baseURL
+{
+	NSString *relationsFileID = [self _fileIDForSystemTagsRelations:fileID];
+	// Tag relations for a file are a DAV collection; use a trailing slash like the web client.
+	return [[baseURL URLByAppendingPathComponent:@"files" isDirectory:YES] URLByAppendingPathComponent:relationsFileID isDirectory:YES];
+}
+
+/// SabreDAV uses 418 as a placeholder status inside multistatus/propstat responses.
+static const OCHTTPStatusCode OCHTTPStatusCodeIM_A_TEAPOT = 418;
+
 #pragma mark - PROPFIND helpers
 
 - (NSArray<OCXMLNode *> *)_tagPropfindProperties
@@ -73,7 +83,7 @@
 	];
 }
 
-- (NSArray<OCSystemTag *> *)_systemTagsFromDAVResponseData:(NSData *)responseData basePath:(NSString *)basePath
+- (NSArray<OCSystemTag *> *)_systemTagsFromDAVResponseData:(NSData *)responseData basePath:(NSString *)basePath skipRelationsCollectionRoot:(BOOL)skipRelationsCollectionRoot
 {
 	if (responseData == nil) { return @[]; }
 
@@ -94,6 +104,15 @@
 		if (![parsed isKindOfClass:[OCHTTPDAVMultistatusResponse class]]) { continue; }
 
 		OCHTTPDAVMultistatusResponse *msr = (OCHTTPDAVMultistatusResponse *)parsed;
+		if (skipRelationsCollectionRoot)
+		{
+			// Depth-1 PROPFIND includes the file relations collection itself; tag metadata lives on child hrefs only.
+			NSString *path = msr.path;
+			if (path == nil || path.length == 0 || [path isEqualToString:@"/"])
+			{
+				continue;
+			}
+		}
 		NSDictionary *props = msr.valueForPropByStatusCode[okStatus];
 		if (props == nil) {
 			for (OCHTTPStatus *status in msr.valueForPropByStatusCode) {
@@ -138,7 +157,7 @@
 			completionHandler(responseError ?: OCError(OCErrorInternal), nil);
 			return;
 		}
-		NSArray<OCSystemTag *> *tags = [self _systemTagsFromDAVResponseData:response.bodyData basePath:url.path];
+		NSArray<OCSystemTag *> *tags = [self _systemTagsFromDAVResponseData:response.bodyData basePath:url.path skipRelationsCollectionRoot:NO];
 		completionHandler(nil, tags);
 	}];
 }
@@ -319,10 +338,12 @@
 		completionHandler(OCError(OCErrorInternal), nil);
 		return nil;
 	}
-	NSString *relationsFileID = [self _fileIDForSystemTagsRelations:fileID];
-	NSURL *url = [[baseURL URLByAppendingPathComponent:@"files" isDirectory:YES] URLByAppendingPathComponent:relationsFileID];
+	NSURL *url = [self _systemTagsRelationsURLForFileID:fileID baseURL:baseURL];
 
 	OCHTTPDAVRequest *request = [OCHTTPDAVRequest propfindRequestWithURL:url depth:OCPropfindDepthItemAndImmediateChildren];
+	// Prefer: return=minimal causes SabreDAV to emit an empty <d:prop> + 418 on the collection
+	// root instead of per-property 404s (web/Android omit this header).
+	[request setValue:nil forHeaderField:OCHTTPHeaderFieldNamePrefer];
 	[request.xmlRequestPropAttribute addChildren:[self _tagPropfindProperties]];
 	request.requiredSignals = self.propFindSignals;
 
@@ -332,10 +353,16 @@
 			return;
 		}
 		if (!response.status.isSuccess) {
+			// Untagged files: web gets 404 when the relations collection does not exist yet.
+			// Without Prefer: return=minimal this should match web; still accept 418 defensively.
+			if (response.status.code == OCHTTPStatusCodeNOT_FOUND || response.status.code == OCHTTPStatusCodeIM_A_TEAPOT) {
+				completionHandler(nil, @[]);
+				return;
+			}
 			completionHandler(response.bodyParsedAsDAVError ?: response.status.error ?: OCError(OCErrorInternal), nil);
 			return;
 		}
-		NSArray<OCSystemTag *> *tags = [self _systemTagsFromDAVResponseData:response.bodyData basePath:url.path];
+		NSArray<OCSystemTag *> *tags = [self _systemTagsFromDAVResponseData:response.bodyData basePath:url.path skipRelationsCollectionRoot:YES];
 		completionHandler(nil, tags);
 	}];
 }
@@ -354,8 +381,7 @@
 		completionHandler(OCError(OCErrorInternal));
 		return nil;
 	}
-	NSString *relationsFileID = [self _fileIDForSystemTagsRelations:fileID];
-	NSURL *url = [[[baseURL URLByAppendingPathComponent:@"files" isDirectory:YES] URLByAppendingPathComponent:relationsFileID] URLByAppendingPathComponent:tag.identifier];
+	NSURL *url = [[self _systemTagsRelationsURLForFileID:fileID baseURL:baseURL] URLByAppendingPathComponent:tag.identifier];
 
 	OCHTTPRequest *request = [OCHTTPRequest requestWithURL:url];
 	request.method = OCHTTPMethodPUT;
@@ -400,8 +426,7 @@
 		completionHandler(OCError(OCErrorInternal));
 		return nil;
 	}
-	NSString *relationsFileID = [self _fileIDForSystemTagsRelations:fileID];
-	NSURL *url = [[[baseURL URLByAppendingPathComponent:@"files" isDirectory:YES] URLByAppendingPathComponent:relationsFileID] URLByAppendingPathComponent:tag.identifier];
+	NSURL *url = [[self _systemTagsRelationsURLForFileID:fileID baseURL:baseURL] URLByAppendingPathComponent:tag.identifier];
 
 	OCHTTPRequest *request = [OCHTTPRequest requestWithURL:url];
 	request.method = OCHTTPMethodDELETE;
@@ -437,8 +462,7 @@
 		completionHandler(OCError(OCErrorInternal), nil);
 		return nil;
 	}
-	NSString *relationsFileID = [self _fileIDForSystemTagsRelations:fileID];
-	NSURL *url = [[baseURL URLByAppendingPathComponent:@"files" isDirectory:YES] URLByAppendingPathComponent:relationsFileID];
+	NSURL *url = [self _systemTagsRelationsURLForFileID:fileID baseURL:baseURL];
 
 	NSDictionary *body = @{
 		@"canAssign" : (canAssign ? @YES : @NO),

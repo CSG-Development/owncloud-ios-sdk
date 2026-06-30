@@ -17,6 +17,7 @@
  */
 
 #import "OCCore+DirectURL.h"
+#import "OCConnection+Trash.h"
 #import "NSError+OCError.h"
 #import "OCMacros.h"
 
@@ -44,7 +45,24 @@
 		// Provide URL to file on server
 		if (url == nil)
 		{
-			if ((item.path != nil) && ((url = [[self.connection URLForEndpoint:OCConnectionEndpointIDWebDAVRoot options:@{ OCConnectionEndpointURLOptionDriveID : OCNullProtect(item.driveID) }] URLByAppendingPathComponent:item.path]) != nil))
+			if ([self.connection isTrashedItem:item])
+			{
+				// For trash items, use the trash-bin WebDAV URL instead of the regular files WebDAV URL
+				url = [self.connection previewURLForTrashedItem:item];
+
+				OCLogDebug(@"[Trash][Preview] provideDirectURL: trash item path=%@ → trashURL=%@ hasAuthMethod=%@",
+					item.path, url.absoluteString, self.connection.authenticationMethod != nil ? @"YES" : @"NO");
+
+				if (url != nil)
+				{
+					authHeaders = [self.connection.authenticationMethod authorizationHeadersForConnection:self.connection error:&error];
+				}
+				else
+				{
+					error = OCError(OCErrorNotAvailableOffline);
+				}
+			}
+			else if ((item.path != nil) && ((url = [[self.connection URLForEndpoint:OCConnectionEndpointIDWebDAVRoot options:@{ OCConnectionEndpointURLOptionDriveID : OCNullProtect(item.driveID) }] URLByAppendingPathComponent:item.path]) != nil))
 			{
 				authHeaders = [self.connection.authenticationMethod authorizationHeadersForConnection:self.connection error:&error];
 			}

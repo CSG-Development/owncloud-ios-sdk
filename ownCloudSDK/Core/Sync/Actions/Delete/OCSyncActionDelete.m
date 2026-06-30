@@ -17,6 +17,9 @@
  */
 
 #import "OCSyncActionDelete.h"
+#import "OCDatabase+Trash.h"
+#import "OCTrashPendingItems.h"
+#import "OCMacros.h"
 
 static OCMessageTemplateIdentifier OCMessageTemplateIdentifierDeleteWithForce = @"delete.withForce";
 static OCMessageTemplateIdentifier OCMessageTemplateIdentifierDeleteCancel = @"delete.cancel";
@@ -65,6 +68,29 @@ OCSYNCACTION_REGISTER_ISSUETEMPLATES
 }
 
 #pragma mark - Action implementation
+- (void)_addPendingTrashItemWithContext:(OCSyncContext *)syncContext
+{
+	OCItem *syntheticItem = [OCTrashPendingItems syntheticTrashItemFromDeletedItem:self.localItem syncRecordID:syncContext.syncRecord.recordID];
+
+	OCSyncExec(addPendingTrash, {
+		[self.core.vault.database addTrashCacheItems:@[ syntheticItem ]
+				     parentTrashPath:@""
+						 driveID:syntheticItem.driveID
+					   completionHandler:^(OCDatabase *db, NSError *error) {
+			OCSyncExecDone(addPendingTrash);
+		}];
+	});
+}
+
+- (void)_removePendingTrashItemWithContext:(OCSyncContext *)syncContext
+{
+	OCSyncExec(removePendingTrash, {
+		[self.core.vault.database removePendingTrashCacheItemForSyncRecordID:syncContext.syncRecord.recordID completionHandler:^(OCDatabase *db, NSError *error) {
+			OCSyncExecDone(removePendingTrash);
+		}];
+	});
+}
+
 - (void)preflightWithContext:(OCSyncContext *)syncContext
 {
 	OCItem *itemToDelete;
@@ -105,11 +131,15 @@ OCSYNCACTION_REGISTER_ISSUETEMPLATES
 				self.associatedItemLaneTags = [self generateLaneTagsFromItems:removedItems];
 			}
 		}
+
+		[self _addPendingTrashItemWithContext:syncContext];
 	}
 }
 
 - (void)descheduleWithContext:(OCSyncContext *)syncContext
 {
+	[self _removePendingTrashItemWithContext:syncContext];
+
 	OCItem *itemToRestore;
 
 	if ((itemToRestore = self.localItem) != nil)
@@ -217,6 +247,8 @@ OCSYNCACTION_REGISTER_ISSUETEMPLATES
 
 	if ((event.error == nil) && (event.result != nil))
 	{
+		[self _removePendingTrashItemWithContext:syncContext];
+
 		// Item itself
 		[self.localItem removeSyncRecordID:syncRecordID activity:OCItemSyncActivityDeleting];
 		syncContext.removedItems = @[ self.localItem ];
@@ -296,6 +328,8 @@ OCSYNCACTION_REGISTER_ISSUETEMPLATES
 
 			case OCErrorItemNotFound:
 				// The item that was supposed to be deleted could not be found on the server (may already have been deleted)
+
+				[self _removePendingTrashItemWithContext:syncContext];
 
 				// => remove item
 				[self.localItem removeSyncRecordID:syncContext.syncRecord.recordID activity:OCItemSyncActivityDeleting];

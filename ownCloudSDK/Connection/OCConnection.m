@@ -19,6 +19,7 @@
 #import <CoreServices/CoreServices.h>
 
 #import "OCConnection.h"
+#import "OCConnection+Trash.h"
 #import "OCHTTPRequest.h"
 #import "OCAuthenticationMethod.h"
 #import "NSError+OCError.h"
@@ -162,6 +163,8 @@ INCLUDE_IN_CLASS_SETTINGS_SNAPSHOTS(OCConnection)
 		OCConnectionEndpointIDAvatars			: @"remote.php/dav/avatars",				// Requested once per user per session (adding /[user]/[size-in-pixels])
 		OCConnectionEndpointIDWebDAVSystemTags		: @"remote.php/dav/systemtags",			// Tags API - list, create, update, delete tags
 		OCConnectionEndpointIDWebDAVSystemTagsRelations	: @"remote.php/dav/systemtags-relations",		// Tags API - file-tag relations (append /files/<fileId>)
+		OCConnectionEndpointIDWebDAVTrashBin		: @"remote.php/dav/trash-bin",			// Trash bin API
+		OCConnectionEndpointIDTrashPreview		: @"apps/files_trashbin/ajax/preview.php",	// Classic ownCloud trash preview
 
 		OCConnectionEndpointIDGraphMe			: @"graph/v1.0/me",					// Me endpoint
 		OCConnectionEndpointIDGraphMeDrives		: @"graph/v1.0/me/drives",				// Drives of the user
@@ -2422,22 +2425,31 @@ INCLUDE_IN_CLASS_SETTINGS_SNAPSHOTS(OCConnection)
 {
 	OCProgress *requestProgress = nil;
 	OCActionTrackingID actionTrackingID = OCConnectionInferActionTrackingID(options, eventTarget);
-	NSURL *downloadURL;
 
 	if (item == nil)
 	{
 		return(nil);
 	}
 
-	if (self.useDriveAPI && (item.driveID == nil))
+	NSURL *downloadURL = nil;
+
+	if ([self isTrashedItem:item])
+	{
+		downloadURL = [self previewURLForTrashedItem:item];
+	}
+	else if (self.useDriveAPI && (item.driveID == nil))
 	{
 		// Drive ID required for accounts with Drive API
 		OCLogWarning(@"downloadItem: API call without drive ID in drive-based account");
 		[eventTarget handleError:OCError(OCErrorMissingDriveID) type:OCEventTypeDownload uuid:nil sender:self];
 		return (nil);
 	}
+	else
+	{
+		downloadURL = [[self URLForEndpoint:OCConnectionEndpointIDWebDAVRoot options:@{ OCConnectionEndpointURLOptionDriveID : OCNullProtect(item.driveID) }] URLByAppendingPathComponent:item.path];
+	}
 
-	if ((downloadURL = [[self URLForEndpoint:OCConnectionEndpointIDWebDAVRoot options:@{ OCConnectionEndpointURLOptionDriveID : OCNullProtect(item.driveID) }] URLByAppendingPathComponent:item.path]) != nil)
+	if (downloadURL != nil)
 	{
 		OCHTTPRequest *request = [OCHTTPRequest requestWithURL:downloadURL];
 
@@ -3280,7 +3292,11 @@ INCLUDE_IN_CLASS_SETTINGS_SNAPSHOTS(OCConnection)
 		return (nil);
 	}
 
-	if (self.useDriveAPI && (item.driveID == nil))
+	BOOL isTrashItem = [self isTrashedItem:item];
+	BOOL trashClassicPreview = NO;
+	BOOL trashRawImageDownload = NO;
+
+	if (self.useDriveAPI && (item.driveID == nil) && !isTrashItem)
 	{
 		// Drive ID required for accounts with Drive API
 		OCLogWarning(@"retrieveThumbnail: API call without drive ID in drive-based account");
@@ -3290,37 +3306,98 @@ INCLUDE_IN_CLASS_SETTINGS_SNAPSHOTS(OCConnection)
 
 	if (item.type != OCItemTypeCollection)
 	{
-		// Preview API (OC 10.0.9+)
-		url = [self URLForEndpoint:OCConnectionEndpointIDPreview options:@{ OCConnectionEndpointURLOptionDriveID : OCNullProtect(item.driveID) }];
+		NSString *classicTrashFileParameter = nil;
+
+		if (isTrashItem)
+		{
+			classicTrashFileParameter = [self classicTrashPreviewFileParameterForItem:item];
+			NSURL *classicPreviewURL = nil;
+
+			if (classicTrashFileParameter.length > 0) {
+				classicPreviewURL = [self URLForEndpoint:OCConnectionEndpointIDTrashPreview options:nil];
+			}
+
+			if (classicPreviewURL != nil) {
+				url = classicPreviewURL;
+				trashClassicPreview = YES;
+			} else {
+				trashRawImageDownload = [self trashedItemSupportsRawImageDownload:item];
+
+				if (trashRawImageDownload) {
+					url = [self previewURLForTrashedItem:item];
+				} else {
+					url = [self previewURLForTrashedItemThumbnail:item];
+				}
+			}
+		}
+		else
+		{
+			// Preview API (OC 10.0.9+)
+			url = [self URLForEndpoint:OCConnectionEndpointIDPreview options:@{ OCConnectionEndpointURLOptionDriveID : OCNullProtect(item.driveID) }];
+
+			// Add path
+			if (item.path != nil)
+			{
+				url = [url URLByAppendingPathComponent:item.path];
+			}
+		}
 
 		if (url == nil)
 		{
+			if (isTrashItem) {
+				OCTrashDebugLog([NSString stringWithFormat:@"retrieveThumbnail: failed to build URL path=%@ driveID=%@ fileID=%@",
+					item.path, item.driveID, item.fileID]);
+			}
 			// WebDAV root could not be generated (likely due to lack of username)
 			[eventTarget handleError:OCError(OCErrorInternal) type:OCEventTypeRetrieveThumbnail uuid:nil sender:self];
 			return (nil);
 		}
 
-		// Add path
-		if (item.path != nil)
-		{
-			url = [url URLByAppendingPathComponent:item.path];
-		}
-
 		// Compose request
 		request = [OCHTTPRequest requestWithURL:url];
+
+		if (isTrashItem) {
+			OCTrashDebugLog([NSString stringWithFormat:@"retrieveThumbnail: url=%@ classicPreview=%@ rawImage=%@ mimeType=%@ itemPath=%@ file=%@",
+				url.absoluteString, trashClassicPreview ? @"YES" : @"NO", trashRawImageDownload ? @"YES" : @"NO", item.mimeType, item.path, classicTrashFileParameter]);
+		}
 
 		request.groupID = item.path.stringByDeletingLastPathComponent;
 		request.priority = NSURLSessionTaskPriorityDefault;
 
-		request.parameters = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-			@(size.width).stringValue, 	@"x",
-			@(size.height).stringValue,	@"y",
-			item.eTag, 			@"c",
-			@"1",				@"a", // Request resize respecting aspect ratio 
-			@"1", 				@"preview",
+		if (trashClassicPreview)
+		{
+			NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+				classicTrashFileParameter,	@"file",
+				@(size.width).stringValue,	@"x",
+				@(size.height).stringValue,	@"y",
+				@"0",				@"scalingup",
+			nil];
 
-			@"0",				@"scalingup", // do not scale up images (new in ocis)
-		nil];
+			NSString *cacheParameter = [self classicTrashPreviewCacheParameterForItem:item];
+			if (cacheParameter.length > 0)
+			{
+				parameters[@"c"] = cacheParameter;
+			}
+
+			request.parameters = parameters;
+		}
+		else if (!trashRawImageDownload)
+		{
+			NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+				@(size.width).stringValue, 	@"x",
+				@(size.height).stringValue,	@"y",
+				@"1",				@"a", // Request resize respecting aspect ratio
+				@"1", 				@"preview",
+				@"0",				@"scalingup", // do not scale up images (new in ocis)
+			nil];
+
+			if (item.eTag.length > 0)
+			{
+				parameters[@"c"] = item.eTag;
+			}
+
+			request.parameters = parameters;
+		}
 	}
 	else
 	{
@@ -3331,10 +3408,22 @@ INCLUDE_IN_CLASS_SETTINGS_SNAPSHOTS(OCConnection)
 	{
 		request.requiredSignals = waitForConnectivity ? self.actionSignals : self.propFindSignals;
 		request.eventTarget = eventTarget;
-		request.userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-			item.itemVersionIdentifier,	OCEventUserInfoKeyItemVersionIdentifier,
+		NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithObjectsAndKeys:
 			[NSValue valueWithCGSize:size],	@"maximumSize",
 		nil];
+
+		if (item.itemVersionIdentifier != nil)
+		{
+			userInfo[OCEventUserInfoKeyItemVersionIdentifier] = item.itemVersionIdentifier;
+		}
+
+		if (isTrashItem)
+		{
+			userInfo[@"trashClassicPreview"] = @(trashClassicPreview);
+			userInfo[@"trashRawImageDownload"] = @(trashRawImageDownload);
+		}
+
+		request.userInfo = [userInfo copy];
 		request.resultHandlerAction = @selector(_handleRetrieveThumbnailResult:error:);
 
 		if (localThumbnailURL != nil)
@@ -3365,33 +3454,54 @@ INCLUDE_IN_CLASS_SETTINGS_SNAPSHOTS(OCConnection)
 - (void)_handleRetrieveThumbnailResult:(OCHTTPRequest *)request error:(NSError *)error
 {
 	OCEvent *event;
+	BOOL isTrashThumbnail = [request.url.path containsString:@"/trash-bin/"]
+		|| [request.url.path containsString:@"files_trashbin"];
 
 	if ((event = [OCEvent eventForEventTarget:request.eventTarget type:OCEventTypeRetrieveThumbnail uuid:request.identifier attributes:nil]) != nil)
 	{
 		if (error != nil)
 		{
+			if (isTrashThumbnail) {
+				OCTrashDebugLog([NSString stringWithFormat:@"retrieveThumbnail result: transport error=%@", error]);
+			}
 			event.error = error;
 		}
 		else if (request.error != nil)
 		{
+			if (isTrashThumbnail) {
+				OCTrashDebugLog([NSString stringWithFormat:@"retrieveThumbnail result: request error=%@", request.error]);
+			}
 			event.error = request.error;
 		}
 		else
 		{
 			if (request.httpResponse.status.isSuccess)
 			{
-				if (![request.httpResponse.contentType hasPrefix:@"image/"])
+				BOOL trashRawImageDownload = [request.userInfo[@"trashRawImageDownload"] boolValue];
+				BOOL contentTypeIsImage = [request.httpResponse.contentType hasPrefix:@"image/"];
+				BOOL hasBody = (request.httpResponse.bodyData.length > 0) || (request.downloadedFileURL != nil);
+				BOOL acceptAsImage = contentTypeIsImage || (trashRawImageDownload && hasBody);
+
+				if (!acceptAsImage)
 				{
+					if (isTrashThumbnail) {
+						OCTrashDebugLog([NSString stringWithFormat:@"retrieveThumbnail result: rejected contentType=%@ status=%ld rawImage=%@ bytes=%lu",
+							request.httpResponse.contentType, (long)request.httpResponse.status.code, trashRawImageDownload ? @"YES" : @"NO", (unsigned long)request.httpResponse.bodyData.length]);
+					}
 					// Do not accept anything but images as thumbnail (https://github.com/owncloud/ocis/issues/3558)
 					event.error = OCError(OCErrorFeatureNotSupportedForItem);
 				}
 				else
 				{
+					if (isTrashThumbnail) {
+						OCTrashDebugLog([NSString stringWithFormat:@"retrieveThumbnail result: success contentType=%@ bytes=%lu rawImage=%@",
+							request.httpResponse.contentType, (unsigned long)request.httpResponse.bodyData.length, trashRawImageDownload ? @"YES" : @"NO"]);
+					}
 					OCItemThumbnail *thumbnail = [OCItemThumbnail new];
 					OCItemVersionIdentifier *itemVersionIdentifier = request.userInfo[OCEventUserInfoKeyItemVersionIdentifier];
 					CGSize maximumSize = ((NSValue *)request.userInfo[@"maximumSize"]).CGSizeValue;
 
-					thumbnail.mimeType = request.httpResponse.contentType;
+					thumbnail.mimeType = contentTypeIsImage ? request.httpResponse.contentType : @"application/octet-stream";
 
 					if ((request.httpResponse.bodyURL != nil) && !request.httpResponse.bodyURLIsTemporary)
 					{
@@ -3412,11 +3522,18 @@ INCLUDE_IN_CLASS_SETTINGS_SNAPSHOTS(OCConnection)
 			}
 			else if (request.httpResponse.status.code == OCHTTPStatusCodeNOT_FOUND)
 			{
+				if (isTrashThumbnail) {
+					OCTrashDebugLog([NSString stringWithFormat:@"retrieveThumbnail result: 404 url=%@", request.url.absoluteString]);
+				}
 				// No thumbnail available for item
 				event.error = OCError(OCErrorFeatureNotSupportedForItem);
 			}
 			else
 			{
+				if (isTrashThumbnail) {
+					OCLogDebug(@"[Trash] retrieveThumbnail result: HTTP %ld error=%@ url=%@",
+						(long)request.httpResponse.status.code, request.httpResponse.status.error, request.url.absoluteString);
+				}
 				event.error = request.httpResponse.status.error;
 			}
 		}
@@ -3602,6 +3719,9 @@ OCConnectionEndpointID OCConnectionEndpointIDRecipients = @"endpoint-recipients"
 OCConnectionEndpointID OCConnectionEndpointIDAvatars = @"endpoint-avatars";
 OCConnectionEndpointID OCConnectionEndpointIDWebDAVSystemTags = @"endpoint-webdav-systemtags";
 OCConnectionEndpointID OCConnectionEndpointIDWebDAVSystemTagsRelations = @"endpoint-webdav-systemtags-relations";
+OCConnectionEndpointID OCConnectionEndpointIDWebDAVTrashBin = @"endpoint-webdav-trashbin";
+OCConnectionEndpointID OCConnectionEndpointIDWebDAVTrashBinRoot = @"endpoint-webdav-trashbin-root";
+OCConnectionEndpointID OCConnectionEndpointIDTrashPreview = @"endpoint-trash-preview";
 OCConnectionEndpointID OCConnectionEndpointIDAppProviderList = @"app-provider-list";
 OCConnectionEndpointID OCConnectionEndpointIDAppProviderOpen = @"app-provider-open";
 OCConnectionEndpointID OCConnectionEndpointIDAppProviderOpenWeb = @"app-provider-open-web";

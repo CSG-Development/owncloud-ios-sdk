@@ -24,6 +24,8 @@
 #import "OCItem+OCThumbnail.h"
 #import "OCItem.h"
 #import "NSError+OCError.h"
+#import "OCLogger.h"
+#import "OCConnection+Trash.h"
 
 @implementation OCResourceSourceItemThumbnails
 
@@ -65,25 +67,39 @@
 	OCResourceRequestItemThumbnail *thumbnailRequest;
 	OCItem *item;
 
-	if (((thumbnailRequest = OCTypedCast(request, OCResourceRequestItemThumbnail)) != nil) &&
-	    ((item = OCTypedCast(thumbnailRequest.reference, OCItem)) != nil))
+		if (((thumbnailRequest = OCTypedCast(request, OCResourceRequestItemThumbnail)) != nil) &&
+		    ((item = OCTypedCast(thumbnailRequest.reference, OCItem)) != nil))
 	{
-		OCConnection *connection;
+	OCResourceQuality quality = [self qualityForRequest:request];
+		OCConnection *connection = self.core.connection;
+
+		if ([item valueForLocalAttribute:OCLocalAttributeTrashItem] != nil) {
+			OCTrashDebugLog([NSString stringWithFormat:@"itemThumbnails: request path=%@ type=%ld quality=%ld thumbnailAvailability=%ld mimeType=%@ classicFile=%@",
+				item.path, (long)item.type, (long)quality, (long)item.thumbnailAvailability, item.mimeType,
+				(connection != nil ? [connection classicTrashPreviewFileParameterForItem:item] : nil)]);
+		}
 
 		if (item.thumbnailAvailability == OCItemThumbnailAvailabilityNone)
 		{
+			OCTrashDebugLog([NSString stringWithFormat:@"itemThumbnails: skip (thumbnailAvailability=none) path=%@ mimeType=%@",
+				item.path, item.mimeType]);
 			// Do not initiate a thumbnail request for items that indicate no thumbnail is available
 			resultHandler(nil, nil);
 			return;
 		}
 
-		if ((connection = self.core.connection) != nil)
+		if (connection != nil)
 		{
 			NSString *specID = item.thumbnailSpecID;
 			NSProgress *progress = nil;
 
 			progress = [connection retrieveThumbnailFor:item to:nil maximumSize:request.maxPixelSize waitForConnectivity:request.waitForConnectivity resultTarget:[OCEventTarget eventTargetWithEphermalEventHandlerBlock:^(OCEvent * _Nonnull event, id  _Nonnull sender) {
 				OCItemThumbnail *thumbnail;
+
+				if ([item valueForLocalAttribute:OCLocalAttributeTrashItem] != nil) {
+					OCTrashDebugLog([NSString stringWithFormat:@"itemThumbnails: remote result error=%@ thumbnail=%@ path=%@",
+						event.error, event.result != nil ? @"present" : @"nil", item.path]);
+				}
 
 				if (event.error != nil)
 				{
@@ -107,6 +123,10 @@
 					resource.quality = OCResourceQualityNormal;
 
 					resultHandler(nil, resource);
+				}
+				else
+				{
+					resultHandler(OCError(OCErrorFeatureNotSupportedForItem), nil);
 				}
 			} userInfo:nil ephermalUserInfo:nil]];
 

@@ -34,3 +34,4 @@ extern OCDatabaseTableName OCDatabaseTableNameResources;
 extern OCDatabaseTableName OCDatabaseTableNameCounters;
 extern OCDatabaseTableName OCDatabaseTableNameEvents;
 extern OCDatabaseTableName OCDatabaseTableNameItemPolicies;
+extern OCDatabaseTableName OCDatabaseTableNameTrashMetaData;

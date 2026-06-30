@@ -132,6 +132,8 @@ extern OCSyncActionIdentifier OCSyncActionIdentifierCreateFolder;
 extern OCSyncActionIdentifier OCSyncActionIdentifierDownload;
 extern OCSyncActionIdentifier OCSyncActionIdentifierUpload;
 extern OCSyncActionIdentifier OCSyncActionIdentifierUpdate;
+extern OCSyncActionIdentifier OCSyncActionIdentifierTrashRestore;
+extern OCSyncActionIdentifier OCSyncActionIdentifierTrashPurge;
 
 extern NSString *OCSyncRecordProgressUserInfoKeySource;
 

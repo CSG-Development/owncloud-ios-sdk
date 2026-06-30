@@ -40,6 +40,7 @@
 	[self addOrUpdateEvents];
 
 	[self addOrUpdateItemPoliciesSchema];
+	[self addOrUpdateTrashMetaDataSchema];
 
 	[self addOrUpdateUpdateJobs];
 }
@@ -2004,6 +2005,32 @@
 	];
 }
 
+- (void)addOrUpdateTrashMetaDataSchema
+{
+	[self.sqlDB addTableSchema:[OCSQLiteTableSchema
+		schemaWithTableName:OCDatabaseTableNameTrashMetaData
+		version:1
+		creationQueries:@[
+			/*
+				mdID : INTEGER			- unique row ID
+				trashPath : TEXT		- normalized trash path of the item
+				parentTrashPath : TEXT		- normalized trash path of the parent folder (empty for root trash listing)
+				driveID : TEXT			- drive/space identifier
+				fileID : TEXT			- server file identifier
+				name : TEXT			- display name in trash
+				lastUpdated : REAL		- cache timestamp
+				removed : INTEGER		- soft-delete flag
+				itemData : BLOB			- serialized OCItem with trash metadata
+			*/
+			@"CREATE TABLE trashMetaData (mdID INTEGER PRIMARY KEY AUTOINCREMENT, trashPath TEXT NOT NULL, parentTrashPath TEXT NOT NULL, driveID TEXT NULL, fileID TEXT NULL, name TEXT NULL, lastUpdated REAL NOT NULL, removed INTEGER NOT NULL DEFAULT 0, itemData BLOB NOT NULL)",
+			@"CREATE INDEX idx_trashMetaData_parent ON trashMetaData (parentTrashPath, driveID)",
+			@"CREATE UNIQUE INDEX idx_trashMetaData_path ON trashMetaData (trashPath, driveID)"
+		]
+		openStatements:nil
+		upgradeMigrator:nil]
+	];
+}
+
 @end
 
 OCDatabaseTableName OCDatabaseTableNameMetaData = @"metaData";
@@ -2015,3 +2042,4 @@ OCDatabaseTableName OCDatabaseTableNameResources = @"thumb.resources"; // Places
 OCDatabaseTableName OCDatabaseTableNameEvents = @"events";
 OCDatabaseTableName OCDatabaseTableNameCounters = @"counters";
 OCDatabaseTableName OCDatabaseTableNameItemPolicies = @"itemPolicies";
+OCDatabaseTableName OCDatabaseTableNameTrashMetaData = @"trashMetaData";

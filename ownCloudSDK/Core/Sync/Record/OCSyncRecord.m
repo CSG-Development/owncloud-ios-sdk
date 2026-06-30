@@ -360,5 +360,7 @@ OCSyncActionIdentifier OCSyncActionIdentifierCreateFolder = @"createFolder";
 OCSyncActionIdentifier OCSyncActionIdentifierDownload = @"download";
 OCSyncActionIdentifier OCSyncActionIdentifierUpload = @"upload";
 OCSyncActionIdentifier OCSyncActionIdentifierUpdate = @"update";
+OCSyncActionIdentifier OCSyncActionIdentifierTrashRestore = @"trashRestore";
+OCSyncActionIdentifier OCSyncActionIdentifierTrashPurge = @"trashPurge";
 
 NSString *OCSyncRecordProgressUserInfoKeySource = @"sourceProgress";

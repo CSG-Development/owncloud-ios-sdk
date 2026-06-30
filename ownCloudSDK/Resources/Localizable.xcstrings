@@ -9878,6 +9878,9 @@
         }
       }
     },
+    "Couldn't restore %@" : {
+
+    },
     "Couldn't upload %@" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -25823,6 +25826,9 @@
           }
         }
       }
+    },
+    "Restoring %@…" : {
+
     },
     "Retrieving capabilities…" : {
       "extractionState" : "manual",
