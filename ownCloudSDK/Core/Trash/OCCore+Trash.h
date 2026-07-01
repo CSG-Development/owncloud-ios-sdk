@@ -42,6 +42,10 @@ typedef void(^OCCoreTrashDownloadResultHandler)(NSError * _Nullable error, NSURL
 - (nullable NSProgress *)downloadTrashedItem:(OCItem *)item
                                resultHandler:(OCCoreTrashDownloadResultHandler)resultHandler;
 
+/// Removes a single item from the local trash cache after a direct connection-level mutation.
+- (void)removeTrashedItemFromCache:(OCItem *)item
+		 completionHandler:(void (^ _Nullable)(NSError * _Nullable error))completionHandler;
+
 @end
 
 NS_ASSUME_NONNULL_END

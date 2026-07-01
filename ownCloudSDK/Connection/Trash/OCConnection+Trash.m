@@ -1092,6 +1092,41 @@ static NSString * const OCTrashPreviewRestoreFolderName = @".owncloud-ios-trash-
 	return (requestProgress);
 }
 
+- (nullable NSError *)_trashRestoreConflictErrorForResponse:(OCHTTPResponse *)response
+{
+	if (response == nil)
+	{
+		return (nil);
+	}
+
+	switch (response.status.code)
+	{
+		case OCHTTPStatusCodePRECONDITION_FAILED:
+		case OCHTTPStatusCodeCONFLICT:
+		case OCHTTPStatusCodeLOCKED:
+			return (OCError(OCErrorItemAlreadyExists));
+		default:
+			break;
+	}
+
+	NSError *davError = [response bodyParsedAsDAVError];
+
+	if (davError != nil)
+	{
+		NSString *davExceptionName = davError.davExceptionName;
+
+		if ((davExceptionName != nil) &&
+		    ([davExceptionName containsString:@"FileLocked"] ||
+		     [davExceptionName containsString:@"PreconditionFailed"] ||
+		     [davExceptionName containsString:@"Conflict"]))
+		{
+			return (OCError(OCErrorItemAlreadyExists));
+		}
+	}
+
+	return (nil);
+}
+
 - (void)_handleTrashRestoreResult:(OCHTTPRequest *)request error:(NSError *)error
 {
 	OCEvent *event;
@@ -1109,6 +1144,9 @@ static NSString * const OCTrashPreviewRestoreFolderName = @".owncloud-ios-trash-
 		else if (request.httpResponse.status.isSuccess || request.httpResponse.status.code == OCHTTPStatusCodeNO_CONTENT)
 		{
 			event.result = request.httpResponse.status;
+		}
+		else if ((event.error = [self _trashRestoreConflictErrorForResponse:request.httpResponse]) != nil)
+		{
 		}
 		else
 		{
@@ -1197,6 +1235,8 @@ static NSString * const OCTrashPreviewRestoreFolderName = @".owncloud-ios-trash-
 			}
 			if (response.status.isSuccess) {
 				completionHandler(nil);
+			} else if ((error = [self _trashRestoreConflictErrorForResponse:response]) != nil) {
+				completionHandler(error);
 			} else {
 				completionHandler(response.bodyParsedAsDAVError ?: response.status.error ?: OCError(OCErrorInternal));
 			}
@@ -1228,6 +1268,8 @@ static NSString * const OCTrashPreviewRestoreFolderName = @".owncloud-ios-trash-
 		}
 		if (response.status.code == OCHTTPStatusCodeNO_CONTENT || response.status.isSuccess) {
 			completionHandler(nil);
+		} else if ((error = [self _trashRestoreConflictErrorForResponse:response]) != nil) {
+			completionHandler(error);
 		} else {
 			completionHandler(response.bodyParsedAsDAVError ?: response.status.error ?: OCError(OCErrorInternal));
 		}

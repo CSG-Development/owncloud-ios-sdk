@@ -191,4 +191,27 @@
 				    completionHandler:resultHandler]);
 }
 
+- (void)removeTrashedItemFromCache:(OCItem *)item
+		 completionHandler:(void (^)(NSError * _Nullable))completionHandler
+{
+	if (item == nil)
+	{
+		if (completionHandler != nil)
+		{
+			completionHandler(OCError(OCErrorInvalidParameter));
+		}
+
+		return;
+	}
+
+	[self queueBlock:^{
+		[self.vault.database removeTrashCacheItem:item completionHandler:^(OCDatabase *db, NSError *error) {
+			if (completionHandler != nil)
+			{
+				completionHandler(error);
+			}
+		}];
+	}];
+}
+
 @end
