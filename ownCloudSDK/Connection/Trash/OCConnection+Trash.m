@@ -1302,7 +1302,18 @@ static NSString * const OCTrashPreviewRestoreFolderName = @".owncloud-ios-trash-
 		}
 		else
 		{
-			event.error = request.httpResponse.bodyParsedAsDAVError ?: request.httpResponse.status.error ?: OCError(OCErrorInternal);
+			NSError *davError = request.httpResponse.bodyParsedAsDAVError;
+			NSString *davExceptionName = davError.davExceptionName;
+
+			if (request.httpResponse.status.code == OCHTTPStatusCodeLOCKED ||
+			    (davExceptionName != nil && [davExceptionName containsString:@"FileLocked"]))
+			{
+				event.error = OCError(OCErrorItemProcessing);
+			}
+			else
+			{
+				event.error = davError ?: request.httpResponse.status.error ?: OCError(OCErrorInternal);
+			}
 		}
 
 		[request.eventTarget handleEvent:event sender:self];

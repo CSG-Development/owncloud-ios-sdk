@@ -106,6 +106,12 @@ OCSYNCACTION_REGISTER_ISSUETEMPLATES
 		syncContext.updateStoredSyncRecordAfterItemUpdates = NO;
 		resultInstruction = OCCoreSyncInstructionDeleteLast;
 	}
+	else if (event.error.isOCError && event.error.code == OCErrorItemProcessing)
+	{
+		[self.core rescheduleSyncRecord:syncContext.syncRecord withUpdates:nil];
+		[syncContext completeWithError:event.error core:self.core item:self.localItem parameter:event.result];
+		resultInstruction = OCCoreSyncInstructionStop;
+	}
 	else if (event.error != nil)
 	{
 		[syncContext completeWithError:event.error core:self.core item:self.localItem parameter:event.result];

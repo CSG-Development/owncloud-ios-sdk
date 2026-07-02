@@ -145,14 +145,27 @@
 - (nullable NSProgress *)permanentlyDeleteTrashedItem:(OCItem *)item
 					resultHandler:(OCCoreActionResultHandler)resultHandler
 {
+	return ([self permanentlyDeleteTrashedItem:item enqueueCompletionHandler:nil resultHandler:resultHandler]);
+}
+
+- (nullable NSProgress *)permanentlyDeleteTrashedItem:(OCItem *)item
+			   enqueueCompletionHandler:(OCCoreCompletionHandler)enqueueCompletionHandler
+					resultHandler:(OCCoreActionResultHandler)resultHandler
+{
 	if (item == nil) {
+		if (enqueueCompletionHandler != nil) {
+			enqueueCompletionHandler(OCError(OCErrorInvalidParameter));
+		}
 		if (resultHandler != nil) {
 			resultHandler(OCError(OCErrorInvalidParameter), self, nil, nil);
 		}
 		return (nil);
 	}
 
-	return ([self _enqueueSyncRecordWithAction:[[OCSyncActionTrashPurge alloc] initWithItem:item] cancellable:NO resultHandler:resultHandler]);
+	return ([self _enqueueSyncRecordWithAction:[[OCSyncActionTrashPurge alloc] initWithItem:item]
+					  cancellable:NO
+			     preflightResultHandler:enqueueCompletionHandler
+					 resultHandler:resultHandler]);
 }
 
 - (nullable NSProgress *)downloadTrashedItem:(OCItem *)item

@@ -33,6 +33,11 @@ typedef void(^OCCoreTrashDownloadResultHandler)(NSError * _Nullable error, NSURL
 - (nullable NSProgress *)permanentlyDeleteTrashedItem:(OCItem *)item
 					resultHandler:(nullable OCCoreActionResultHandler)resultHandler;
 
+/// Calls enqueueCompletionHandler when the sync action has been scheduled (preflight completed).
+- (nullable NSProgress *)permanentlyDeleteTrashedItem:(OCItem *)item
+			   enqueueCompletionHandler:(nullable OCCoreCompletionHandler)enqueueCompletionHandler
+					resultHandler:(nullable OCCoreActionResultHandler)resultHandler;
+
 /**
  * Downloads a trashed item's actual file content to a temporary local directory.
  * Classic ownCloud temporarily restores the item to a hidden folder, downloads via
