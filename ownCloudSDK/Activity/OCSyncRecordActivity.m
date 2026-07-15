@@ -68,7 +68,12 @@
 		self.waitingForUser = syncRecord.waitingForUser;
 
 		_ranking = syncRecord.recordID.integerValue;
-		_progress = [syncRecord.progress resolveWith:nil];
+		_progress = syncRecord.progress.progress;
+
+		if (_progress == nil)
+		{
+			_progress = [syncRecord.progress resolveWith:nil];
+		}
 
 		_localizedDescription = syncRecord.action.localizedDescription;
 	}

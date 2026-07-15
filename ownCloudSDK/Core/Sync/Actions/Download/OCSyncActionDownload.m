@@ -23,6 +23,19 @@
 #import "OCCore+Claims.h"
 #import "OCWaitConditionMetaDataRefresh.h"
 #import "OCCellularManager.h"
+#import "OCProxyProgress.h"
+#import "OCActivityUpdate.h"
+#import "OCSyncRecordActivity.h"
+#import "OCSyncRecord.h"
+#import "OCProgress.h"
+#import "NSProgress+OCExtensions.h"
+
+@interface OCSyncActionDownload (ProgressRestore)
+
+- (BOOL)_registerLiveDownloadProgressForSyncRecord:(OCSyncRecord *)syncRecord;
+- (BOOL)_registerLiveDownloadProgressForSyncRecord:(OCSyncRecord *)syncRecord transferProgress:(nullable NSProgress *)transferProgress;
+
+@end
 
 static OCMessageTemplateIdentifier OCMessageTemplateIdentifierDownloadOverwrite = @"download.overwrite";
 static OCMessageTemplateIdentifier OCMessageTemplateIdentifierDownloadRetry = @"download.retry";
@@ -315,15 +328,9 @@ OCSYNCACTION_REGISTER_ISSUETEMPLATES
 		OCProgress *progress;
 		NSDictionary *options = self.options;
 
-		NSURL *temporaryDirectoryURL = self.core.vault.temporaryDownloadURL;
-		NSURL *temporaryFileURL = [temporaryDirectoryURL URLByAppendingPathComponent:[NSUUID UUID].UUIDString];
-
-		OCLogDebug(@"record %@ download: setting up directory", syncContext.syncRecord);
-
-		if (![[NSFileManager defaultManager] fileExistsAtPath:temporaryDirectoryURL.path])
-		{
-			[[NSFileManager defaultManager] createDirectoryAtURL:temporaryDirectoryURL withIntermediateDirectories:YES attributes:@{ NSFileProtectionKey : NSFileProtectionCompleteUntilFirstUserAuthentication } error:NULL];
-		}
+		// Use the process temp directory (same container as CFNetwork download staging) so
+		// URLSession's post-download move is a rename, not a cross-container copy into the app group vault.
+		NSURL *temporaryFileURL = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:[NSUUID UUID].UUIDString]];
 
 		[self setupProgressSupportForItem:item options:&options syncContext:syncContext];
 
@@ -354,7 +361,8 @@ OCSYNCACTION_REGISTER_ISSUETEMPLATES
 
 			if (syncContext.syncRecord.progress.progress != nil)
 			{
-				[self.core registerProgress:syncContext.syncRecord.progress.progress forItem:item];
+				// Register on localItem (same item that receives sync activity in preflight), matching upload behaviour
+				[self.core registerProgress:syncContext.syncRecord.progress.progress forItem:self.localItem];
 			}
 		}
 
@@ -404,6 +412,7 @@ OCSYNCACTION_REGISTER_ISSUETEMPLATES
 						OCSyncExecDone(checksumVerification);
 					}];
 				});
+
 			}
 			else
 			{
@@ -547,6 +556,11 @@ OCSYNCACTION_REGISTER_ISSUETEMPLATES
 			}
 		}
 
+		if (error != nil)
+		{
+			downloadError = error;
+		}
+
 		[item removeSyncRecordID:syncContext.syncRecord.recordID activity:OCItemSyncActivityDownloading];
 		syncContext.updatedItems = @[ item ];
 
@@ -555,11 +569,6 @@ OCSYNCACTION_REGISTER_ISSUETEMPLATES
 		resultInstruction = OCCoreSyncInstructionDeleteLast;
 
 		[syncContext completeWithError:downloadError core:self.core item:item parameter:downloadedFile];
-
-		if (error != nil)
-		{
-			downloadError = error;
-		}
 	}
 	else
 	{
@@ -761,9 +770,134 @@ OCSYNCACTION_REGISTER_ISSUETEMPLATES
 }
 
 #pragma mark - Restore progress
+- (nullable NSProgress *)_liveHTTPDownloadProgressForSyncRecord:(OCSyncRecord *)syncRecord
+{
+	id sourceProgress = syncRecord.progress.userInfo[OCSyncRecordProgressUserInfoKeySource];
+	OCProgress *httpProgress = ([sourceProgress isKindOfClass:[OCProgress class]] ? ((OCProgress *)sourceProgress) : nil);
+	NSProgress *liveHTTPProgress = nil;
+
+	if (httpProgress != nil)
+	{
+		httpProgress.progress = nil;
+		[httpProgress resetResolutionOffset];
+		liveHTTPProgress = [httpProgress resolveWith:nil];
+	}
+
+	return (liveHTTPProgress);
+}
+
+- (nullable NSProgress *)_liveDownloadProgressForSyncRecord:(OCSyncRecord *)syncRecord item:(OCItem *)item
+{
+	NSProgress *liveProgress = nil;
+
+	if (item.localID != nil)
+	{
+		liveProgress = [self.core.connection liveDownloadTransferProgressForItemLocalID:item.localID];
+	}
+
+	if (liveProgress != nil)
+	{
+		return (liveProgress);
+	}
+
+	if ((liveProgress = [self _liveHTTPDownloadProgressForSyncRecord:syncRecord]) == nil)
+	{
+		return (nil);
+	}
+
+	// Resolved request progress is an indeterminate wrapper until pipeline recovery attaches the sized transfer child.
+	if (liveProgress.isIndeterminate)
+	{
+		return (nil);
+	}
+
+	return (liveProgress);
+}
+
+- (BOOL)_registerLiveDownloadProgressForSyncRecord:(OCSyncRecord *)syncRecord
+{
+	return ([self _registerLiveDownloadProgressForSyncRecord:syncRecord transferProgress:nil]);
+}
+
+- (BOOL)_registerLiveDownloadProgressForSyncRecord:(OCSyncRecord *)syncRecord transferProgress:(NSProgress *)transferProgress
+{
+	OCItem *item = [self itemToRestoreProgressRegistrationFor];
+	NSProgress *liveProgress = transferProgress;
+
+	if ((item == nil) || (item.localID == nil))
+	{
+		return (NO);
+	}
+
+	if ((liveProgress == nil) && ((liveProgress = [self _liveDownloadProgressForSyncRecord:syncRecord item:item]) == nil))
+	{
+		return (NO);
+	}
+
+	NSProgress *displayProgress = liveProgress;
+
+	// Register a standalone cloned progress for UI. The live transfer object remains a child of the HTTP request tree and can appear indeterminate to SwiftUI/UIKit observers.
+	if (liveProgress.totalUnitCount > 0)
+	{
+		NSProgress *clonedProgress = [OCProxyProgress cloneProgress:liveProgress];
+
+		clonedProgress.cancellable = syncRecord.progress.cancellable;
+		clonedProgress.localizedDescription = liveProgress.localizedDescription;
+		clonedProgress.localizedAdditionalDescription = liveProgress.localizedAdditionalDescription;
+
+		displayProgress = clonedProgress;
+	}
+	else
+	{
+		liveProgress.cancellable = syncRecord.progress.cancellable;
+	}
+
+	syncRecord.progress.progress = displayProgress;
+
+	for (NSProgress *registeredProgress in [[self.core progressForItemWithLocalID:item.localID matchingEventType:OCEventTypeNone] copy])
+	{
+		if (registeredProgress != displayProgress)
+		{
+			[self.core unregisterProgress:registeredProgress forItem:item];
+		}
+	}
+
+	[self.core registerProgress:displayProgress forItem:item];
+
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[self.core.activityManager update:[[[OCActivityUpdate updatingActivityFor:syncRecord] withSyncRecord:syncRecord] withProgress:displayProgress]];
+	});
+
+	return (YES);
+}
+
+- (void)restoreProgressRegistrationForSyncRecord:(OCSyncRecord *)syncRecord
+{
+	[self _registerLiveDownloadProgressForSyncRecord:syncRecord];
+
+	// Pipeline/URLSession recovery may complete after the initial activity publish on cold start.
+	__weak OCSyncActionDownload *weakSelf = self;
+	__weak OCSyncRecord *weakSyncRecord = syncRecord;
+
+	for (NSNumber *delay in @[ @0.5, @2.0 ])
+	{
+		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay.doubleValue * NSEC_PER_SEC)), dispatch_get_global_queue(QOS_CLASS_UTILITY, 0), ^{
+			OCSyncActionDownload *strongSelf = weakSelf;
+			OCSyncRecord *strongSyncRecord = weakSyncRecord;
+
+			if ((strongSelf == nil) || (strongSyncRecord == nil) || strongSyncRecord.removed || (strongSyncRecord.state != OCSyncRecordStateProcessing))
+			{
+				return;
+			}
+
+			[strongSelf _registerLiveDownloadProgressForSyncRecord:strongSyncRecord];
+		});
+	}
+}
+
 - (OCItem *)itemToRestoreProgressRegistrationFor
 {
-	return (self.archivedServerItem);
+	return (self.localItem);
 }
 
 #pragma mark - Lane tags

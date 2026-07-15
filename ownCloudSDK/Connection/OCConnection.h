@@ -477,6 +477,7 @@ typedef void(^OCConnectionIdentityObjectsDetailsRetrievalCompletionHandler)(NSEr
 @interface OCConnection (ProgressReporting)
 
 - (nullable NSProgress *)progressForActionTrackingID:(nullable OCActionTrackingID)trackingID provider:(nullable NSProgress *(^)(NSProgress *progress))progressProvider; //!< Returns the progress for the provided action tracking ID. If none exists yet, creates a new one and passes it to progressProvider (if provided). Only returns nil if no trackingID is provided or the provider returned nil.
+- (nullable NSProgress *)liveDownloadTransferProgressForItemLocalID:(OCLocalID)localID; //!< Returns the sized transfer progress for an in-flight download of the item across all pipelines, if one exists.
 - (void)finishActionWithTrackingID:(nullable OCActionTrackingID)trackingID; //!< Indicates the action with the provided trackingID has finished and that associated resources can be released. nil is allowed as a value only for convenience and will not have any effect.
 
 @end

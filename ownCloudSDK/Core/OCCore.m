@@ -42,6 +42,7 @@
 #import "OCCore+Thumbnails.h"
 #import "OCCore+ItemUpdates.h"
 #import "OCHTTPPipelineManager.h"
+#import "OCHTTPPipeline.h"
 #import "OCProgressManager.h"
 #import "OCProxyProgress.h"
 #import "OCRateLimiter.h"
@@ -1064,11 +1065,13 @@ INCLUDE_IN_CLASS_SETTINGS_SNAPSHOTS(OCCore)
 	}];
 
 	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(handleAuthDataChangedNotification:) name:OCBookmarkAuthenticationDataChangedNotification object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_handleDownloadProgressReconnectedNotification:) name:OCHTTPPipelineDownloadProgressReconnectedNotification object:nil];
 }
 
 - (void)stopIPCObserveration
 {
 	[NSNotificationCenter.defaultCenter removeObserver:self name:OCBookmarkAuthenticationDataChangedNotification object:self.bookmark];
+	[NSNotificationCenter.defaultCenter removeObserver:self name:OCHTTPPipelineDownloadProgressReconnectedNotification object:nil];
 
 	[_ipNotificationCenter removeObserver:self forName:self.bookmark.bookmarkAuthUpdateNotificationName];
 	[_ipNotificationCenter removeObserver:self forName:self.bookmark.coreUpdateNotificationName];

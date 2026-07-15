@@ -18,6 +18,7 @@
 
 #import "OCConnection.h"
 #import "NSProgress+OCExtensions.h"
+#import "OCHTTPPipeline.h"
 
 @implementation OCConnection (ProgressReporting)
 
@@ -60,6 +61,26 @@
 	{
 		_progressByActionTrackingID[trackingID] = nil;
 	}
+}
+
+- (NSProgress *)liveDownloadTransferProgressForItemLocalID:(OCLocalID)localID
+{
+	if (localID == nil)
+	{
+		return (nil);
+	}
+
+	for (OCHTTPPipeline *pipeline in self.allHTTPPipelines)
+	{
+		NSProgress *transferProgress;
+
+		if ((transferProgress = [pipeline liveDownloadTransferProgressForItemLocalID:localID]) != nil)
+		{
+			return (transferProgress);
+		}
+	}
+
+	return (nil);
 }
 
 @end

@@ -156,6 +156,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Progress
 - (nullable NSProgress *)progressForRequestID:(OCHTTPRequestID)requestID;
+- (nullable NSProgress *)liveDownloadTransferProgressForItemLocalID:(OCLocalID)localID; //!< Returns the sized transfer progress for an in-flight download of the item, if one exists in this pipeline.
 
 #pragma mark - Metrics
 - (nullable NSNumber *)estimatedTimeForRequest:(OCHTTPRequest *)request withExpectedResponseLength:(NSUInteger)expectedResponseLength confidence:(double * _Nullable)outConfidence;//!< If a sufficient amount of metrics could be collected, returns the estimated number of seconds it'll take the request to be sent and a response of expectedResponseLength be received.
@@ -171,5 +172,8 @@ extern OCClassSettingsKey OCHTTPPipelineSettingTrafficLogFormat;
 
 extern OCHTTPPipelineLogFormat OCHTTPPipelineLogFormatPlainText;
 extern OCHTTPPipelineLogFormat OCHTTPPipelineLogFormatJSON;
+
+extern NSNotificationName OCHTTPPipelineDownloadProgressReconnectedNotification; //!< Posted when a download task's sized transfer progress is connected. Object is the item's OCLocalID. UserInfo may contain OCHTTPPipelineDownloadProgressUserInfoKeyTransferProgress.
+extern OCEventUserInfoKey OCHTTPPipelineDownloadProgressUserInfoKeyTransferProgress;
 
 NS_ASSUME_NONNULL_END

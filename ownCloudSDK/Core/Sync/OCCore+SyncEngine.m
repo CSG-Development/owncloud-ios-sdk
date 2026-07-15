@@ -42,6 +42,15 @@
 #import "OCSignalManager.h"
 #import "OCHTTPPipelineManager.h"
 #import "OCCore+ConnectionStatus.h"
+#import "OCHTTPPipeline.h"
+#import "OCSyncActionDownload.h"
+
+@interface OCSyncActionDownload (ProgressRestore)
+
+- (BOOL)_registerLiveDownloadProgressForSyncRecord:(OCSyncRecord *)syncRecord;
+- (BOOL)_registerLiveDownloadProgressForSyncRecord:(OCSyncRecord *)syncRecord transferProgress:(nullable NSProgress *)transferProgress;
+
+@end
 
 OCIPCNotificationName OCIPCNotificationNameProcessSyncRecordsBase = @"org.owncloud.process-sync-records";
 OCIPCNotificationName OCIPCNotificationNameUpdateSyncRecordsBase = @"org.owncloud.update-sync-records";
@@ -1975,7 +1984,25 @@ static OCKeyValueStoreKey OCKeyValueStoreKeyActiveProcessCores = @"activeProcess
 				if (!publish)
 				{
 					// Update published activities
-					NSProgress *progress = [syncRecord.progress resolveWith:nil];
+					NSProgress *progress = nil;
+					OCSyncActionDownload *downloadAction;
+
+					if ((downloadAction = OCTypedCast(syncRecord.action, OCSyncActionDownload)) != nil)
+					{
+						[downloadAction _registerLiveDownloadProgressForSyncRecord:syncRecord];
+
+						if ((progress = syncRecord.progress.progress) == nil)
+						{
+							progress = [self.connection liveDownloadTransferProgressForItemLocalID:downloadAction.localItem.localID];
+						}
+					}
+					else
+					{
+						if ((progress = syncRecord.progress.progress) == nil)
+						{
+							progress = [syncRecord.progress resolveWith:nil];
+						}
+					}
 
 					if (progress == nil)
 					{
@@ -2289,6 +2316,97 @@ static OCKeyValueStoreKey OCKeyValueStoreKeyActiveProcessCores = @"activeProcess
 				OCSyncExecDone(journalDump);
 			}];
 		});
+	}
+}
+
+- (void)_registerDownloadTransferProgress:(NSProgress *)transferProgress forItemLocalID:(OCLocalID)localID
+{
+	if ((transferProgress == nil) || (localID == nil))
+	{
+		return;
+	}
+
+	[self.database retrieveSyncRecordsForPath:nil action:OCSyncActionIdentifierDownload inProgressSince:nil completionHandler:^(OCDatabase *db, NSError *error, NSArray<OCSyncRecord *> *syncRecords) {
+		if (error != nil)
+		{
+			return;
+		}
+
+		for (OCSyncRecord *syncRecord in syncRecords)
+		{
+			OCSyncActionDownload *downloadAction;
+
+			if (syncRecord.removed || (syncRecord.state != OCSyncRecordStateProcessing))
+			{
+				continue;
+			}
+
+			if ((downloadAction = OCTypedCast(syncRecord.action, OCSyncActionDownload)) == nil)
+			{
+				continue;
+			}
+
+			if (![downloadAction.localItem.localID isEqual:localID])
+			{
+				continue;
+			}
+
+			downloadAction.core = self;
+			[downloadAction _registerLiveDownloadProgressForSyncRecord:syncRecord transferProgress:transferProgress];
+		}
+	}];
+}
+
+- (void)_restoreDownloadProgressRegistrationForItemLocalID:(OCLocalID)localID
+{
+	if (localID == nil)
+	{
+		return;
+	}
+
+	[self.database retrieveSyncRecordsForPath:nil action:OCSyncActionIdentifierDownload inProgressSince:nil completionHandler:^(OCDatabase *db, NSError *error, NSArray<OCSyncRecord *> *syncRecords) {
+		if (error != nil)
+		{
+			return;
+		}
+
+		for (OCSyncRecord *syncRecord in syncRecords)
+		{
+			OCSyncActionDownload *downloadAction;
+
+			if (syncRecord.removed || (syncRecord.state != OCSyncRecordStateProcessing))
+			{
+				continue;
+			}
+
+			if ((downloadAction = OCTypedCast(syncRecord.action, OCSyncActionDownload)) == nil)
+			{
+				continue;
+			}
+
+			if (![downloadAction.localItem.localID isEqual:localID])
+			{
+				continue;
+			}
+
+			downloadAction.core = self;
+			[downloadAction _registerLiveDownloadProgressForSyncRecord:syncRecord];
+		}
+	}];
+}
+
+- (void)_handleDownloadProgressReconnectedNotification:(NSNotification *)notification
+{
+	OCLocalID localID = (OCLocalID)notification.object;
+	NSProgress *transferProgress = OCTypedCast(notification.userInfo[OCHTTPPipelineDownloadProgressUserInfoKeyTransferProgress], NSProgress);
+
+	if (transferProgress != nil)
+	{
+		[self _registerDownloadTransferProgress:transferProgress forItemLocalID:localID];
+	}
+	else
+	{
+		[self _restoreDownloadProgressRegistrationForItemLocalID:localID];
 	}
 }
 

@@ -23,10 +23,57 @@
 #import "OCHTTPPipelineManager.h"
 #import "OCProcessManager.h"
 #import "OCLogger.h"
+#import "OCItem.h"
 #import "NSError+OCError.h"
 #import "OCMacros.h"
 #import "NSProgress+OCExtensions.h"
 #import "OCProxyProgress.h"
+#import <objc/runtime.h>
+
+static const void *OCHTTPRequestDownloadTransferProgressKey = &OCHTTPRequestDownloadTransferProgressKey;
+
+static NSProgress *OCHTTPRequestDownloadTransferProgress(OCHTTPRequest *request)
+{
+	return (objc_getAssociatedObject(request, OCHTTPRequestDownloadTransferProgressKey));
+}
+
+static void OCHTTPRequestSetDownloadTransferProgress(OCHTTPRequest *request, NSProgress *progress)
+{
+	objc_setAssociatedObject(request, OCHTTPRequestDownloadTransferProgressKey, progress, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+static NSProgress *OCHTTPPipelineDownloadTransferProgressForRequest(OCHTTPRequest *request, NSURLSessionTask *urlSessionTask)
+{
+	OCItem *item = OCTypedCast(request.userInfo[@"item"], OCItem);
+
+	if (!request.downloadRequest || (item == nil) || (item.size == NSNotFound) || (item.size == 0))
+	{
+		return ([OCProxyProgress cloneProgress:urlSessionTask.progress]);
+	}
+
+	NSProgress *sizedProgress = OCHTTPRequestDownloadTransferProgress(request);
+
+	if (sizedProgress == nil)
+	{
+		sizedProgress = [NSProgress progressWithTotalUnitCount:(int64_t)item.size];
+		sizedProgress.cancellable = YES;
+
+		if (request.progress.progress.localizedDescription != nil)
+		{
+			sizedProgress.localizedDescription = request.progress.progress.localizedDescription;
+		}
+
+		OCHTTPRequestSetDownloadTransferProgress(request, sizedProgress);
+	}
+
+	__weak NSURLSessionTask *weakURLSessionTask = urlSessionTask;
+
+	sizedProgress.cancellationHandler = ^{
+		[weakURLSessionTask cancel];
+	};
+
+	return (sizedProgress);
+}
 #import "NSURLSessionTaskMetrics+OCCompactSummary.h"
 #import "OCBackgroundTask.h"
 #import "OCAppIdentity.h"
@@ -329,8 +376,7 @@
 								}
 							};
 
-							task.request.progress.progress.totalUnitCount += 200;
-							[task.request.progress.progress addChild:[OCProxyProgress cloneProgress:urlSessionTask.progress] withPendingUnitCount:200];
+							[self _connectURLSessionTaskProgress:urlSessionTask toRequest:task.request reconnected:YES];
 						}
 
 						OCLogDebug(@"Recovered urlSession=%@: task=%@", urlSession, task);
@@ -1130,8 +1176,7 @@
 					[_backend updatePipelineTask:task];
 
 					// Connect task progress to request progress
-					request.progress.progress.totalUnitCount += 200;
-					[request.progress.progress addChild:[OCProxyProgress cloneProgress:urlSessionTask.progress] withPendingUnitCount:200];
+					[self _connectURLSessionTaskProgress:urlSessionTask toRequest:request];
 
 					// Update internal tracking collections
 					task.state = OCHTTPPipelineTaskStateRunning;
@@ -2476,6 +2521,26 @@
 
 
 #pragma mark - NSURLSessionDownloadDelegate
+- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite
+{
+	[self queueBlock:^{
+		NSError *dbError = nil;
+		OCHTTPPipelineTask *task;
+
+		if ((task = [self.backend retrieveTaskForPipeline:self URLSession:session task:downloadTask error:&dbError]) != nil)
+		{
+			NSProgress *sizedProgress = OCHTTPRequestDownloadTransferProgress(task.request);
+
+			if (sizedProgress != nil)
+			{
+				int64_t totalUnitCount = sizedProgress.totalUnitCount;
+
+				sizedProgress.completedUnitCount = (totalUnitCount > 0) ? MIN(totalBytesWritten, totalUnitCount) : totalBytesWritten;
+			}
+		}
+	}];
+}
+
 - (nullable NSURL *)_URLForPartitionID:(nullable OCHTTPPipelinePartitionID)partitionID requestID:(nullable OCHTTPRequestID)requestID
 {
 	NSURL *url = [_backend.temporaryFilesRoot URLByAppendingPathComponent:_identifier]; // Add pipeline ID
@@ -2531,6 +2596,13 @@
 		{
 			response.bodyURL = request.downloadedFileURL;
 			response.bodyURLIsTemporary = request.downloadedFileIsTemporary;
+		}
+
+		NSProgress *sizedProgress = OCHTTPRequestDownloadTransferProgress(request);
+
+		if (sizedProgress != nil)
+		{
+			sizedProgress.completedUnitCount = sizedProgress.totalUnitCount;
 		}
 
 		if (response.bodyURL != nil)
@@ -2735,6 +2807,89 @@
 }
 
 #pragma mark - Progress
+- (void)_connectURLSessionTaskProgress:(NSURLSessionTask *)urlSessionTask toRequest:(OCHTTPRequest *)request reconnected:(BOOL)reconnected
+{
+	NSProgress *requestProgress = request.progress.progress;
+
+	if (requestProgress == nil)
+	{
+		requestProgress = [NSProgress indeterminateProgress];
+		requestProgress.cancellable = YES;
+		request.progress.progress = requestProgress;
+	}
+
+	if (OCHTTPRequestDownloadTransferProgress(request) != nil)
+	{
+		// Already connected for this request cycle.
+		return;
+	}
+
+	OCHTTPRequestSetDownloadTransferProgress(request, nil);
+
+	NSProgress *transferProgress = OCHTTPPipelineDownloadTransferProgressForRequest(request, urlSessionTask);
+	OCItem *downloadItem = OCTypedCast(request.userInfo[@"item"], OCItem);
+
+	if ((downloadItem != nil) && (downloadItem.size != NSNotFound) && (downloadItem.size > 0))
+	{
+		int64_t bytesReceived = urlSessionTask.progress.completedUnitCount;
+
+		if (bytesReceived > 0)
+		{
+			transferProgress.completedUnitCount = MIN(bytesReceived, (int64_t)downloadItem.size);
+		}
+	}
+
+	if (reconnected)
+	{
+		NSString *localizedDescription = requestProgress.localizedDescription;
+		NSString *localizedAdditionalDescription = requestProgress.localizedAdditionalDescription;
+
+		requestProgress = [NSProgress indeterminateProgress];
+		requestProgress.cancellable = YES;
+		requestProgress.localizedDescription = localizedDescription;
+		requestProgress.localizedAdditionalDescription = localizedAdditionalDescription;
+
+		__weak OCHTTPPipeline *weakSelf = self;
+		__weak OCHTTPRequest *weakRequest = request;
+
+		requestProgress.cancellationHandler = ^{
+			if (weakRequest != nil)
+			{
+				[weakSelf cancelRequest:weakRequest];
+			}
+		};
+
+		request.progress.progress = requestProgress;
+	}
+	else
+	{
+		__weak OCHTTPPipeline *weakSelf = self;
+		__weak OCHTTPRequest *weakRequest = request;
+
+		requestProgress.cancellationHandler = ^{
+			if (weakRequest != nil)
+			{
+				[weakSelf cancelRequest:weakRequest];
+			}
+		};
+	}
+
+	requestProgress.totalUnitCount += 200;
+	[requestProgress addChild:transferProgress withPendingUnitCount:200];
+
+	if ((downloadItem != nil) && (downloadItem.localID != nil))
+	{
+		[[NSNotificationCenter defaultCenter] postNotificationName:OCHTTPPipelineDownloadProgressReconnectedNotification
+		                                                    object:downloadItem.localID
+		                                                  userInfo:(transferProgress != nil ? @{ OCHTTPPipelineDownloadProgressUserInfoKeyTransferProgress : transferProgress } : nil)];
+	}
+}
+
+- (void)_connectURLSessionTaskProgress:(NSURLSessionTask *)urlSessionTask toRequest:(OCHTTPRequest *)request
+{
+	[self _connectURLSessionTaskProgress:urlSessionTask toRequest:request reconnected:NO];
+}
+
 - (nullable NSProgress *)progressForRequestID:(OCHTTPRequestID)requestID
 {
 	OCHTTPPipelineTask *task;
@@ -2745,6 +2900,45 @@
 	}
 
 	return (nil);
+}
+
+- (nullable NSProgress *)liveDownloadTransferProgressForItemLocalID:(OCLocalID)localID
+{
+	if (localID == nil)
+	{
+		return (nil);
+	}
+
+	__block NSProgress *foundProgress = nil;
+
+	[self.backend enumerateTasksForPipeline:self enumerator:^(OCHTTPPipelineTask *task, BOOL *stop) {
+		if (!task.request.downloadRequest)
+		{
+			return;
+		}
+
+		OCItem *item = OCTypedCast(task.request.userInfo[@"item"], OCItem);
+
+		if ((item.localID == nil) || ![item.localID isEqual:localID])
+		{
+			return;
+		}
+
+		NSProgress *transferProgress = OCHTTPRequestDownloadTransferProgress(task.request);
+
+		if ((transferProgress == nil) && (task.urlSessionTask != nil))
+		{
+			transferProgress = OCHTTPPipelineDownloadTransferProgressForRequest(task.request, task.urlSessionTask);
+		}
+
+		if (transferProgress != nil)
+		{
+			foundProgress = transferProgress;
+			*stop = YES;
+		}
+	}];
+
+	return (foundProgress);
 }
 
 #pragma mark - Class settings
@@ -2862,3 +3056,6 @@ OCClassSettingsKey OCHTTPPipelineSettingTrafficLogFormat = @"traffic-log-format"
 
 OCHTTPPipelineLogFormat OCHTTPPipelineLogFormatPlainText = @"plain";
 OCHTTPPipelineLogFormat OCHTTPPipelineLogFormatJSON = @"json";
+
+NSNotificationName OCHTTPPipelineDownloadProgressReconnectedNotification = @"OCHTTPPipelineDownloadProgressReconnectedNotification";
+OCEventUserInfoKey OCHTTPPipelineDownloadProgressUserInfoKeyTransferProgress = @"transferProgress";
