@@ -55,6 +55,11 @@
 		{
 			if ([baseName.lowercaseString hasSuffix:oneSuffix.lowercaseString])
 			{
+				// Guard against NSUInteger underflow: NSCaseInsensitiveSearch can return
+				// NFD-based offsets for strings stored as NFC (e.g. Vietnamese/Korean
+				// filenames whose diacritics expand under decomposition).
+				if (oneSuffix.length > baseName.length) { return; }
+
 				duplicateStyle = style;
 				duplicateCount = @(1);
 
@@ -64,12 +69,25 @@
 			}
 		}
 
-		// Check for prefix and suffix
-		NSRange openingRange = [baseName rangeOfString:prefix options:NSBackwardsSearch|NSCaseInsensitiveSearch];
+		// Check for prefix and suffix.
+		// NSCaseInsensitiveSearch normalises both strings to NFD internally and returns
+		// an offset into that NFD representation. For NFC strings (APFS, server names)
+		// that offset is larger than any valid NFC code-unit index — causing NSUInteger
+		// underflow and a crash. The prefix " (" and suffix ")" are pure ASCII so
+		// case-insensitivity buys nothing; use exact (case-sensitive) search to keep
+		// the returned range in terms of the receiver's actual UTF-16 code units.
+		NSRange openingRange = [baseName rangeOfString:prefix options:NSBackwardsSearch];
 
 		if (openingRange.location != NSNotFound)
 		{
-			NSString *possibleNumberString = [baseName substringWithRange:NSMakeRange(openingRange.location+openingRange.length, baseName.length-openingRange.location-openingRange.length-suffix.length)];
+			NSUInteger contentStart = openingRange.location + openingRange.length;
+			NSUInteger suffixLen    = suffix.length;
+
+			// Safety guard: ensure the range arithmetic won't underflow even with an
+			// unexpected prefix/suffix combination (e.g. localised "copy" variants).
+			if (contentStart + suffixLen > baseName.length) { return; }
+
+			NSString *possibleNumberString = [baseName substringWithRange:NSMakeRange(contentStart, baseName.length - contentStart - suffixLen)];
 
 			if ((possibleNumberString.length>0) && ([possibleNumberString stringByTrimmingCharactersInSet:[NSCharacterSet decimalDigitCharacterSet]].length == 0))
 			{
