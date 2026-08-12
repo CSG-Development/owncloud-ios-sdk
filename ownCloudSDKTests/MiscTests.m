@@ -736,6 +736,36 @@
 	XCTAssert([[@"Base" itemDuplicateNameWithStyle:OCCoreDuplicateNameStyleNumbered duplicateCount:@(2)] isEqual:@"Base 2"]);
 }
 
+- (void)testUnicodeFilenameNFCNormalizationForNameConflicts
+{
+	// Japanese ダ (U+30C0) decomposes under NFD to タ + combining dakuten. Literal
+	// NSString/SQLite equality fails across forms; NFC normalization must reunify them.
+	NSString *japaneseNFC = @"新規フォルダー_写真.pdf";
+	NSString *japaneseNFD = japaneseNFC.decomposedStringWithCanonicalMapping;
+	NSString *chinese = @"照片_视频_2026.txt";
+
+	XCTAssertFalse([japaneseNFC isEqualToString:japaneseNFD], @"Japanese name must differ under NFD for this regression to be meaningful");
+	XCTAssertTrue([japaneseNFC isEqualToString:japaneseNFD.precomposedStringWithCanonicalMapping]);
+	XCTAssertTrue([chinese isEqualToString:chinese.decomposedStringWithCanonicalMapping], @"Chinese name is NFC-stable");
+	XCTAssertTrue([chinese isEqualToString:chinese.precomposedStringWithCanonicalMapping]);
+
+	NSString *indexedFromNFD = [japaneseNFD.precomposedStringWithCanonicalMapping itemDuplicateNameWithStyle:OCCoreDuplicateNameStyleBracketed duplicateCount:@(1)];
+	XCTAssertEqualObjects(indexedFromNFD, @"新規フォルダー_写真 (1).pdf");
+
+	NSString *indexedFromNFC = [japaneseNFC itemDuplicateNameWithStyle:OCCoreDuplicateNameStyleBracketed duplicateCount:@(1)];
+	XCTAssertEqualObjects(indexedFromNFC, @"新規フォルダー_写真 (1).pdf");
+
+	NSString *chineseIndexed = [chinese itemDuplicateNameWithStyle:OCCoreDuplicateNameStyleBracketed duplicateCount:@(1)];
+	XCTAssertEqualObjects(chineseIndexed, @"照片_视频_2026 (1).txt");
+
+	OCCoreDuplicateNameStyle nameStyle = OCCoreDuplicateNameStyleNone;
+	NSNumber *duplicateCount = nil;
+	NSString *baseFromIndexed = [@"新規フォルダー_写真 (1).pdf" itemBaseNameWithStyle:&nameStyle duplicateCount:&duplicateCount allowAmbiguous:NO];
+	XCTAssertEqualObjects(baseFromIndexed, @"新規フォルダー_写真.pdf");
+	XCTAssertEqual(nameStyle, OCCoreDuplicateNameStyleBracketed);
+	XCTAssertEqualObjects(duplicateCount, @(1));
+}
+
 - (void)testPathNormalization
 {
 	XCTAssert([@"//path/" isUnnormalizedPath]);

@@ -40,6 +40,10 @@
 	NSString *returnSuggestedName = nil;
 	NSMutableArray <NSString *> *duplicateNames = [NSMutableArray new];
 
+	// Normalize to NFC so literal path lookups match server/cache names. Filenames that
+	// differ under NFD (e.g. Japanese ダ → タ+dakuten) would otherwise miss collisions.
+	itemName = itemName.precomposedStringWithCanonicalMapping;
+
 	// Extract information from itemName
 	baseName = [itemName itemBaseNameWithStyle:&nameStyle
 				    duplicateCount:&duplicateCountNumber
