@@ -44,6 +44,11 @@
 		newFileName = inputFileURL.lastPathComponent;
 	}
 
+	// Normalize to NFC so conflict resolution and placeholder paths match server/cache
+	// names (literal SQLite/NSString equality). Covers NFD names from zip extract and
+	// the Files app (e.g. Japanese ダ decomposes under NFD).
+	newFileName = newFileName.precomposedStringWithCanonicalMapping;
+
 	// Alternative name pick
 	NSNumber *nameStyleNumber = nil;
 
