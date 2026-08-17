@@ -178,13 +178,26 @@
 					nil] completionHandler:^(NSError *error, NSArray<OCItem *> *items) {
 						OCMeasureEventEnd(self, @"network.propfind", propFindEvenRef, ([NSString stringWithFormat:@"Completed PROPFIND for %@", self.location]));
 
+						__block BOOL requestQueueReleased = NO;
+						void (^ReleaseRequestQueue)(void) = ^{
+							if (!requestQueueReleased)
+							{
+								requestQueueReleased = YES;
+								completionHandler();
+							}
+						};
+
 						if (self.core.state != OCCoreStateRunning)
 						{
 							// Skip processing the response if the core is not starting or running
 							self.retrievedSet.state = OCCoreItemListStateNew;
-							completionHandler(); // we're done for now, make sure the queue doesn't get stuck
+							ReleaseRequestQueue(); // we're done for now, make sure the queue doesn't get stuck
 							return;
 						}
+
+						// Free the sequential PROPFIND request queue immediately so the next
+						// folder listing can start while this response is merged on the core queue.
+						ReleaseRequestQueue();
 
 						[self->_core beginActivity:@"update retrieved set"];
 
@@ -195,7 +208,6 @@
 							{
 								// Skip processing the response if the core is not starting or running
 								self.retrievedSet.state = OCCoreItemListStateNew;
-								completionHandler(); // we're done for now, make sure the queue doesn't get stuck
 
 								[self->_core endActivity:@"update retrieved set"];
 								return;
@@ -297,8 +309,6 @@
 							[self->_core endActivity:@"update retrieved set"];
 
 							OCMeasureEventEnd(self, @"itemlist.update-from-propfind", propFindRef, ([NSString stringWithFormat:@"Done updating retrieved set for %@", self.location]));
-
-							completionHandler();
 						}];
 					}];
 

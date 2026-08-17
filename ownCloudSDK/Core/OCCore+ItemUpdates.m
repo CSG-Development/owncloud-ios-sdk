@@ -69,6 +69,46 @@
 	[updatedItems makeObjectsPerformSelector:@selector(updateSeed)];
 	[removedItems makeObjectsPerformSelector:@selector(updateSeed)];
 
+	// During bulk local mutations, buffer item changes until endBulkLocalMutations
+	// so ItemList/PROPFIND cannot observe a partial placeholder tree.
+	if (!_bulkFlushingBufferedUpdates &&
+	    self.isInBulkLocalMutations &&
+	    (afterQueryUpdatesAction == nil) &&
+	    (queryPostProcessor == nil))
+	{
+		@synchronized(self)
+		{
+			if (_bulkLocalMutationDepth > 0)
+			{
+				if ([addedItems isKindOfClass:NSArray.class] && (addedItems.count > 0))
+				{
+					[_bulkBufferedAddedItems addObjectsFromArray:addedItems];
+				}
+				if ([removedItems isKindOfClass:NSArray.class] && (removedItems.count > 0))
+				{
+					[_bulkBufferedRemovedItems addObjectsFromArray:removedItems];
+				}
+				if ([updatedItems isKindOfClass:NSArray.class] && (updatedItems.count > 0))
+				{
+					[_bulkBufferedUpdatedItems addObjectsFromArray:updatedItems];
+				}
+			}
+		}
+
+		// Sync-record bookkeeping still has to run (e.g. removeRecords / record updates).
+		if (beforeQueryUpdatesAction != nil)
+		{
+			OCSyncExec(waitForBulkPreflight, {
+				beforeQueryUpdatesAction(^{
+					OCSyncExecDone(waitForBulkPreflight);
+				});
+			});
+		}
+
+		[self endActivity:@"Perform item and query updates"];
+		return;
+	}
+
 	// Update metaData table and queries
 	if ((addedItems.count > 0) || (removedItems.count > 0) || (updatedItems.count > 0) || (beforeQueryUpdatesAction!=nil))
 	{
@@ -589,7 +629,7 @@
 	NSArray <OCItem *> *newChangedAndDeletedItems = nil;
 
 	#define AddArrayToNewAndChanged(itemArray) \
-		if (itemArray.count > 0) \
+		if ([itemArray isKindOfClass:NSArray.class] && (itemArray.count > 0)) \
 		{ \
 			if (newChangedAndDeletedItems == nil) \
 			{ \

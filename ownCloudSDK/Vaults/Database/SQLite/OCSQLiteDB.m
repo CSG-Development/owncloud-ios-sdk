@@ -470,7 +470,7 @@ static void collationProvider(void *dbObj, sqlite3 *db, int eTextRep, const char
 
 								if ((latestTableSchema = GetLatestTableSchemaForCurrent()) != nil)
 								{
-									if (((openStatements = latestTableSchema.openStatements) != nil) && (openStatements.count > 0))
+									if (((openStatements = latestTableSchema.openStatements) != nil) && [openStatements isKindOfClass:NSArray.class] && (openStatements.count > 0))
 									{
 										[allOpenStatements addObjectsFromArray:openStatements];
 									}

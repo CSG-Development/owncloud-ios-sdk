@@ -32,6 +32,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)queueRequestJob:(OCAsyncSequentialQueueJob)requestJob;
 
+//! YES if a UI/query file-list PROPFIND is queued or in flight
+- (BOOL)hasPendingQueryItemListWork;
+
+//! YES if any item-list work (query or background fetch/scan) is queued/in flight, or a fetchUpdates is running
+- (BOOL)hasPendingItemListWork;
+
 #pragma mark - Check for updates
 - (void)startCheckingForUpdates; //!< Checks the root directory for a changed ETag and recursively traverses the entire tree for all updated and new items.
 - (void)fetchUpdatesWithCompletionHandler:(nullable OCCoreItemListFetchUpdatesCompletionHandler)completionHandler; //!< Checks the root directory for a changed ETag and recursively traverses the entire tree for all updated and new items. Calls a completionHandler when done. On ocis systems, loads the drive list and looks for updates.

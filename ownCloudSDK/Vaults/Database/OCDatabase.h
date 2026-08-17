@@ -51,6 +51,7 @@ typedef void(^OCDatabaseRetrieveSyncRecordIDsCompletionHandler)(OCDatabase *db, 
 typedef void(^OCDatabaseRetrieveSyncLaneCompletionHandler)(OCDatabase *db, NSError *error, OCSyncLane *syncRecord);
 typedef void(^OCDatabaseRetrieveSyncLanesCompletionHandler)(OCDatabase *db, NSError *error, NSArray <OCSyncLane *> *syncLanes);
 typedef void(^OCDatabaseRetrieveSyncReasonCountsCompletionHandler)(OCDatabase *db, NSError *error, NSDictionary<OCSyncReason, NSNumber *> *syncReasonCounts);
+typedef void(^OCDatabaseRetrieveSyncJournalLaneHeadsCompletionHandler)(OCDatabase *db, NSError *error, NSArray<NSDictionary<NSString *, id> *> *laneHeads); //!< Each dictionary contains laneID, recordID, revision, action, and optional inProgressSinceDate for the first journal row on that lane.
 typedef void(^OCDatabaseDirectoryUpdateJobCompletionHandler)(OCDatabase *db, NSError *error, OCCoreDirectoryUpdateJob *updateJob);
 typedef void(^OCDatabaseRetrieveDirectoryUpdateJobsCompletionHandler)(OCDatabase *db, NSError *error, NSArray<OCCoreDirectoryUpdateJob *> *updateJobs);
 typedef void(^OCDatabaseProtectedBlockCompletionHandler)(NSError *error, NSNumber *previousCounterValue, NSNumber *newCounterValue);
@@ -156,6 +157,7 @@ typedef NSString* OCDatabaseCounterIdentifier;
 - (void)retrieveSyncRecordForID:(OCSyncRecordID)recordID completionHandler:(OCDatabaseRetrieveSyncRecordCompletionHandler)completionHandler;
 - (void)retrieveSyncRecordAfterID:(OCSyncRecordID)recordID onLaneID:(OCSyncLaneID)laneID completionHandler:(OCDatabaseRetrieveSyncRecordCompletionHandler)completionHandler;
 - (void)retrieveSyncRecordsForPath:(OCPath)path action:(OCSyncActionIdentifier)action inProgressSince:(NSDate *)inProgressSince completionHandler:(OCDatabaseRetrieveSyncRecordsCompletionHandler)completionHandler;
+- (void)retrieveSyncJournalLaneHeadsWithCompletionHandler:(OCDatabaseRetrieveSyncJournalLaneHeadsCompletionHandler)completionHandler; //!< Returns the first sync-journal row per lane (ordered by laneID) without deserializing record blobs — used to pick runnable work without walking every lane.
 - (void)retrieveSyncReasonCountsWithCompletionHandler:(OCDatabaseRetrieveSyncReasonCountsCompletionHandler)completionHandler;
 
 #pragma mark - Event interface

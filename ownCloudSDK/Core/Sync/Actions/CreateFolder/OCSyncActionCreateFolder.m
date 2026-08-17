@@ -134,15 +134,15 @@ OCSYNCACTION_REGISTER_ISSUETEMPLATES
 			newItem.previousPlaceholderFileID = placeholderItem.fileID;
 			newItem.parentFileID = placeholderItem.parentFileID;
 
-			newItem.localID = placeholderItem.localID;
-			newItem.parentLocalID = placeholderItem.parentLocalID;
+			// In-place replace: remove+add cascade-marks children removed under this folder.
+			[newItem prepareToReplace:placeholderItem];
 
-			placeholderItem.localID = nil;
-
-			syncContext.removedItems = @[ placeholderItem ];
+			syncContext.updatedItems = @[ newItem ];
 		}
-
-		syncContext.addedItems = @[ newItem ];
+		else
+		{
+			syncContext.addedItems = @[ newItem ];
+		}
 
 		// Action complete and can be removed
 		[syncContext transitionToState:OCSyncRecordStateCompleted withWaitConditions:nil];

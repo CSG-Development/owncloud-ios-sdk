@@ -50,6 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Sync Record Scheduling
 - (void)setNeedsToProcessSyncRecords;
+- (void)processSyncRecordsIfNeeded;
 
 - (void)submitSyncRecord:(OCSyncRecord *)record withPreflightResultHandler:(nullable OCCoreCompletionHandler)preflightResultHandler;
 - (void)rescheduleSyncRecord:(OCSyncRecord *)syncRecord withUpdates:(NSError * _Nullable (^ _Nullable)(OCSyncRecord *record))applyUpdates;
@@ -72,6 +73,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Sync action utilities
 - (OCEventTarget *)_eventTargetWithSyncRecord:(OCSyncRecord *)syncRecord userInfo:(nullable NSDictionary *)userInfo ephermal:(nullable NSDictionary *)ephermalUserInfo;
 - (OCEventTarget *)_eventTargetWithSyncRecord:(OCSyncRecord *)syncRecord;
+- (void)performSyncContextActions:(OCSyncContext *)syncContext;
 
 #pragma mark - Sync record scheduling
 - (nullable NSError *)_descheduleSyncRecord:(OCSyncRecord *)syncRecord completeWithError:(nullable NSError *)completionError parameter:(nullable id)parameter;

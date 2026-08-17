@@ -17,12 +17,17 @@
  */
 
 #import "OCCore.h"
+#import "OCCore+SyncEngine.h"
+#import "OCCore+Internal.h"
 #import "OCSyncActionUpload.h"
 #import "OCSyncAction+FileProvider.h"
+#import "OCSyncContext.h"
 #import "OCChecksum.h"
 #import "OCChecksumAlgorithmSHA1.h"
 #import "NSDate+OCDateParser.h"
 #import "OCCellularManager.h"
+#import "OCMacros.h"
+#import "OCLogger.h"
 
 static OCMessageTemplateIdentifier OCMessageTemplateIdentifierUploadKeepBoth = @"upload.keep-both";
 static OCMessageTemplateIdentifier OCMessageTemplateIdentifierUploadRetry = @"upload.retry";
@@ -226,62 +231,117 @@ OCSYNCACTION_REGISTER_ISSUETEMPLATES
 			}
 		}
 
-		// Compute checksum
+		// Compute checksum asynchronously so hashing does not block the serial core queue
+		// (which also serves ItemList / PROPFIND result application).
 		if (_uploadCopyFileURL != nil)
 		{
-			OCProgress *progress;
+			OCSyncRecord *syncRecord = syncContext.syncRecord;
+			NSURL *fileURLForUpload = uploadURL;
+			OCPath capturedRemoteFileName = remoteFileName;
+			OCItem *capturedUploadItem = uploadItem;
+			OCItem *capturedParentItem = parentItem;
+			NSURL *capturedCopyURL = _uploadCopyFileURL;
+			OCChecksumAlgorithmIdentifier algorithmIdentifier = self.core.preferredChecksumAlgorithm;
 
-			OCSyncExec(checksumComputation, {
-				[OCChecksum computeForFile:_uploadCopyFileURL checksumAlgorithm:self.core.preferredChecksumAlgorithm completionHandler:^(NSError *error, OCChecksum *computedChecksum) {
-					self.importFileChecksum = computedChecksum;
-					OCSyncExecDone(checksumComputation);
-				}];
-			});
-
-			// Determine cellular switch ID dependency
-			OCCellularSwitchIdentifier cellularSwitchID;
-
-			if ((cellularSwitchID = self.options[OCCoreOptionDependsOnCellularSwitch]) == nil)
-			{
-				cellularSwitchID = OCCellularSwitchIdentifierMain;
-			}
-
-			// Create segment folder
-			NSURL *segmentFolderURL = [[self.core.vault.rootURL URLByAppendingPathComponent:@"TUS"] URLByAppendingPathComponent:NSUUID.UUID.UUIDString];
-
-			// Schedule the upload
-			NSDate *lastModificationDate = ((uploadItem.lastModified != nil) ? uploadItem.lastModified : [NSDate new]);
-			NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
-							segmentFolderURL,								OCConnectionOptionTemporarySegmentFolderURLKey,
-							lastModificationDate,								OCConnectionOptionLastModificationDateKey,
-							cellularSwitchID,								OCConnectionOptionRequiredCellularSwitchKey,
-							@(((NSNumber *)self.options[OCConnectionOptionForceReplaceKey]).boolValue),	OCConnectionOptionForceReplaceKey,
-							OCActionTrackingIDFromSyncRecordID(syncContext.syncRecord.recordID),		OCConnectionOptionActionTrackingID,
-							syncContext.syncRecord.recordID,						OCConnectionOptionSyncRecordID,		// not using @{} syntax here: if recordID is nil for any reason, that'd throw
-							self.importFileChecksum, 	 						OCConnectionOptionChecksumKey,		// not using @{} syntax here: if importFileChecksum is nil for any reason, that'd throw
-						nil];
-
-			[self setupProgressSupportForItem:self.latestVersionOfLocalItem options:&options syncContext:syncContext];
-
-			if ((progress = [self.core.connection uploadFileFromURL:uploadURL
-								       withName:remoteFileName
-									     to:parentItem
-								  replacingItem:(self.replaceItem != nil) ? self.replaceItem : (self.localItem.isPlaceholder ? nil : self.latestVersionOfLocalItem)
-									options:options
-								   resultTarget:[self.core _eventTargetWithSyncRecord:syncContext.syncRecord]]) != nil)
-			{
-				[syncContext.syncRecord addProgress:progress];
-
-				if (syncContext.syncRecord.progress.progress != nil)
-				{
-					[self.core registerProgress:syncContext.syncRecord.progress.progress forItem:self.localItem];
-				}
-			}
-
-			// Transition to processing
+			// Park the record in Processing so the scheduler does not re-enter schedule
+			// while the checksum runs off-queue.
 			[syncContext transitionToState:OCSyncRecordStateProcessing withWaitConditions:nil];
 
-			// Wait for result
+			__weak OCSyncActionUpload *weakSelf = self;
+			__weak OCCore *weakCore = self.core;
+
+			[OCChecksum computeForFile:capturedCopyURL checksumAlgorithm:algorithmIdentifier completionHandler:^(NSError *checksumError, OCChecksum *computedChecksum) {
+				OCSyncActionUpload *strongSelf = weakSelf;
+				OCCore *core = weakCore;
+
+				if ((strongSelf == nil) || (core == nil))
+				{
+					return;
+				}
+
+				[core queueBlock:^{
+					if ((strongSelf.core == nil) || syncRecord.removed || syncRecord.progress.cancelled)
+					{
+						return;
+					}
+
+					if ((core.state != OCCoreStateRunning) && (core.state != OCCoreStateReady))
+					{
+						OCLogDebug(@"Skipping async upload start for %@ — core state is %lu", syncRecord.recordID, (unsigned long)core.state);
+						return;
+					}
+
+					if (syncRecord.state != OCSyncRecordStateProcessing)
+					{
+						OCLogDebug(@"Skipping async upload start for %@ — sync record state is %ld", syncRecord.recordID, (long)syncRecord.state);
+						return;
+					}
+
+					if (core.connection == nil)
+					{
+						OCLogDebug(@"Skipping async upload start for %@ — connection gone", syncRecord.recordID);
+						return;
+					}
+
+					if ((checksumError != nil) || (computedChecksum == nil))
+					{
+						OCLogError(@"error computing upload checksum for %@: %@", capturedCopyURL, checksumError);
+
+						OCSyncContext *issueContext = [OCSyncContext schedulerContextWithSyncRecord:syncRecord];
+						[strongSelf _addIssueForCancellationAndDeschedulingToContext:issueContext title:[NSString stringWithFormat:OCLocalizedString(@"Error uploading %@",nil), strongSelf.localItem.name] description:(checksumError.localizedDescription ?: OCLocalizedString(@"Checksum computation failed",nil)) impact:OCSyncIssueChoiceImpactDataLoss];
+						[issueContext transitionToState:OCSyncRecordStateProcessing withWaitConditions:nil];
+						[core performSyncContextActions:issueContext];
+						return;
+					}
+
+					strongSelf.importFileChecksum = computedChecksum;
+
+					OCCellularSwitchIdentifier cellularSwitchID;
+
+					if ((cellularSwitchID = strongSelf.options[OCCoreOptionDependsOnCellularSwitch]) == nil)
+					{
+						cellularSwitchID = OCCellularSwitchIdentifierMain;
+					}
+
+					NSURL *segmentFolderURL = [[core.vault.rootURL URLByAppendingPathComponent:@"TUS"] URLByAppendingPathComponent:NSUUID.UUID.UUIDString];
+
+					NSDate *lastModificationDate = ((capturedUploadItem.lastModified != nil) ? capturedUploadItem.lastModified : [NSDate new]);
+					NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
+									segmentFolderURL,								OCConnectionOptionTemporarySegmentFolderURLKey,
+									lastModificationDate,								OCConnectionOptionLastModificationDateKey,
+									cellularSwitchID,								OCConnectionOptionRequiredCellularSwitchKey,
+									@(((NSNumber *)strongSelf.options[OCConnectionOptionForceReplaceKey]).boolValue),	OCConnectionOptionForceReplaceKey,
+									OCActionTrackingIDFromSyncRecordID(syncRecord.recordID),				OCConnectionOptionActionTrackingID,
+									syncRecord.recordID,								OCConnectionOptionSyncRecordID,
+									computedChecksum, 	 								OCConnectionOptionChecksumKey,
+								nil];
+
+					OCSyncContext *uploadContext = [OCSyncContext schedulerContextWithSyncRecord:syncRecord];
+					[strongSelf setupProgressSupportForItem:strongSelf.latestVersionOfLocalItem options:&options syncContext:uploadContext];
+
+					OCProgress *progress;
+
+					if ((progress = [core.connection uploadFileFromURL:fileURLForUpload
+										 withName:capturedRemoteFileName
+										       to:capturedParentItem
+									    replacingItem:(strongSelf.replaceItem != nil) ? strongSelf.replaceItem : (strongSelf.localItem.isPlaceholder ? nil : strongSelf.latestVersionOfLocalItem)
+										  options:options
+									     resultTarget:[core _eventTargetWithSyncRecord:syncRecord]]) != nil)
+					{
+						[syncRecord addProgress:progress];
+
+						if (syncRecord.progress.progress != nil)
+						{
+							[core registerProgress:syncRecord.progress.progress forItem:strongSelf.localItem];
+						}
+					}
+
+					[uploadContext transitionToState:OCSyncRecordStateProcessing withWaitConditions:nil];
+					[core performSyncContextActions:uploadContext];
+				}];
+			}];
+
+			// Wait for checksum + upload result
 			return (OCCoreSyncInstructionStop);
 		}
 	}
@@ -315,24 +375,97 @@ OCSYNCACTION_REGISTER_ISSUETEMPLATES
 			// Update uploaded item with local relative path
 			uploadedItem.localRelativePath = [self.core.vault relativePathForItem:uploadedItem];
 
-			// Compute checksum to determine if the current main file of this file is identical to this upload action's version
-			OCSyncExec(checksumComputation, {
-				[OCChecksum computeForFile:[self.core localURLForItem:uploadedItem] checksumAlgorithm:self.importFileChecksum.algorithmIdentifier completionHandler:^(NSError *error, OCChecksum *computedChecksum) {
-					// Set locallyModified to NO if checksums match, YES if they don't
-					uploadedItem.locallyModified = ![self.importFileChecksum isEqual:computedChecksum];
+			// Compute checksum asynchronously so result handling does not block the core queue.
+			OCChecksum *expectedChecksum = self.importFileChecksum;
+			NSURL *localFileURL = [self.core localURLForItem:uploadedItem];
+			OCSyncRecord *syncRecord = syncContext.syncRecord;
+			BOOL importFileIsTemporaryAlongsideCopy = _importFileIsTemporaryAlongsideCopy;
+			NSURL *importFileURL = _importFileURL;
 
-					OCSyncExecDone(checksumComputation);
-				}];
-			});
-
-			// Add version information if local and uploaded item version are identical
-			if (!uploadedItem.locallyModified)
+			if ((expectedChecksum != nil) && (localFileURL != nil))
 			{
-				uploadedItem.localCopyVersionIdentifier = uploadedItem.itemVersionIdentifier;
+				__weak OCSyncActionUpload *weakSelf = self;
+				__weak OCCore *weakCore = self.core;
+
+				[OCChecksum computeForFile:localFileURL checksumAlgorithm:expectedChecksum.algorithmIdentifier completionHandler:^(NSError *checksumError, OCChecksum *computedChecksum) {
+					OCSyncActionUpload *strongSelf = weakSelf;
+					OCCore *core = weakCore;
+
+					if ((strongSelf == nil) || (core == nil) || syncRecord.removed)
+					{
+						return;
+					}
+
+					[core queueBlock:^{
+						if (syncRecord.removed)
+						{
+							return;
+						}
+
+						if ((core.state != OCCoreStateRunning) && (core.state != OCCoreStateReady))
+						{
+							OCLogDebug(@"Skipping async upload result finalize for %@ — core state is %lu", syncRecord.recordID, (unsigned long)core.state);
+							return;
+						}
+
+						OCItem *finalUploadedItem = uploadedItem;
+
+						if ((checksumError == nil) && (computedChecksum != nil))
+						{
+							finalUploadedItem.locallyModified = ![expectedChecksum isEqual:computedChecksum];
+						}
+						else
+						{
+							OCLogWarning(@"Upload result checksum failed (%@) — treating as locallyModified", checksumError);
+							finalUploadedItem.locallyModified = YES;
+						}
+
+						if (!finalUploadedItem.locallyModified)
+						{
+							finalUploadedItem.localCopyVersionIdentifier = finalUploadedItem.itemVersionIdentifier;
+						}
+
+						NSArray<OCItemPolicy *> *availableOfflineItemPoliciesCoveringItem;
+
+						if (((availableOfflineItemPoliciesCoveringItem = [core retrieveAvailableOfflinePoliciesCoveringItem:finalUploadedItem completionHandler:nil]) != nil) && (availableOfflineItemPoliciesCoveringItem.count > 0))
+						{
+							finalUploadedItem.downloadTriggerIdentifier = OCItemDownloadTriggerIDAvailableOffline;
+						}
+
+						[finalUploadedItem removeSyncRecordID:syncRecord.recordID activity:OCItemSyncActivityUploading];
+
+						strongSelf.localItem = finalUploadedItem;
+
+						if (importFileIsTemporaryAlongsideCopy && (importFileURL != nil))
+						{
+							NSError *removeError = nil;
+							[[NSFileManager defaultManager] removeItemAtURL:importFileURL error:&removeError];
+							OCFileOpLog(@"rm", removeError, @"Deleted temporary copy at %@", importFileURL.path);
+						}
+
+						OCSyncContext *completionContext = [OCSyncContext eventHandlingContextWith:syncRecord event:event];
+						completionContext.updatedItems = @[ finalUploadedItem ];
+						[completionContext transitionToState:OCSyncRecordStateCompleted withWaitConditions:nil];
+						[completionContext completeWithError:nil core:core item:finalUploadedItem parameter:finalUploadedItem];
+						[core performSyncContextActions:completionContext];
+
+						[core removeSyncRecords:@[ syncRecord ] completionHandler:^(OCDatabase *db, NSError *removeError) {
+							if (removeError != nil)
+							{
+								OCLogError(@"Error removing completed upload sync record %@: %@", syncRecord.recordID, removeError);
+							}
+							[core setNeedsToProcessSyncRecords];
+						}];
+					}];
+				}];
+
+				// Stay in Processing until async checksum finishes; event is consumed by the engine.
+				return (OCCoreSyncInstructionStop);
 			}
 
-			// Set download trigger to available offline if the item is targeted by available offline, as it might
-			// otherwise be removed and re-downloaded
+			// No checksum to verify — complete synchronously
+			uploadedItem.locallyModified = YES;
+
 			NSArray<OCItemPolicy *> *availableOfflineItemPoliciesCoveringItem;
 
 			if (((availableOfflineItemPoliciesCoveringItem =  [self.core retrieveAvailableOfflinePoliciesCoveringItem:uploadedItem completionHandler:nil]) != nil) && (availableOfflineItemPoliciesCoveringItem.count > 0))
@@ -340,16 +473,12 @@ OCSYNCACTION_REGISTER_ISSUETEMPLATES
 				uploadedItem.downloadTriggerIdentifier = OCItemDownloadTriggerIDAvailableOffline;
 			}
 
-			// Remove sync record from placeholder
 			[uploadedItem removeSyncRecordID:syncContext.syncRecord.recordID activity:OCItemSyncActivityUploading];
 
-			// Indicate item update
 			syncContext.updatedItems = @[ uploadedItem ];
 
-			// Update localItem
 			self.localItem = uploadedItem;
 
-			// Remove temporary copy
 			if (_importFileIsTemporaryAlongsideCopy)
 			{
 				NSError *error = nil;
@@ -367,10 +496,15 @@ OCSYNCACTION_REGISTER_ISSUETEMPLATES
 		// Action complete and can be removed
 		[syncContext transitionToState:OCSyncRecordStateCompleted withWaitConditions:nil];
 		resultInstruction = OCCoreSyncInstructionDeleteLast;
-	}
 
-	// Call resultHandler (and give file provider a chance to attach an uploadingError)
-	[syncContext completeWithError:event.error core:self.core item:(OCItem *)event.result parameter:self.localItem];
+		// Call resultHandler (and give file provider a chance to attach an uploadingError)
+		[syncContext completeWithError:event.error core:self.core item:(OCItem *)event.result parameter:self.localItem];
+	}
+	else
+	{
+		// Call resultHandler (and give file provider a chance to attach an uploadingError)
+		[syncContext completeWithError:event.error core:self.core item:(OCItem *)event.result parameter:self.localItem];
+	}
 
 	if (event.error != nil)
 	{

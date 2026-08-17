@@ -52,12 +52,14 @@ static OCHTTPRequestGroupID OCCoreItemListTaskGroupBackgroundTasks = @"backgroun
 	switch (self.memoryConfiguration)
 	{
 		case OCPlatformMemoryConfigurationMinimum:
-			return (1);
+			return (2);
 		break;
 
 		case OCPlatformMemoryConfigurationDefault:
 		default:
-			return (2);
+			// Allow several folder PROPFINDs in flight so fetch-updates / navigation
+			// are not serialized behind a single item-list task (esp. while uploads drain).
+			return (5);
 		break;
 	}
 }
@@ -218,13 +220,18 @@ static OCHTTPRequestGroupID OCCoreItemListTaskGroupBackgroundTasks = @"backgroun
 	OCHTTPRequestGroupID groupID = nil;
 	OCLocationString locationString = updateJob.location.string;
 
-	if (updateJob.identifier != nil)
+	// Unique group per location so the HTTP pipeline can run multiple PROPFINDs
+	// concurrently. A shared groupID would allow only one in-flight request for
+	// all query (or all background) item-list work.
+	if (locationString != nil)
 	{
-		 groupID = OCCoreItemListTaskGroupBackgroundTasks;
+		groupID = [NSString stringWithFormat:@"%@:%@",
+			(updateJob.isForQuery ? OCCoreItemListTaskGroupQueryTasks : OCCoreItemListTaskGroupBackgroundTasks),
+			locationString];
 	}
 	else
 	{
-		 groupID = OCCoreItemListTaskGroupQueryTasks;
+		groupID = updateJob.isForQuery ? OCCoreItemListTaskGroupQueryTasks : OCCoreItemListTaskGroupBackgroundTasks;
 	}
 
 	if (updateJob.location.path != nil)
@@ -299,6 +306,8 @@ static OCHTTPRequestGroupID OCCoreItemListTaskGroupBackgroundTasks = @"backgroun
 {
 	if (finishedTask != nil)
 	{
+		BOOL wasQueryTask = finishedTask.updateJob.isForQuery;
+
 		@synchronized(_queuedItemListTaskUpdateJobs)
 		{
 			BOOL removeJobFromDatabase = YES;
@@ -337,9 +346,15 @@ static OCHTTPRequestGroupID OCCoreItemListTaskGroupBackgroundTasks = @"backgroun
 			}
 		}
 
-		if (finishedTask.updateJob.isForQuery)
+		if (wasQueryTask)
 		{
 			[self.activityManager update:[OCActivityUpdate unpublishActivityFor:finishedTask]];
+		}
+
+		// Resume upload scheduling after item-list / fetch work drains (uploads yield while these are pending)
+		if (!self.hasPendingItemListWork)
+		{
+			[self setNeedsToProcessSyncRecords];
 		}
 	}
 }
@@ -1267,6 +1282,68 @@ static OCHTTPRequestGroupID OCCoreItemListTaskGroupBackgroundTasks = @"backgroun
 	[_itemListTasksRequestQueue async:requestJob];
 }
 
+- (BOOL)hasPendingQueryItemListWork
+{
+	@synchronized(_queuedItemListTaskUpdateJobs)
+	{
+		for (OCCoreDirectoryUpdateJob *updateJob in _queuedItemListTaskUpdateJobs)
+		{
+			if (updateJob.isForQuery)
+			{
+				return (YES);
+			}
+		}
+
+		for (OCCoreItemListTask *task in _scheduledItemListTasks)
+		{
+			if (!task.updateJob.isForQuery)
+			{
+				continue;
+			}
+
+			OCCoreItemListState retrievedState = task.retrievedSet.state;
+
+			if ((retrievedState == OCCoreItemListStateNew) || (retrievedState == OCCoreItemListStateStarted))
+			{
+				return (YES);
+			}
+		}
+	}
+
+	return (NO);
+}
+
+- (BOOL)hasPendingItemListWork
+{
+	@synchronized(_queuedItemListTaskUpdateJobs)
+	{
+		if (_queuedItemListTaskUpdateJobs.count > 0)
+		{
+			return (YES);
+		}
+
+		for (OCCoreItemListTask *task in _scheduledItemListTasks)
+		{
+			OCCoreItemListState retrievedState = task.retrievedSet.state;
+
+			if ((retrievedState == OCCoreItemListStateNew) || (retrievedState == OCCoreItemListStateStarted))
+			{
+				return (YES);
+			}
+		}
+	}
+
+	@synchronized(_fetchUpdatesCompletionHandlers)
+	{
+		if (_fetchUpdatesCompletionHandlers.count > 0)
+		{
+			return (YES);
+		}
+	}
+
+	return (NO);
+}
+
 #pragma mark - Check for updates
 - (void)startCheckingForUpdates
 {
@@ -1663,6 +1740,12 @@ static OCHTTPRequestGroupID OCCoreItemListTaskGroupBackgroundTasks = @"backgroun
 	for (OCCoreItemListFetchUpdatesCompletionHandler completionHandler in completionHandlers)
 	{
 		completionHandler(error, foundChanges);
+	}
+
+	// Fetch-updates may have been keeping uploads deferred; resume if item-list work is idle.
+	if (!self.hasPendingItemListWork)
+	{
+		[self setNeedsToProcessSyncRecords];
 	}
 }
 

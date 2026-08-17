@@ -48,6 +48,9 @@
 	NSMutableDictionary <OCSyncRecordID, NSDictionary<OCSyncActionParameter,id> *> *_ephermalParametersBySyncRecordID;
 	NSMutableDictionary <OCSyncRecordID, OCSyncRecord *> *_syncRecordsByID;
 
+	NSMutableDictionary <OCSyncLaneID, OCSyncLane *> *_cachedSyncLanesByID;
+	NSMutableDictionary <OCSyncLaneID, NSData *> *_cachedSyncLaneDataByID;
+
 	OCAsyncSequentialQueue *_openQueue;
 	NSInteger _openCount;
 	OCPlatformMemoryConfiguration _memoryConfiguration;
@@ -91,6 +94,9 @@
 			// Set up sync record caching if not running in an extension
 			_syncRecordsByID = [NSMutableDictionary new];
 		}
+
+		_cachedSyncLanesByID = [NSMutableDictionary new];
+		_cachedSyncLaneDataByID = [NSMutableDictionary new];
 
 		_openQueue = [OCAsyncSequentialQueue new];
 		_openQueue.executor = ^(OCAsyncSequentialQueueJob  _Nonnull job, dispatch_block_t  _Nonnull completionHandler) {
@@ -1143,21 +1149,77 @@
 
 		if (error == nil)
 		{
+			// This is called once per submitted sync record and once per sync engine pass, so with a large
+			// backlog (one lane per queued upload) deserializing every lane every time dominates the cost of
+			// queueing new records. Reuse instances whose stored data is byte-identical, which also keeps
+			// changes made by other processes visible. Lanes are never mutated after retrieval.
+			NSMutableSet<OCSyncLaneID> *existingLaneIDs = [NSMutableSet new];
+
 			[resultSet iterateUsing:^(OCSQLiteResultSet *resultSet, NSUInteger line, NSDictionary<NSString *,id<NSObject>> *rowDictionary, BOOL *stop) {
-				if (rowDictionary[@"laneData"] != nil)
+				NSData *laneData;
+
+				if ((laneData = (NSData *)rowDictionary[@"laneData"]) != nil)
 				{
 					if (syncLanes == nil) { syncLanes = [NSMutableArray new]; }
 
-					OCSyncLane *syncLane;
+					OCSyncLaneID laneID = (OCSyncLaneID)rowDictionary[@"laneID"];
+					OCSyncLane *syncLane = nil;
 
-					if ((syncLane = [NSKeyedUnarchiver unarchiveObjectWithData:((NSData *)rowDictionary[@"laneData"])]) != nil)
+					if (laneID != nil)
 					{
-						syncLane.identifier = (NSNumber *)rowDictionary[@"laneID"];
+						[existingLaneIDs addObject:laneID];
 
+						@synchronized(self.sqlDB)
+						{
+							if ([self->_cachedSyncLaneDataByID[laneID] isEqualToData:laneData])
+							{
+								syncLane = self->_cachedSyncLanesByID[laneID];
+							}
+						}
+					}
+
+					if (syncLane == nil)
+					{
+						if ((syncLane = [NSKeyedUnarchiver unarchiveObjectWithData:laneData]) != nil)
+						{
+							syncLane.identifier = laneID;
+
+							if (laneID != nil)
+							{
+								@synchronized(self.sqlDB)
+								{
+									self->_cachedSyncLanesByID[laneID] = syncLane;
+									self->_cachedSyncLaneDataByID[laneID] = laneData;
+								}
+							}
+						}
+					}
+
+					if (syncLane != nil)
+					{
 						[syncLanes addObject:syncLane];
 					}
 				}
 			} error:&iterationError];
+
+			if (iterationError == nil)
+			{
+				// Drop cache entries for lanes that no longer exist
+				@synchronized(self.sqlDB)
+				{
+					if (self->_cachedSyncLanesByID.count > existingLaneIDs.count)
+					{
+						for (OCSyncLaneID laneID in self->_cachedSyncLanesByID.allKeys)
+						{
+							if (![existingLaneIDs containsObject:laneID])
+							{
+								[self->_cachedSyncLanesByID removeObjectForKey:laneID];
+								[self->_cachedSyncLaneDataByID removeObjectForKey:laneID];
+							}
+						}
+					}
+				}
+			}
 		}
 
 		if (completionHandler != nil)
@@ -1533,20 +1595,19 @@
 			{
 				@synchronized(self.sqlDB)
 				{
-					if ([_syncRecordsByID[recordID].revision isEqual:revision])
+					OCSyncRecord *cachedSyncRecord = _syncRecordsByID[recordID];
+
+					if ([cachedSyncRecord.revision isEqual:revision])
 					{
-						if (syncRecord.removed)
+						if (cachedSyncRecord.removed)
 						{
 							// Ensure instance hasn't been deleted
-							OCLogWarning(@"Removed syncRecord found in cache: %@", syncRecord);
+							OCLogWarning(@"Removed syncRecord found in cache: %@", cachedSyncRecord);
 						}
-						else
+						else if (cachedSyncRecord.recordID != nil) // ensure this instance has a recordID
 						{
 							// Use cached sync record if its revision hasn't changed
-							if (syncRecord.recordID != nil) // ensure this instance has a recordID
-							{
-								syncRecord = _syncRecordsByID[recordID];
-							}
+							syncRecord = cachedSyncRecord;
 						}
 					}
 				}
@@ -1698,7 +1759,9 @@
 
 - (void)retrieveSyncRecordAfterID:(OCSyncRecordID)recordID onLaneID:(OCSyncLaneID)laneID completionHandler:(OCDatabaseRetrieveSyncRecordCompletionHandler)completionHandler
 {
-	[self.sqlDB executeQuery:[OCSQLiteQuery querySelectingColumns:@[ @"recordID", @"recordData" ] fromTable:OCDatabaseTableNameSyncJournal where:@{
+	// Include "revision", without which -_syncRecordFromRowDictionary:cache: can't use its record cache
+	// and has to deserialize every record of a lane on every sync engine pass.
+	[self.sqlDB executeQuery:[OCSQLiteQuery querySelectingColumns:@[ @"recordID", @"revision", @"recordData" ] fromTable:OCDatabaseTableNameSyncJournal where:@{
 		@"recordID" 	: [OCSQLiteQueryCondition queryConditionWithOperator:@">" value:recordID apply:(recordID!=nil)],
 		@"laneID"	: [OCSQLiteQueryCondition queryConditionWithOperator:@"=" value:laneID apply:(laneID!=nil)]
 	} orderBy:@"recordID ASC" limit:@"0,1" resultHandler:^(OCSQLiteDB *db, NSError *error, OCSQLiteTransaction *transaction, OCSQLiteResultSet *resultSet) {
@@ -1713,6 +1776,38 @@
 		if (completionHandler != nil)
 		{
 			completionHandler(self, iterationError, syncRecord);
+		}
+	}]];
+}
+
+- (void)retrieveSyncJournalLaneHeadsWithCompletionHandler:(OCDatabaseRetrieveSyncJournalLaneHeadsCompletionHandler)completionHandler
+{
+	// One row per lane: the earliest journal entry. Avoids per-lane SELECT round-trips when the
+	// sync engine only needs to know which lanes have in-flight work vs Ready candidates.
+	NSString *sql =
+		@"SELECT sj.laneID AS laneID, sj.recordID AS recordID, sj.revision AS revision, "
+		 @"sj.action AS action, sj.inProgressSinceDate AS inProgressSinceDate "
+		 @"FROM syncJournal sj "
+		 @"INNER JOIN ("
+		 @"  SELECT laneID AS headLaneID, MIN(recordID) AS headRecordID FROM syncJournal "
+		 @"  WHERE laneID IS NOT NULL GROUP BY laneID"
+		 @") heads ON sj.laneID = heads.headLaneID AND sj.recordID = heads.headRecordID "
+		 @"ORDER BY sj.laneID ASC";
+
+	[self.sqlDB executeQuery:[OCSQLiteQuery query:sql resultHandler:^(OCSQLiteDB *db, NSError *error, OCSQLiteTransaction *transaction, OCSQLiteResultSet *resultSet) {
+		NSMutableArray<NSDictionary<NSString *, id> *> *laneHeads = [NSMutableArray new];
+		NSError *iterationError = error;
+
+		[resultSet iterateUsing:^(OCSQLiteResultSet *resultSet, NSUInteger line, NSDictionary<NSString *,id<NSObject>> *rowDictionary, BOOL *stop) {
+			if (rowDictionary[@"laneID"] != nil && rowDictionary[@"recordID"] != nil)
+			{
+				[laneHeads addObject:rowDictionary];
+			}
+		} error:&iterationError];
+
+		if (completionHandler != nil)
+		{
+			completionHandler(self, iterationError, laneHeads);
 		}
 	}]];
 }

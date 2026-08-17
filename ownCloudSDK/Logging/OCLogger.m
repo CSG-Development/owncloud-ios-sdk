@@ -1021,6 +1021,11 @@ INCLUDE_IN_CLASS_SETTINGS_SNAPSHOTS(OCLogger)
 
 - (NSArray<NSString *> *)arrayByMergingTagsFromArray:(NSArray<NSString *> *)mergeTags
 {
+	if (![mergeTags isKindOfClass:NSArray.class])
+	{
+		return (self);
+	}
+
 	if (self.count < 2)
 	{
 		return ([self arrayByAddingObjectsFromArray:mergeTags]);

@@ -153,17 +153,25 @@ NS_ASSUME_NONNULL_END
 
 #define OCLogGetTags(obj)		([obj conformsToProtocol:@protocol(OCLogTagging)] ? [(id<OCLogTagging>)obj logTags] : nil)
 
+// extraTags must be an NSArray (or nil). Non-array values are ignored to avoid
+// -[NSArray arrayByAddingObjectsFromArray:]: array argument is not an NSArray
+// crashes from mistaken OCTLog*(@"tag", ...) call sites or corrupted tag values.
+// Cast through (id) so nil (void*) and other pointer types type-check as message receivers.
 #define OCLogAddTags(obj,extraTags)	([obj conformsToProtocol:@protocol(OCLogTagging)] ? \
-	((extraTags==nil) ? \
+	((((id)(extraTags)) == nil) ? \
 		[(id<OCLogTagging>)obj logTags] : \
-		[[(id<OCLogTagging>)obj logTags] arrayByAddingObjectsFromArray:(id _Nonnull)(extraTags)] ) : \
-	(extraTags))
+		([(id)(extraTags) isKindOfClass:NSArray.class] ? \
+			[[(id<OCLogTagging>)obj logTags] arrayByAddingObjectsFromArray:(NSArray * _Nonnull)(extraTags)] : \
+			[(id<OCLogTagging>)obj logTags]) ) : \
+	([(id)(extraTags) isKindOfClass:NSArray.class] ? (NSArray *)(extraTags) : nil))
 
 #define OCLogMergeTags(obj,extraTags)	([obj conformsToProtocol:@protocol(OCLogTagging)] ? \
-	((extraTags==nil) ? \
+	((((id)(extraTags)) == nil) ? \
 		[(id<OCLogTagging>)obj logTags] : \
-		[[(id<OCLogTagging>)obj logTags] arrayByMergingTagsFromArray:(id _Nonnull)(extraTags)] ) : \
-	(extraTags))
+		([(id)(extraTags) isKindOfClass:NSArray.class] ? \
+			[[(id<OCLogTagging>)obj logTags] arrayByMergingTagsFromArray:(NSArray * _Nonnull)(extraTags)] : \
+			[(id<OCLogTagging>)obj logTags]) ) : \
+	([(id)(extraTags) isKindOfClass:NSArray.class] ? (NSArray *)(extraTags) : nil))
 
 #define OCLogToggleEnabled(toggleID)	((toggleID!=nil) ? [OCLogger.sharedLogger isToggleEnabled:toggleID] : YES)
 

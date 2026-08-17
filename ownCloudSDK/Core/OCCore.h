@@ -196,6 +196,15 @@ typedef id<NSObject> OCCoreItemTracking;
 
 	BOOL _needsToProcessSyncRecords;
 
+	NSUInteger _bulkLocalMutationDepth;
+	NSMutableArray<OCItem *> *_bulkBufferedAddedItems;
+	NSMutableArray<OCItem *> *_bulkBufferedRemovedItems;
+	NSMutableArray<OCItem *> *_bulkBufferedUpdatedItems;
+	BOOL _bulkFlushingBufferedUpdates;
+
+	NSTimeInterval _uploadDeferralStartTime;
+	BOOL _uploadDeferralWakeUpScheduled;
+
 	OCSyncAnchor _latestSyncAnchor;
 
 	OCRateLimiter *_syncResetRateLimiter;
@@ -489,6 +498,23 @@ typedef void(^OCCoreShareRoleRetrievalHandler)(NSError * _Nullable error, NSArra
 
 @interface OCCore (CommandLocalImport)
 - (nullable NSProgress *)importFileNamed:(nullable NSString *)newFileName at:(OCItem *)parentItem fromURL:(NSURL *)inputFileURL isSecurityScoped:(BOOL)isSecurityScoped options:(nullable NSDictionary<OCCoreOption,id> *)options placeholderCompletionHandler:(nullable OCCorePlaceholderCompletionHandler)placeholderCompletionHandler resultHandler:(nullable OCCoreUploadResultHandler)resultHandler;
+@end
+
+@interface OCCore (BulkLocalMutations)
+
+/**
+ Begins a nestable bulk local-mutation section. Defers sync wakes, upload scheduling,
+ and item/query persistence until -endBulkLocalMutations. Pair with -endBulkLocalMutations.
+ */
+- (void)beginBulkLocalMutations;
+
+/**
+ Ends a bulk local-mutation section. At nest count zero: one DB+query flush, then resume sync.
+ */
+- (void)endBulkLocalMutations;
+
+@property(nonatomic,readonly) BOOL isInBulkLocalMutations;
+
 @end
 
 @interface OCCore (CommandLocalModification)

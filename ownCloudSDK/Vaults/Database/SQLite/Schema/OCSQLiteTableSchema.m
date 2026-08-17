@@ -27,6 +27,7 @@
 	schema.tableName = tableName;
 	schema.version = version;
 	schema.creationQueries = creationQueries;
+	schema.openStatements = openStatements;
 	schema.upgradeMigrator = migrator;
 
 	return (schema);

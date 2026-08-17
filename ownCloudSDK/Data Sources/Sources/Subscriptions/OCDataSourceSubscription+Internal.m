@@ -28,30 +28,46 @@
 	BOOL isInterDataSourceSubscription = _isInterDataSourceSubscription;
 	dispatch_group_t synchronizationGroup = self.source.synchronizationGroup;
 	dispatch_queue_t updateQueue = self.updateQueue;
+	BOOL shouldSchedule = NO;
+
+	// Coalesce: many rapid item updates (e.g. bulk import / upload progress) must not
+	// enqueue one updateHandler invocation per change onto the main queue.
+	@synchronized(self) {
+		if (!_needsUpdateHandling)
+		{
+			_needsUpdateHandling = YES;
+			shouldSchedule = YES;
+		}
+	}
+
+	if (!shouldSchedule)
+	{
+		return;
+	}
+
 	dispatch_block_t updateHandlingBlock = ^{
 		OCDataSourceSubscription *strongSelf;
 		OCDataSourceSubscriptionUpdateHandler updateHandler;
 
 		if (((strongSelf = weakSelf) != nil) && ((updateHandler = strongSelf.updateHandler) != nil))
 		{
-			@synchronized(self) {
-				if (strongSelf->_needsUpdateHandling)
-				{
-					strongSelf->_needsUpdateHandling = NO;
-				}
-			};
+			@synchronized(strongSelf) {
+				strongSelf->_needsUpdateHandling = NO;
+			}
 
 			updateHandler(strongSelf);
+		}
+		else if ((strongSelf = weakSelf) != nil)
+		{
+			@synchronized(strongSelf) {
+				strongSelf->_needsUpdateHandling = NO;
+			}
 		}
 
 		if (isInterDataSourceSubscription && (synchronizationGroup != nil))
 		{
 			dispatch_group_leave(synchronizationGroup);
 		}
-	};
-
-	@synchronized(self) {
-		_needsUpdateHandling = YES;
 	};
 
 	if (isInterDataSourceSubscription && (synchronizationGroup != nil))
