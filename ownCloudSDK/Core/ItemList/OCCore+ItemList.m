@@ -421,7 +421,10 @@ static OCHTTPRequestGroupID OCCoreItemListTaskGroupBackgroundTasks = @"backgroun
 		case OCCoreItemListStateFailed:
 			// Error retrieving items from cache. This should never happen.
 			OCLogError(@"Error retrieving items from cache for %@: %@", OCLogPrivate(taskLocationString), OCLogPrivate(task.cachedSet.error));
-			performMerge = YES;
+			// Never publish an empty list on refresh failure: keep the currently shown
+			// query results by avoiding merge/update output for this failed pass.
+			performMerge = NO;
+			queryState = OCQueryStateIdle;
 			removeTask = YES;
 		break;
 

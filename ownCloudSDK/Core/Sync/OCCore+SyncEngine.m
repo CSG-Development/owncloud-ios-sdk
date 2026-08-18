@@ -872,7 +872,17 @@ static const NSTimeInterval OCCoreUploadDeferralMaximumInterval = 5.0;
 
 			if (needsToProcessSyncRecords)
 			{
+				if (self.hasPendingQueryItemListWork)
+				{
+					@synchronized(self)
+					{
+						self->_needsToProcessSyncRecords = YES;
+					}
+				}
+				else
+				{
 				[self processSyncRecords];
+				}
 			}
 		}
 
@@ -960,6 +970,17 @@ static const NSTimeInterval OCCoreUploadDeferralMaximumInterval = 5.0;
 			*outDidModify = didRemoveAny;
 			return (eventQueue);
 		}];
+	}
+
+	if ((transferredEventUUIDs.count == 0) && [self shouldDeferUploadSchedulingForItemListWork])
+	{
+		@synchronized(self)
+		{
+			self->_needsToProcessSyncRecords = YES;
+		}
+
+		[self endActivity:@"process sync records"];
+		return;
 	}
 
 	// Process sync records

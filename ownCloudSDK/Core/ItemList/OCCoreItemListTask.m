@@ -115,7 +115,17 @@
 
 			self->_syncAnchorAtStart = latestAnchorAtRetrieval;
 
-			[self->_cachedSet updateWithError:error items:items];
+			if ((error != nil) && (self->_cachedSet.items.count > 0))
+			{
+				// Preserve the last successful cache snapshot on transient refresh errors
+				// so refresh cannot blank an already populated file list.
+				self->_cachedSet.error = error;
+				self->_cachedSet.state = OCCoreItemListStateSuccess;
+			}
+			else
+			{
+				[self->_cachedSet updateWithError:error items:items];
+			}
 
 			if (notifyChange && ((self->_cachedSet.state == OCCoreItemListStateSuccess) || (self->_cachedSet.state == OCCoreItemListStateFailed)))
 			{
@@ -161,43 +171,50 @@
 
 			OCMeasureEventBegin(self, @"core.queue", propFindEvenRef, @"Queuing PROPFIND");
 
-			[self->_core queueConnectivityBlock:^{
-				[self->_core queueRequestJob:^(dispatch_block_t completionHandler) {
-					NSProgress *retrievalProgress;
+			// Query (user-initiated) tasks bypass the sequential request queue so they
+			// are not blocked behind background scan PROPFINDs when uploads are saturating
+			// the core queue.
+			BOOL isQueryTask = self.updateJob.isForQuery;
 
-					OCMeasureEventEnd(self, @"core.queue", propFindEvenRef, @"Beginning PROPFIND");
+			void (^PerformPROPFIND)(dispatch_block_t completionHandler) = ^(dispatch_block_t completionHandler) {
+				NSProgress *retrievalProgress;
 
-					OCMeasureEventBegin(self, @"network.propfind", propFindEvenRef, ([NSString stringWithFormat:@"Starting PROPFIND for %@", self.location]));
+				OCMeasureEventEnd(self, @"core.queue", propFindEvenRef, @"Beginning PROPFIND");
 
-					retrievalProgress = [self->_core.connection retrieveItemListAtLocation:self.location depth:1 options:[NSDictionary dictionaryWithObjectsAndKeys:
-						// For background scan jobs, wait with scheduling until there is connectivity
-						((self.updateJob.isForQuery) ? self.core.connection.propFindSignals : self.core.connection.actionSignals), 	OCConnectionOptionRequiredSignalsKey,
+				OCMeasureEventBegin(self, @"network.propfind", propFindEvenRef, ([NSString stringWithFormat:@"Starting PROPFIND for %@", self.location]));
 
-						// Schedule in a particular group
-						((self.groupID != nil) ? self.groupID : nil), 									OCConnectionOptionGroupIDKey,
-					nil] completionHandler:^(NSError *error, NSArray<OCItem *> *items) {
-						OCMeasureEventEnd(self, @"network.propfind", propFindEvenRef, ([NSString stringWithFormat:@"Completed PROPFIND for %@", self.location]));
+				retrievalProgress = [self->_core.connection retrieveItemListAtLocation:self.location depth:1 options:[NSDictionary dictionaryWithObjectsAndKeys:
+					// For background scan jobs, wait with scheduling until there is connectivity
+					(isQueryTask ? self.core.connection.propFindSignals : self.core.connection.actionSignals), 	OCConnectionOptionRequiredSignalsKey,
 
-						__block BOOL requestQueueReleased = NO;
-						void (^ReleaseRequestQueue)(void) = ^{
-							if (!requestQueueReleased)
+					// Schedule in a particular group
+					((self.groupID != nil) ? self.groupID : nil), 									OCConnectionOptionGroupIDKey,
+				nil] completionHandler:^(NSError *error, NSArray<OCItem *> *items) {
+					OCMeasureEventEnd(self, @"network.propfind", propFindEvenRef, ([NSString stringWithFormat:@"Completed PROPFIND for %@", self.location]));
+
+					__block BOOL requestQueueReleased = NO;
+					void (^ReleaseRequestQueue)(void) = ^{
+						if (!requestQueueReleased)
+						{
+							requestQueueReleased = YES;
+							if (completionHandler != nil)
 							{
-								requestQueueReleased = YES;
 								completionHandler();
 							}
-						};
-
-						if (self.core.state != OCCoreStateRunning)
-						{
-							// Skip processing the response if the core is not starting or running
-							self.retrievedSet.state = OCCoreItemListStateNew;
-							ReleaseRequestQueue(); // we're done for now, make sure the queue doesn't get stuck
-							return;
 						}
+					};
 
-						// Free the sequential PROPFIND request queue immediately so the next
-						// folder listing can start while this response is merged on the core queue.
-						ReleaseRequestQueue();
+					if (self.core.state != OCCoreStateRunning)
+					{
+						// Skip processing the response if the core is not starting or running
+						self.retrievedSet.state = OCCoreItemListStateNew;
+						ReleaseRequestQueue(); // we're done for now, make sure the queue doesn't get stuck
+						return;
+					}
+
+					// Free the sequential PROPFIND request queue immediately so the next
+					// folder listing can start while this response is merged on the core queue.
+					ReleaseRequestQueue();
 
 						[self->_core beginActivity:@"update retrieved set"];
 
@@ -312,12 +329,27 @@
 						}];
 					}];
 
-					if (retrievalProgress != nil)
-					{
-						[self.core.activityManager update:[[OCActivityUpdate updatingActivityFor:self] withProgress:retrievalProgress]];
-					}
+				if (retrievalProgress != nil)
+				{
+					[self.core.activityManager update:[[OCActivityUpdate updatingActivityFor:self] withProgress:retrievalProgress]];
+				}
+			};
+
+			if (isQueryTask)
+			{
+				// Query tasks fire the PROPFIND directly — no sequential queue wait.
+				[self->_core queueConnectivityBlock:^{
+					PerformPROPFIND(nil);
 				}];
-			}];
+			}
+			else
+			{
+				[self->_core queueConnectivityBlock:^{
+					[self->_core queueRequestJob:^(dispatch_block_t completionHandler) {
+						PerformPROPFIND(completionHandler);
+					}];
+				}];
+			}
 		};
 
 		if ([self.location.path isEqual:@"/"])
