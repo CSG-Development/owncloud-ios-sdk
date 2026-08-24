@@ -1232,7 +1232,11 @@ INCLUDE_IN_CLASS_SETTINGS_SNAPSHOTS(OCCore)
 					{
 						OCCoreItemList *queryItemList;
 
-						if ((queryItemList = [OCCoreItemList itemListWithItems:query.fullQueryResults]) != nil)
+						// Snapshot under the query lock. query.fullQueryResults is a live
+						// NSMutableArray mutated by query updates on other threads; wrapping
+						// that array directly races and throws NSGenericException
+						// ("Collection was mutated while being enumerated") in itemsByFileID.
+						if ((queryItemList = query.fullQueryResultsItemList) != nil)
 						{
 							NSMutableSet <OCFileID> *sharedFileIDs = [[NSMutableSet alloc] initWithSet:addedOrUpdatedItemsList.itemFileIDsSet];
 							[sharedFileIDs intersectSet:queryItemList.itemFileIDsSet];
