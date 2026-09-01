@@ -44,6 +44,18 @@
 			}
 			
 			urlComponents.queryItems = queryItemsAction(queryItems);
+
+			// NSURLComponents.percentEncodedQuery will NOT
+			// - escape "+" as "%2B" because Apple argues that's not what's in the standard and causes issues with normalization (source: http://www.openradar.me/24076063)
+			// - escape ";" as "%3B" (seen under iOS 17.0.1)
+			// Match POST form encoding: servers parse GET queries as form-urlencoded, so "+" is a space.
+			NSString *encodedQuery = urlComponents.percentEncodedQuery;
+			if (encodedQuery.length > 0)
+			{
+				encodedQuery = [encodedQuery stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"];
+				encodedQuery = [encodedQuery stringByReplacingOccurrencesOfString:@";" withString:@"%3B"];
+				urlComponents.percentEncodedQuery = encodedQuery;
+			}
 		}
 		
 		return (urlComponents.URL);

@@ -70,6 +70,29 @@
 	}
 }
 
+#pragma mark - NSURL+OCURLQueryParameterExtensions
+- (void)testQueryParameterPlusAndSemicolonEncoding
+{
+	NSURL *baseURL = [NSURL URLWithString:@"https://example.com/ocs/v2.php/apps/files_sharing/api/v1/shares"];
+
+	// "+" must be encoded as %2B so servers using form-urlencoded query parsing
+	// (PHP $_GET / OCS Share API) do not treat it as a space.
+	NSURL *plusURL = [baseURL urlByAppendingQueryParameters:@{ @"path" : @"/July+August.txt" } replaceExisting:YES];
+	XCTAssertTrue([plusURL.absoluteString containsString:@"July%2BAugust.txt"]);
+	XCTAssertFalse([plusURL.absoluteString containsString:@"July+August.txt"]);
+	XCTAssertEqualObjects(plusURL.queryParameters[@"path"], @"/July+August.txt");
+
+	// Spaces must remain %20 (not "+"), so the "+" → "%2B" rewrite does not
+	// collide with space encoding.
+	NSURL *spaceURL = [baseURL urlByAppendingQueryParameters:@{ @"path" : @"/July August.txt" } replaceExisting:YES];
+	XCTAssertTrue([spaceURL.absoluteString containsString:@"July%20August.txt"]);
+	XCTAssertFalse([spaceURL.absoluteString containsString:@"July+August.txt"]);
+
+	// ";" must be encoded as %3B (NSURLComponents leaves it unescaped on some iOS versions).
+	NSURL *semicolonURL = [baseURL urlByAppendingQueryParameters:@{ @"path" : @"/a;b.txt" } replaceExisting:YES];
+	XCTAssertTrue([semicolonURL.absoluteString containsString:@"a%3Bb.txt"]);
+}
+
 #pragma mark - XML en-/decoding
 - (void)testXMLEncoding
 {

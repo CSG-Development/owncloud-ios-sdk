@@ -250,6 +250,7 @@
 {
 	_fileID = fileID;
 	_versionIdentifier = nil;
+	_location = nil;
 }
 
 - (OCItemVersionIdentifier *)itemVersionIdentifier
@@ -298,6 +299,11 @@
 {
 	if (_location != nil)
 	{
+		if ((_location.fileID == nil) && (_fileID != nil))
+		{
+			_location.fileID = _fileID;
+		}
+
 		return (_location);
 	}
 
