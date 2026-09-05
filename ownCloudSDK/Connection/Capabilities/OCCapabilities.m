@@ -23,7 +23,7 @@
 
 #define WithDefault(val,def) (((val)==nil)?(def):(val))
 
-static NSInteger _defaultSharingSearchMinLength = 2;
+static NSInteger _defaultSharingSearchMinLength = 1;
 
 @interface OCCapabilities()
 {

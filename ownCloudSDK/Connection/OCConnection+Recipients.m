@@ -29,13 +29,26 @@
 #import "OCConnection+RecipientsLegacy.h"
 #endif /* OC_LEGACY_SUPPORT */
 
+// oCIS Graph rejects $search shorter than GRAPH_IDENTITY_SEARCH_MIN_LENGTH (default 3) for regular users.
+static const NSUInteger OCGraphIdentitySearchMinLength = 3;
+
+@interface OCConnection (RecipientsInternal)
+- (NSString *)_graphSearchParameterForTerm:(NSString *)searchTerm;
+- (nullable NSProgress *)_retrieveRecipientsUsingGraphSearchForItemType:(OCItemType)itemType ofShareType:(nullable NSArray<OCShareTypeID> *)shareTypes searchTerm:(NSString *)searchTerm maximumNumberOfRecipients:(NSUInteger)maximumNumberOfRecipients completionHandler:(OCConnectionRecipientsRetrievalCompletionHandler)completionHandler;
+- (nullable NSProgress *)_retrieveRecipientsUsingGraphSearchForItemType:(OCItemType)itemType ofShareType:(nullable NSArray<OCShareTypeID> *)shareTypes searchTerm:(NSString *)searchTerm maximumNumberOfRecipients:(NSUInteger)maximumNumberOfRecipients allowShareesFallback:(BOOL)allowShareesFallback completionHandler:(OCConnectionRecipientsRetrievalCompletionHandler)completionHandler;
+- (nullable NSProgress *)_retrieveUsersForSearchTerm:(NSString *)searchTerm maximumResultCount:(NSUInteger)maximumResultCount completionHandler:(OCConnectionRecipientsRetrievalCompletionHandler)completionHandler;
+- (nullable NSProgress *)_retrieveGroupsForSearchTerm:(nullable NSString *)searchTerm maximumResultCount:(NSUInteger)maximumResultCount completionHandler:(OCConnectionRecipientsRetrievalCompletionHandler)completionHandler;
+#if OC_LEGACY_SUPPORT
+- (nullable NSProgress *)_retrieveRecipientsUsingShareesResolvingGraphIDsForItemType:(OCItemType)itemType ofShareType:(nullable NSArray<OCShareTypeID> *)shareTypes searchTerm:(NSString *)searchTerm maximumNumberOfRecipients:(NSUInteger)maximumNumberOfRecipients completionHandler:(OCConnectionRecipientsRetrievalCompletionHandler)completionHandler;
+- (nullable NSProgress *)_enrichIdentitiesWithGraphIDs:(NSArray<OCIdentity *> *)identities completionHandler:(OCConnectionRecipientsRetrievalCompletionHandler)completionHandler;
+#endif
+@end
+
 @implementation OCConnection (Recipients)
 
 #pragma mark - Search
 - (nullable NSProgress *)retrieveRecipientsForItemType:(OCItemType)itemType ofShareType:(nullable NSArray <OCShareTypeID> *)shareTypes searchTerm:(nullable NSString *)searchTerm maximumNumberOfRecipients:(NSUInteger)maximumNumberOfRecipients completionHandler:(OCConnectionRecipientsRetrievalCompletionHandler)completionHandler
 {
-	NSProgress *progress = nil;
-
 	// OC 10
 	#if OC_LEGACY_SUPPORT
 	if (!self.useDriveAPI) {
@@ -43,64 +56,218 @@
 	}
 	#endif /* OC_LEGACY_SUPPORT */
 
-	// ocis
-	// Reference: https://owncloud.dev/apis/http/graph/users/#get-users
-	if ((searchTerm != nil) && (searchTerm.length > 0))
-	{
-		NSProgress *combinedProgress = [NSProgress indeterminateProgress];
-		NSMutableArray<OCIdentity *> *resultIdentities = [NSMutableArray new];
-		__block NSError *combinedError = nil;
-		dispatch_group_t completionGroup = dispatch_group_create();
-
-		dispatch_group_enter(completionGroup);
-		progress = [self _retrieveUsersForSearchTerm:searchTerm maximumResultCount:maximumNumberOfRecipients completionHandler:^(NSError * _Nullable error, NSArray<OCIdentity *> * _Nullable recipients, BOOL finished) {
-			@synchronized(resultIdentities) {
-				if (error != nil) {
-					combinedError = error;
-				}
-				else
-				{
-					[resultIdentities addObjectsFromArray:recipients];
-				}
-			}
-			dispatch_group_leave(completionGroup);
-		}];
-		[combinedProgress addChild:progress withPendingUnitCount:50];
-
-		dispatch_group_enter(completionGroup);
-		progress = [self _retrieveGroupsForSearchTerm:searchTerm maximumResultCount:maximumNumberOfRecipients completionHandler:^(NSError * _Nullable error, NSArray<OCIdentity *> * _Nullable recipients, BOOL finished) {
-			@synchronized(resultIdentities) {
-				if (error != nil) {
-					combinedError = error;
-				}
-				else
-				{
-					[resultIdentities addObjectsFromArray:recipients];
-				}
-			}
-			dispatch_group_leave(completionGroup);
-		}];
-		[combinedProgress addChild:progress withPendingUnitCount:50];
-
-		dispatch_group_notify(completionGroup, dispatch_get_main_queue(), ^{
-			completionHandler(combinedError, (combinedError == nil) ? resultIdentities : nil, YES);
-		});
-	}
-	else
+	if ((searchTerm == nil) || (searchTerm.length == 0))
 	{
 		if (completionHandler != nil)
 		{
 			completionHandler(nil, @[], YES);
 		}
+		return (nil);
 	}
 
-	return (progress);
+	#if OC_LEGACY_SUPPORT
+	// Graph $search is substring/contains matching on the backend, but regular users are
+	// rejected below GRAPH_IDENTITY_SEARCH_MIN_LENGTH (default 3). The OCS sharees API has
+	// no such floor, so 1- and 2-character queries can still return matching users/groups.
+	if (searchTerm.length < OCGraphIdentitySearchMinLength)
+	{
+		return ([self _retrieveRecipientsUsingShareesResolvingGraphIDsForItemType:itemType ofShareType:shareTypes searchTerm:searchTerm maximumNumberOfRecipients:maximumNumberOfRecipients completionHandler:completionHandler]);
+	}
+	#endif /* OC_LEGACY_SUPPORT */
+
+	return ([self _retrieveRecipientsUsingGraphSearchForItemType:itemType ofShareType:shareTypes searchTerm:searchTerm maximumNumberOfRecipients:maximumNumberOfRecipients allowShareesFallback:YES completionHandler:completionHandler]);
 }
+
+- (NSString *)_graphSearchParameterForTerm:(NSString *)searchTerm
+{
+	// Quote only when OData would otherwise tokenize the term (emails, spaces, etc.).
+	// Always-on quotes inflate Graph's min-length check by 2 ("N" is measured as 3, required 5).
+	static NSCharacterSet *nonSimpleCharacters;
+	static dispatch_once_t onceToken;
+	dispatch_once(&onceToken, ^{
+		NSMutableCharacterSet *simpleCharacters = [NSMutableCharacterSet alphanumericCharacterSet];
+		[simpleCharacters addCharactersInString:@"._"];
+		nonSimpleCharacters = simpleCharacters.invertedSet;
+	});
+
+	if ([searchTerm rangeOfCharacterFromSet:nonSimpleCharacters].location != NSNotFound)
+	{
+		NSString *escapedTerm = [[searchTerm stringByReplacingOccurrencesOfString:@"\\" withString:@"\\\\"] stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
+		return ([NSString stringWithFormat:@"\"%@\"", escapedTerm]);
+	}
+
+	return (searchTerm);
+}
+
+- (nullable NSProgress *)_retrieveRecipientsUsingGraphSearchForItemType:(OCItemType)itemType ofShareType:(nullable NSArray<OCShareTypeID> *)shareTypes searchTerm:(NSString *)searchTerm maximumNumberOfRecipients:(NSUInteger)maximumNumberOfRecipients completionHandler:(OCConnectionRecipientsRetrievalCompletionHandler)completionHandler
+{
+	return ([self _retrieveRecipientsUsingGraphSearchForItemType:itemType ofShareType:shareTypes searchTerm:searchTerm maximumNumberOfRecipients:maximumNumberOfRecipients allowShareesFallback:YES completionHandler:completionHandler]);
+}
+
+- (nullable NSProgress *)_retrieveRecipientsUsingGraphSearchForItemType:(OCItemType)itemType ofShareType:(nullable NSArray<OCShareTypeID> *)shareTypes searchTerm:(NSString *)searchTerm maximumNumberOfRecipients:(NSUInteger)maximumNumberOfRecipients allowShareesFallback:(BOOL)allowShareesFallback completionHandler:(OCConnectionRecipientsRetrievalCompletionHandler)completionHandler
+{
+	// ocis
+	// Reference: https://owncloud.dev/apis/http/graph/users/#get-users
+	NSProgress *progress = nil;
+	NSProgress *combinedProgress = [NSProgress indeterminateProgress];
+	NSMutableArray<OCIdentity *> *resultIdentities = [NSMutableArray new];
+	__block NSError *combinedError = nil;
+	dispatch_group_t completionGroup = dispatch_group_create();
+
+	dispatch_group_enter(completionGroup);
+	progress = [self _retrieveUsersForSearchTerm:searchTerm maximumResultCount:maximumNumberOfRecipients completionHandler:^(NSError * _Nullable error, NSArray<OCIdentity *> * _Nullable recipients, BOOL finished) {
+		@synchronized(resultIdentities) {
+			if (error != nil) {
+				combinedError = error;
+			}
+			else
+			{
+				[resultIdentities addObjectsFromArray:recipients];
+			}
+		}
+		dispatch_group_leave(completionGroup);
+	}];
+	if (progress != nil)
+	{
+		[combinedProgress addChild:progress withPendingUnitCount:50];
+	}
+
+	dispatch_group_enter(completionGroup);
+	progress = [self _retrieveGroupsForSearchTerm:searchTerm maximumResultCount:maximumNumberOfRecipients completionHandler:^(NSError * _Nullable error, NSArray<OCIdentity *> * _Nullable recipients, BOOL finished) {
+		@synchronized(resultIdentities) {
+			if (error != nil) {
+				combinedError = error;
+			}
+			else
+			{
+				[resultIdentities addObjectsFromArray:recipients];
+			}
+		}
+		dispatch_group_leave(completionGroup);
+	}];
+	if (progress != nil)
+	{
+		[combinedProgress addChild:progress withPendingUnitCount:50];
+	}
+
+	dispatch_group_notify(completionGroup, dispatch_get_main_queue(), ^{
+		#if OC_LEGACY_SUPPORT
+		if ((combinedError != nil) && allowShareesFallback)
+		{
+			[self _retrieveRecipientsUsingShareesResolvingGraphIDsForItemType:itemType ofShareType:shareTypes searchTerm:searchTerm maximumNumberOfRecipients:maximumNumberOfRecipients completionHandler:completionHandler];
+			return;
+		}
+		#endif /* OC_LEGACY_SUPPORT */
+
+		completionHandler(combinedError, (combinedError == nil) ? resultIdentities : nil, YES);
+	});
+
+	return (combinedProgress);
+}
+
+#if OC_LEGACY_SUPPORT
+- (nullable NSProgress *)_retrieveRecipientsUsingShareesResolvingGraphIDsForItemType:(OCItemType)itemType ofShareType:(nullable NSArray<OCShareTypeID> *)shareTypes searchTerm:(NSString *)searchTerm maximumNumberOfRecipients:(NSUInteger)maximumNumberOfRecipients completionHandler:(OCConnectionRecipientsRetrievalCompletionHandler)completionHandler
+{
+	return ([self legacyRetrieveRecipientsForItemType:itemType ofShareType:shareTypes searchTerm:searchTerm maximumNumberOfRecipients:maximumNumberOfRecipients completionHandler:^(NSError * _Nullable error, NSArray<OCIdentity *> * _Nullable recipients, BOOL finished) {
+		if (error != nil)
+		{
+			[self _retrieveRecipientsUsingGraphSearchForItemType:itemType ofShareType:shareTypes searchTerm:searchTerm maximumNumberOfRecipients:maximumNumberOfRecipients allowShareesFallback:NO completionHandler:completionHandler];
+			return;
+		}
+
+		if (recipients.count == 0)
+		{
+			completionHandler(nil, @[], YES);
+			return;
+		}
+
+		[self _enrichIdentitiesWithGraphIDs:recipients completionHandler:completionHandler];
+	}]);
+}
+
+- (nullable NSProgress *)_enrichIdentitiesWithGraphIDs:(NSArray<OCIdentity *> *)identities completionHandler:(OCConnectionRecipientsRetrievalCompletionHandler)completionHandler
+{
+	NSProgress *combinedProgress = NSProgress.indeterminateProgress;
+	dispatch_group_t retrievalGroup = dispatch_group_create();
+	NSMutableArray<OCIdentity *> *resolvedIdentities = [NSMutableArray new];
+
+	for (OCIdentity *identity in identities)
+	{
+		OCUser *user = identity.user;
+		OCGroup *group = identity.group;
+		NSProgress *retrieveProgress = nil;
+
+		if (user != nil)
+		{
+			OCUserID userID = (user.identifier.length > 0) ? user.identifier : user.userName;
+
+			if (userID.length == 0)
+			{
+				@synchronized(resolvedIdentities) {
+					[resolvedIdentities addObject:identity];
+				}
+				continue;
+			}
+
+			dispatch_group_enter(retrievalGroup);
+			retrieveProgress = [self retrieveUserForID:userID completionHandler:^(NSError * _Nullable error, OCUser * _Nullable graphUser) {
+				OCIdentity *resolvedIdentity = identity;
+
+				if ((error == nil) && (graphUser != nil))
+				{
+					resolvedIdentity = [[OCIdentity identityWithUser:graphUser] withSearchResultName:identity.searchResultName];
+					resolvedIdentity.matchType = identity.matchType;
+				}
+
+				@synchronized(resolvedIdentities) {
+					[resolvedIdentities addObject:resolvedIdentity];
+				}
+				dispatch_group_leave(retrievalGroup);
+			}];
+		}
+		else if ((group != nil) && (group.identifier.length > 0))
+		{
+			dispatch_group_enter(retrievalGroup);
+			retrieveProgress = [self retrieveGroupForID:group.identifier completionHandler:^(NSError * _Nullable error, OCGroup * _Nullable graphGroup) {
+				OCIdentity *resolvedIdentity = identity;
+
+				if ((error == nil) && (graphGroup != nil))
+				{
+					resolvedIdentity = [[OCIdentity identityWithGroup:graphGroup] withSearchResultName:identity.searchResultName];
+					resolvedIdentity.matchType = identity.matchType;
+				}
+
+				@synchronized(resolvedIdentities) {
+					[resolvedIdentities addObject:resolvedIdentity];
+				}
+				dispatch_group_leave(retrievalGroup);
+			}];
+		}
+		else
+		{
+			@synchronized(resolvedIdentities) {
+				[resolvedIdentities addObject:identity];
+			}
+		}
+
+		if (retrieveProgress != nil)
+		{
+			[combinedProgress addChild:retrieveProgress withPendingUnitCount:1];
+		}
+	}
+
+	dispatch_group_notify(retrievalGroup, dispatch_get_main_queue(), ^{
+		completionHandler(nil, resolvedIdentities, YES);
+	});
+
+	return (combinedProgress);
+}
+#endif /* OC_LEGACY_SUPPORT */
 
 - (nullable NSProgress *)_retrieveUsersForSearchTerm:(NSString *)searchTerm maximumResultCount:(NSUInteger)maximumResultCount completionHandler:(OCConnectionRecipientsRetrievalCompletionHandler)completionHandler
 {
 	return ([self requestODataAtURL:[self URLForEndpoint:OCConnectionEndpointIDGraphUsers options:nil] requireSignals:[NSSet setWithObject:OCConnectionSignalIDAuthenticationAvailable] selectEntityID:nil selectProperties:nil filterString:nil parameters:@{
-		@"$search" : [NSString stringWithFormat:@"\"%@\"", searchTerm],
+		@"$search" : [self _graphSearchParameterForTerm:searchTerm],
 		@"$orderby" : @"displayName"
 	} entityClass:GAUser.class options:nil completionHandler:^(NSError * _Nullable error, id  _Nullable response) {
 		NSMutableArray<OCIdentity *> *ocIdentities = nil;
@@ -140,7 +307,7 @@
 - (nullable NSProgress *)_retrieveGroupsForSearchTerm:(nullable NSString *)searchTerm maximumResultCount:(NSUInteger)maximumResultCount completionHandler:(OCConnectionRecipientsRetrievalCompletionHandler)completionHandler
 {
 	return ([self requestODataAtURL:[self URLForEndpoint:OCConnectionEndpointIDGraphGroups options:nil] requireSignals:[NSSet setWithObject:OCConnectionSignalIDAuthenticationAvailable] selectEntityID:nil selectProperties:nil filterString:nil parameters:@{
-		@"$search" : [NSString stringWithFormat:@"\"%@\"", searchTerm],
+		@"$search" : [self _graphSearchParameterForTerm:searchTerm],
 		@"$orderby" : @"displayName"
 	} entityClass:GAGroup.class options:nil completionHandler:^(NSError * _Nullable error, id  _Nullable response) {
 		NSMutableArray<OCIdentity *> *ocIdentities = nil;
@@ -292,8 +459,12 @@
 		}
 
 		if (user != nil) {
+			OCUserID userID = (user.identifier.length > 0) ? user.identifier : user.userName;
+			if (userID.length == 0) {
+				continue;
+			}
 			dispatch_group_enter(retrievalGroup);
-			retrieveProgress = [self retrieveUserForID:user.identifier completionHandler:^(NSError * _Nullable error, OCUser * _Nullable user) {
+			retrieveProgress = [self retrieveUserForID:userID completionHandler:^(NSError * _Nullable error, OCUser * _Nullable user) {
 				@synchronized(resultObjects) {
 					if ((error != nil) && (retrievalError == nil)) {
 						retrievalError = error;
