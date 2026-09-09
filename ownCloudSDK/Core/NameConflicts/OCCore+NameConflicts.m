@@ -20,15 +20,28 @@
 #import "NSString+NameConflicts.h"
 #import "NSString+OCPath.h"
 #import "OCCore+Internal.h"
+#import "OCVault.h"
+#import "OCDatabase.h"
 
 @implementation OCCore (NameConflicts)
 
 #pragma mark - Name conflict resolution
 - (void)suggestUnusedNameBasedOn:(NSString *)itemName atLocation:(OCLocation *)location isDirectory:(BOOL)isDirectory usingNameStyle:(OCCoreDuplicateNameStyle)style filteredBy:(nullable OCCoreUnusedNameSuggestionFilter)filter resultHandler:(OCCoreUnusedNameSuggestionResultHandler)resultHandler
 {
-	[self queueBlock:^{
+	void (^suggest)(void) = ^{
 		[self _suggestUnusedNameBasedOn:itemName atLocation:location isDirectory:isDirectory usingNameStyle:style filteredBy:filter resultHandler:resultHandler];
-	} allowInlining:YES];
+	};
+
+	// Issue resolution runs inside an exclusive SQLite transaction. Hopping to the core
+	// queue from there deadlocks: the core queue then waits on cachedItemAtLocation,
+	// which cannot complete until this SQLite thread is free.
+	if (self.vault.database.sqlDB.isOnSQLiteThread)
+	{
+		suggest();
+		return;
+	}
+
+	[self queueBlock:suggest allowInlining:YES];
 }
 
 - (void)_suggestUnusedNameBasedOn:(NSString *)itemName atLocation:(OCLocation *)location isDirectory:(BOOL)isDirectory usingNameStyle:(OCCoreDuplicateNameStyle)style filteredBy:(nullable OCCoreUnusedNameSuggestionFilter)filter resultHandler:(OCCoreUnusedNameSuggestionResultHandler)resultHandler

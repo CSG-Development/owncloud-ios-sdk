@@ -18,27 +18,39 @@
 
 #import "OCCore.h"
 #import "OCSyncActionCopyMove.h"
+#import "OCMacros.h"
 
 @implementation OCCore (CommandCopyMove)
 
 #pragma mark - Commands
 - (nullable NSProgress *)copyItem:(OCItem *)item to:(OCItem *)parentItem withName:(NSString *)name options:(nullable NSDictionary<OCCoreOption,id> *)options resultHandler:(nullable OCCoreActionResultHandler)resultHandler
 {
+	OCSyncActionCopy *action;
+
 	if ((item == nil) || (name == nil) || (parentItem == nil)) { return(nil); }
 
-	return ([self _enqueueSyncRecordWithAction:[[OCSyncActionCopy alloc] initWithItem:item targetName:name targetParentItem:parentItem isRename:NO] cancellable:NO resultHandler:resultHandler]);
+	action = [[OCSyncActionCopy alloc] initWithItem:item targetName:name targetParentItem:parentItem isRename:NO];
+	action.options = options;
+
+	return ([self _enqueueSyncRecordWithAction:action cancellable:NO resultHandler:resultHandler]);
 }
 
 - (nullable NSProgress *)moveItem:(OCItem *)item to:(OCItem *)parentItem withName:(NSString *)name options:(nullable NSDictionary<OCCoreOption,id> *)options resultHandler:(nullable OCCoreActionResultHandler)resultHandler
 {
+	OCSyncActionMove *action;
+
 	if ((item == nil) || (name == nil) || (parentItem == nil)) { return(nil); }
 
-	return ([self _enqueueSyncRecordWithAction:[[OCSyncActionMove alloc] initWithItem:item targetName:name targetParentItem:parentItem isRename:NO] cancellable:NO resultHandler:resultHandler]);
+	action = [[OCSyncActionMove alloc] initWithItem:item targetName:name targetParentItem:parentItem isRename:NO];
+	action.options = options;
+
+	return ([self _enqueueSyncRecordWithAction:action cancellable:NO resultHandler:resultHandler]);
 }
 
 - (nullable NSProgress *)renameItem:(OCItem *)item to:(NSString *)newFileName options:(nullable NSDictionary<OCCoreOption,id> *)options resultHandler:(nullable OCCoreActionResultHandler)resultHandler
 {
 	__block OCItem *parentItem = nil;
+	OCSyncActionMove *action;
 
 	OCSyncExec(cacheItemRetrieval, {
 		[self.vault.database retrieveCacheItemForFileID:item.parentFileID completionHandler:^(OCDatabase *db, NSError *error, OCSyncAnchor syncAnchor, OCItem *item) {
@@ -53,7 +65,10 @@
 
 	if ((item == nil) || (newFileName == nil) || (parentItem == nil)) { return(nil); }
 
-	return ([self _enqueueSyncRecordWithAction:[[OCSyncActionMove alloc] initWithItem:item targetName:newFileName targetParentItem:parentItem isRename:YES] cancellable:NO resultHandler:resultHandler]);
+	action = [[OCSyncActionMove alloc] initWithItem:item targetName:newFileName targetParentItem:parentItem isRename:YES];
+	action.options = options;
+
+	return ([self _enqueueSyncRecordWithAction:action cancellable:NO resultHandler:resultHandler]);
 }
 
 @end

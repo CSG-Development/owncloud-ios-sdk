@@ -3009,7 +3009,8 @@ INCLUDE_IN_CLASS_SETTINGS_SNAPSHOTS(OCConnection)
 
 			[request setValue:[destinationURL absoluteString] forHeaderField:OCHTTPHeaderFieldNameDestination];
 			[request setValue:@"infinity" forHeaderField:OCHTTPHeaderFieldNameDepth];
-			[request setValue:@"F" forHeaderField:OCHTTPHeaderFieldNameOverwrite]; // "F" for False, "T" for True
+			// "T" when force-replace is requested (overwrite existing destination), otherwise "F"
+			[request setValue:(((NSNumber *)options[OCConnectionOptionForceReplaceKey]).boolValue ? @"T" : @"F") forHeaderField:OCHTTPHeaderFieldNameOverwrite];
 
 			[request setPolicy:OCHTTPRequestStatusPolicyHandleLocally forStatus:OCHTTPStatusCodeBAD_GATEWAY]; // BAD GATEWAY is an expected response code for move/copy
 
@@ -3066,7 +3067,10 @@ INCLUDE_IN_CLASS_SETTINGS_SNAPSHOTS(OCConnection)
 				newFullPath = [newFullPath normalizedDirectoryPath];
 			}
 
-			if (request.httpResponse.status.code == OCHTTPStatusCodeCREATED)
+			// 201 Created: destination did not exist; 204 No Content: destination was overwritten (Overwrite: T)
+			if ((request.httpResponse.status.code == OCHTTPStatusCodeCREATED) ||
+			    (request.httpResponse.status.code == OCHTTPStatusCodeNO_CONTENT) ||
+			    request.httpResponse.status.isSuccess)
 			{
 				postEvent = NO; // Wait until all info on the new item has been received
 

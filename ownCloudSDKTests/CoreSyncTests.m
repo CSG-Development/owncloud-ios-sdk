@@ -743,6 +743,7 @@
 	__block OCLocalID localIDQueryPlaceholderCopyFileParent=nil, localIDCopiedFileParent=nil, localIDQueryPlaceholderCopyFolderParent=nil, localIDCopiedFolderParent=nil;
 	__block OCLocalID localIDParentFolderPlaceholderOnQuery=nil, localIDParentFolderCompleteOnQuery=nil, localIDParentFolderOnCompletion=nil, localIDParentFolderOnDeleteCompletion=nil;
 	NSString *folderName = NSUUID.UUID.UUIDString;
+	CoreSyncTestsIssueDismisser *issueDismisser = [CoreSyncTestsIssueDismisser new];
 
 	// Create bookmark for demo.owncloud.org
 	bookmark = [OCBookmark bookmarkForURL:OCTestTarget.secureTargetURL];
@@ -751,6 +752,7 @@
 
 	// Create core with it
 	core = [[OCCore alloc] initWithBookmark:bookmark];
+	core.delegate = issueDismisser;
 	core.automaticItemListUpdatesEnabled = NO;
 
 	// Start core
@@ -936,7 +938,9 @@
 
 								XCTAssert(error!=nil);
 								XCTAssert([error.domain isEqual:OCErrorDomain]);
-								XCTAssert(error.code == OCErrorItemAlreadyExists);
+								// Name conflict now surfaces as a Replace/Keep both/Cancel sync issue;
+								// the test dismisser cancels, which completes with OCErrorCancelled.
+								XCTAssert(error.code == OCErrorCancelled);
 								XCTAssert(newItem==nil);
 
 								[fileCopiedToExistingLocationExpectation fulfill];
@@ -1258,7 +1262,9 @@
 
 										XCTAssert(error!=nil);
 										XCTAssert([error.domain isEqual:OCErrorDomain]);
-										XCTAssert(error.code == OCErrorItemAlreadyExists);
+										// Name conflict now surfaces as a Replace/Keep both/Cancel sync issue;
+										// the test dismisser cancels, which completes with OCErrorCancelled.
+										XCTAssert(error.code == OCErrorCancelled);
 										XCTAssert(newItem==nil);
 
 										[fileMovedOntoItselfFailsExpectation fulfill];

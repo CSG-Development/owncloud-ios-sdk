@@ -19,6 +19,17 @@
 #import "OCSyncActionCopyMove.h"
 #import "NSError+OCNetworkFailure.h"
 #import "OCLocaleFilterVariables.h"
+#import "OCCore+NameConflicts.h"
+#import "OCCore+SyncEngine.h"
+#import "OCMacros.h"
+#import "OCLogger.h"
+#import "OCEvent.h"
+
+static OCMessageTemplateIdentifier OCMessageTemplateIdentifierCopyMoveKeepBoth = @"copymove.keep-both";
+
+@interface OCCore (NameConflictsInternal)
+- (void)_suggestUnusedNameBasedOn:(NSString *)itemName atLocation:(OCLocation *)location isDirectory:(BOOL)isDirectory usingNameStyle:(OCCoreDuplicateNameStyle)style filteredBy:(nullable OCCoreUnusedNameSuggestionFilter)filter resultHandler:(OCCoreUnusedNameSuggestionResultHandler)resultHandler;
+@end
 
 @interface OCSyncActionCopyMove ()
 {
@@ -27,6 +38,20 @@
 @end
 
 @implementation OCSyncActionCopyMove
+
+@synthesize options;
+
+#pragma mark - Issue templates
++ (NSArray<OCMessageTemplate *> *)actionIssueTemplates
+{
+	return (@[
+		[OCMessageTemplate templateWithIdentifier:OCMessageTemplateIdentifierCopyMoveKeepBoth categoryName:nil choices:@[
+			[OCSyncIssueChoice choiceOfType:OCIssueChoiceTypeCancel impact:OCSyncIssueChoiceImpactNonDestructive identifier:OCSyncIssueChoiceIdentifierCancel label:OCLocalizedString(@"Skip",nil) metaData:nil],
+			[OCSyncIssueChoice choiceOfType:OCIssueChoiceTypeDestructive impact:OCSyncIssueChoiceImpactDataLoss identifier:@"replaceExisting" label:OCLocalizedString(@"Replace",nil) metaData:nil],
+			[OCSyncIssueChoice choiceOfType:OCIssueChoiceTypeDefault impact:OCSyncIssueChoiceImpactNonDestructive identifier:@"keepBoth" label:OCLocalizedString(@"Keep both",nil) metaData:nil]
+		] options:nil]
+	]);
+}
 
 #pragma mark - Initializer
 - (instancetype)initWithItem:(OCItem *)item targetName:(NSString *)targetName targetParentItem:(OCItem *)targetParentItem isRename:(BOOL)isRename
@@ -212,6 +237,15 @@
 			}
 		}
 
+		if ([((NSNumber *)self.options[OCConnectionOptionForceReplaceKey]) boolValue])
+		{
+			OCItem *existingItem = [self _preExistingItemAtDestination];
+			if (existingItem != nil)
+			{
+				syncContext.removedItems = @[ existingItem ];
+			}
+		}
+
 		syncContext.updateStoredSyncRecordAfterItemUpdates = YES; // Update syncRecord, so the updated placeHolderItem (now with databaseID) will be stored in the database and can later be used to remove the placeHolderItem again.
 	}
 	else
@@ -224,14 +258,15 @@
 - (OCCoreSyncInstruction)scheduleWithContext:(OCSyncContext *)syncContext
 {
 	OCProgress *progress;
+	NSDictionary<OCCoreOption,id> *options = (self.options != nil) ? self.options : @{};
 
 	if ([self.identifier isEqual:OCSyncActionIdentifierCopy])
 	{
-		progress = [self.core.connection copyItem:self.localItem to:self.targetParentItem withName:self.targetName options:nil resultTarget:[self.core _eventTargetWithSyncRecord:syncContext.syncRecord]];
+		progress = [self.core.connection copyItem:self.localItem to:self.targetParentItem withName:self.targetName options:options resultTarget:[self.core _eventTargetWithSyncRecord:syncContext.syncRecord]];
 	}
 	else if ([self.identifier isEqual:OCSyncActionIdentifierMove])
 	{
-		progress = [self.core.connection moveItem:self.localItem to:self.targetParentItem withName:self.targetName options:nil resultTarget:[self.core _eventTargetWithSyncRecord:syncContext.syncRecord]];
+		progress = [self.core.connection moveItem:self.localItem to:self.targetParentItem withName:self.targetName options:options resultTarget:[self.core _eventTargetWithSyncRecord:syncContext.syncRecord]];
 	}
 
 	if (progress != nil)
@@ -438,10 +473,10 @@
 				break;
 
 				case OCErrorItemAlreadyExists:
-					issueTitle = [NSString stringWithFormat:OCLocalizedString(@"%@ already exists",nil), self.targetName];
+					issueTitle = OCLocalizedString(@"File already exists",nil);
 					if (isCopy)
 					{
-						issueDescription = [NSString stringWithFormat:OCLocalizedString(@"Couldn't copy %@ to %@, because an item called %@ already exists there.",nil), self.localItem.name, targetPath, self.targetName];
+						issueDescription = [NSString stringWithFormat:OCLocalizedString(@"File with name %@ already exists",nil), self.targetName];
 					}
 					else
 					{
@@ -451,7 +486,7 @@
 						}
 						else
 						{
-							issueDescription = [NSString stringWithFormat:OCLocalizedString(@"Couldn't move %@ to %@, because an item called %@ already exists there.",nil), self.localItem.name, targetPath, self.targetName];
+							issueDescription = [NSString stringWithFormat:OCLocalizedString(@"File with name %@ already exists",nil), self.targetName];
 						}
 					}
 				break;
@@ -507,14 +542,32 @@
 			event.error = OCErrorWithDescription(event.error.code, issueDescription);
 		}
 
-		// Action complete
-		[syncContext completeWithError:event.error core:self.core item:nil parameter:nil];
+		BOOL offerConflictResolution = [event.error isOCErrorWithCode:OCErrorItemAlreadyExists] && !self.isRename;
 
-		if ((issueTitle!=nil) && (issueDescription!=nil))
+		if (offerConflictResolution)
 		{
-			// Create issue for cancellation for any errors
-			[self _addIssueForCancellationAndDeschedulingToContext:syncContext title:issueTitle description:issueDescription impact:OCSyncIssueChoiceImpactNonDestructive]; // queues a new wait condition with the issue
-			[syncContext transitionToState:OCSyncRecordStateProcessing withWaitConditions:nil]; // updates the sync record with the issue wait condition
+			// Defer completion until the user picks Replace, Keep both, or Skip
+			OCSyncIssue *issue = [OCSyncIssue issueFromTemplate:OCMessageTemplateIdentifierCopyMoveKeepBoth
+							      forSyncRecord:syncContext.syncRecord
+								      level:OCIssueLevelError
+								      title:issueTitle
+								description:issueDescription
+								   metaData:nil];
+
+			[syncContext addSyncIssue:issue];
+			[syncContext transitionToState:OCSyncRecordStateProcessing withWaitConditions:nil];
+		}
+		else
+		{
+			// Action complete
+			[syncContext completeWithError:event.error core:self.core item:nil parameter:nil];
+
+			if ((issueTitle!=nil) && (issueDescription!=nil))
+			{
+				// Create issue for cancellation for any errors
+				[self _addIssueForCancellationAndDeschedulingToContext:syncContext title:issueTitle description:issueDescription impact:OCSyncIssueChoiceImpactNonDestructive]; // queues a new wait condition with the issue
+				[syncContext transitionToState:OCSyncRecordStateProcessing withWaitConditions:nil]; // updates the sync record with the issue wait condition
+			}
 		}
 	}
 	else if (event.error != nil)
@@ -528,6 +581,173 @@
 	}
 
 	return (resultInstruction);
+}
+
+#pragma mark - Issue resolution
+- (OCItem *)_preExistingItemAtDestination
+{
+	__block OCItem *itemToReplace = nil;
+	OCLocalID processingLocalID = self.processingItem.localID;
+	OCLocalID sourceLocalID = self.localItem.localID;
+	OCPath targetPath = [self.targetParentItem.path stringByAppendingPathComponent:self.targetName];
+
+	if (self.localItem.type == OCItemTypeCollection)
+	{
+		targetPath = [targetPath normalizedDirectoryPath];
+	}
+
+	OCLocation *destinationLocation = [[OCLocation alloc] initWithDriveID:self.targetParentItem.driveID path:targetPath];
+
+	[self.core.vault.database retrieveCacheItemsAtLocation:destinationLocation itemOnly:NO completionHandler:^(OCDatabase *db, NSError *error, OCSyncAnchor syncAnchor, NSArray<OCItem *> *items) {
+		for (OCItem *item in items)
+		{
+			if ((processingLocalID != nil) && [item.localID isEqual:processingLocalID])
+			{
+				continue;
+			}
+
+			if ((sourceLocalID != nil) && [item.localID isEqual:sourceLocalID])
+			{
+				continue;
+			}
+
+			itemToReplace = item;
+			break;
+		}
+	}];
+
+	return (itemToReplace);
+}
+
+- (void)_applyTargetName:(NSString *)newTargetName syncContext:(OCSyncContext *)syncContext
+{
+	OCPath previousTargetPath = self.processingItem.path;
+	OCPath newTargetPath = [self.targetParentItem.path stringByAppendingPathComponent:newTargetName];
+	BOOL isCopy = [self.identifier isEqual:OCSyncActionIdentifierCopy];
+
+	if (self.localItem.type == OCItemTypeCollection)
+	{
+		newTargetPath = [newTargetPath normalizedDirectoryPath];
+	}
+
+	self.targetName = newTargetName;
+
+	if (self.processingItem != nil)
+	{
+		NSURL *previousLocalURL = nil;
+		NSURL *newLocalURL = nil;
+
+		if (isCopy && (self.processingItem.localRelativePath != nil))
+		{
+			previousLocalURL = [self.core localURLForItem:self.processingItem];
+		}
+
+		self.processingItem.previousPath = previousTargetPath;
+		self.processingItem.path = newTargetPath;
+
+		if (isCopy && (previousLocalURL != nil))
+		{
+			NSError *error = nil;
+
+			self.processingItem.localRelativePath = [self.core.vault relativePathForItem:self.processingItem];
+			newLocalURL = [self.core localURLForItem:self.processingItem];
+
+			if ((newLocalURL != nil) && ![previousLocalURL isEqual:newLocalURL])
+			{
+				if (![[NSFileManager defaultManager] moveItemAtURL:previousLocalURL toURL:newLocalURL error:&error])
+				{
+					OCLogError(@"Renaming local copy from %@ to %@ during `keepBoth` issue resolution returned an error=%@", previousLocalURL, newLocalURL, error);
+				}
+
+				OCFileOpLog(@"mv", error, @"Renamed local copy from %@ to %@ during `keepBoth` issue resolution", previousLocalURL.path, newLocalURL.path);
+			}
+		}
+
+		NSMutableArray <OCItem *> *updatedItems = [NSMutableArray arrayWithObject:self.processingItem];
+
+		if (!isCopy && (self.associatedItemLocalIDs.count > 0) && (previousTargetPath != nil))
+		{
+			for (OCLocalID associatedItemLocalID in self.associatedItemLocalIDs)
+			{
+				[self.core.vault.database retrieveCacheItemForLocalID:associatedItemLocalID completionHandler:^(OCDatabase *db, NSError *error, OCSyncAnchor syncAnchor, OCItem *item) {
+					if ((item != nil) && [item.path hasPrefix:previousTargetPath])
+					{
+						item.previousPath = item.path;
+						item.path = [newTargetPath stringByAppendingPathComponent:[item.path substringFromIndex:previousTargetPath.length]];
+
+						OCLogDebug(@"Keep both: move contained item %@ => %@", OCLogPrivate(item.previousPath), OCLogPrivate(item.path));
+
+						[updatedItems addObject:item];
+					}
+				}];
+			}
+		}
+
+		syncContext.updatedItems = updatedItems;
+	}
+}
+
+- (NSError *)resolveIssue:(OCSyncIssue *)issue withChoice:(OCSyncIssueChoice *)choice context:(OCSyncContext *)syncContext
+{
+	NSError *resolutionError = nil;
+
+	if ((resolutionError = [super resolveIssue:issue withChoice:choice context:syncContext]) != nil)
+	{
+		if (![resolutionError isOCErrorWithCode:OCErrorFeatureNotImplemented])
+		{
+			return (resolutionError);
+		}
+
+		if ([choice.identifier isEqual:@"keepBoth"])
+		{
+			__block NSString *suggestedName = nil;
+			BOOL isDirectory = (self.localItem.type == OCItemTypeCollection);
+
+			// resolveIssue runs inside the protected sync block (SQLite thread).
+			// Do not wait on suggestUnusedNameBasedOn — that hops to the core queue
+			// and deadlocks on cachedItemAtLocation.
+			[self.core _suggestUnusedNameBasedOn:self.targetName atLocation:self.targetParentItem.location isDirectory:isDirectory usingNameStyle:OCCoreDuplicateNameStyleBracketed filteredBy:nil resultHandler:^(NSString * _Nullable name, NSArray<NSString *> * _Nullable rejectedAndTakenNames) {
+				suggestedName = name;
+			}];
+
+			if (suggestedName.length > 0)
+			{
+				[self _applyTargetName:suggestedName syncContext:syncContext];
+				syncContext.updateStoredSyncRecordAfterItemUpdates = YES;
+			}
+
+			// Ensure overwrite stays off for the renamed destination
+			if (self.options[OCConnectionOptionForceReplaceKey] != nil)
+			{
+				NSMutableDictionary<OCCoreOption,id> *options = [self.options mutableCopy];
+				[options removeObjectForKey:OCConnectionOptionForceReplaceKey];
+				self.options = options;
+			}
+
+			[syncContext transitionToState:OCSyncRecordStateReady withWaitConditions:nil];
+			resolutionError = nil;
+		}
+
+		if ([choice.identifier isEqual:@"replaceExisting"])
+		{
+			NSMutableDictionary<OCCoreOption,id> *options = (self.options != nil) ? [self.options mutableCopy] : [NSMutableDictionary new];
+			options[OCConnectionOptionForceReplaceKey] = @(YES);
+			self.options = options;
+
+			OCItem *preExistingItem = [self _preExistingItemAtDestination];
+			if (preExistingItem != nil)
+			{
+				syncContext.removedItems = @[ preExistingItem ];
+			}
+
+			syncContext.updateStoredSyncRecordAfterItemUpdates = YES;
+
+			[syncContext transitionToState:OCSyncRecordStateReady withWaitConditions:nil];
+			resolutionError = nil;
+		}
+	}
+
+	return (resolutionError);
 }
 
 #pragma mark - Lane tags
@@ -557,6 +777,8 @@
 	_isRename = [decoder decodeBoolForKey:@"isRename"];
 	_associatedItemLocalIDs = [decoder decodeObjectOfClasses:[[NSSet alloc] initWithObjects:[NSArray class], [NSString class], nil] forKey:@"associatedItemLocalIDs"];
 	_associatedItemLaneTags = [decoder decodeObjectOfClasses:[[NSSet alloc] initWithObjects:[NSSet class], [NSString class], nil] forKey:@"associatedItemLaneTags"];
+
+	self.options = [decoder decodeObjectOfClasses:OCEvent.safeClasses forKey:@"options"];
 }
 
 - (void)encodeActionData:(NSCoder *)coder
@@ -569,6 +791,8 @@
 	[coder encodeBool:_isRename forKey:@"isRename"];
 	[coder encodeObject:_associatedItemLocalIDs forKey:@"associatedItemLocalIDs"];
 	[coder encodeObject:_associatedItemLaneTags forKey:@"associatedItemLaneTags"];
+
+	[coder encodeObject:self.options forKey:@"options"];
 }
 
 @end

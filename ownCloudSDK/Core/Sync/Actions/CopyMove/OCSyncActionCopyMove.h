@@ -20,7 +20,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OCSyncActionCopyMove : OCSyncAction
+@interface OCSyncActionCopyMove : OCSyncAction <OCSyncActionOptions>
 
 @property(strong) NSString *targetName;
 @property(strong) OCItem *targetParentItem;

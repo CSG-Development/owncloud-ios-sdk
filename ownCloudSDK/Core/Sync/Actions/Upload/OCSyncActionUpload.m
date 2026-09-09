@@ -219,8 +219,8 @@ OCSYNCACTION_REGISTER_ISSUETEMPLATES
 				issue = [OCSyncIssue issueFromTemplate:OCMessageTemplateIdentifierUploadKeepBoth
 							 forSyncRecord:syncContext.syncRecord
 								 level:OCIssueLevelError
-								 title:[NSString stringWithFormat:OCLocalizedString(@"Couldn't upload %@",nil), self.localItem.name]
-							   description:[NSString stringWithFormat:OCLocalizedString(@"Another item named %@ already exists in %@.",nil), self.localItem.name, self.parentItem.name]
+								 title:OCLocalizedString(@"File already exists",nil)
+							   description:[NSString stringWithFormat:OCLocalizedString(@"File with name %@ already exists",nil), ((self.filename != nil) ? self.filename : self.localItem.name)]
 							      metaData:nil];
 
 				[syncContext addSyncIssue:issue];
@@ -523,14 +523,26 @@ OCSYNCACTION_REGISTER_ISSUETEMPLATES
 			OCSyncIssue *issue;
 			BOOL alreadyExists = [event.error isOCErrorWithCode:OCErrorItemAlreadyExists];
 
-			issue = [OCSyncIssue issueFromTemplate:(alreadyExists ? OCMessageTemplateIdentifierUploadKeepBoth : OCMessageTemplateIdentifierUploadRetry)
-						 forSyncRecord:syncContext.syncRecord
-							 level:OCIssueLevelError
-							 title:[NSString stringWithFormat:OCLocalizedString(@"Couldn't upload %@",nil), self.localItem.name]
-						   description:event.error.localizedDescription
-						      metaData:nil];
+			if (alreadyExists)
+			{
+				issue = [OCSyncIssue issueFromTemplate:OCMessageTemplateIdentifierUploadKeepBoth
+							 forSyncRecord:syncContext.syncRecord
+								 level:OCIssueLevelError
+								 title:OCLocalizedString(@"File already exists",nil)
+							   description:[NSString stringWithFormat:OCLocalizedString(@"File with name %@ already exists",nil), ((self.filename != nil) ? self.filename : self.localItem.name)]
+							      metaData:nil];
+			}
+			else
+			{
+				issue = [OCSyncIssue issueFromTemplate:OCMessageTemplateIdentifierUploadRetry
+							 forSyncRecord:syncContext.syncRecord
+								 level:OCIssueLevelError
+								 title:[NSString stringWithFormat:OCLocalizedString(@"Couldn't upload %@",nil), self.localItem.name]
+							   description:event.error.localizedDescription
+							      metaData:nil];
 
-			[issue setAutoChoiceError:event.error forChoiceWithIdentifier:OCSyncIssueChoiceIdentifierRetry];
+				[issue setAutoChoiceError:event.error forChoiceWithIdentifier:OCSyncIssueChoiceIdentifierRetry];
+			}
 
 			[syncContext addSyncIssue:issue];
 			[syncContext transitionToState:OCSyncRecordStateProcessing withWaitConditions:nil]; // updates the sync record with the issue wait condition

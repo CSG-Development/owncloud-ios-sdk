@@ -13692,6 +13692,9 @@
         }
       }
     },
+    "File already exists" : {
+
+    },
     "File modified locally" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -13929,6 +13932,9 @@
           }
         }
       }
+    },
+    "File with name %@ already exists" : {
+
     },
     "Files" : {
       "extractionState" : "manual",
@@ -28450,6 +28456,9 @@
           }
         }
       }
+    },
+    "Skip" : {
+
     },
     "special characters" : {
       "extractionState" : "manual",
