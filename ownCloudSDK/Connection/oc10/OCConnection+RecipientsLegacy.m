@@ -169,7 +169,7 @@
 			}
 		}
 
-		completionHandler(error, recipients, YES);
+		completionHandler(error, [OCIdentity identities:recipients rankedBySearchTerm:searchTerm], YES);
 	}];
 
 	return (progress);

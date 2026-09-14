@@ -135,8 +135,8 @@
 				recipientsDataSource = self->_recipientsDataSource;
 			}
 
-			self.recipients = recipients;
-			[recipientsDataSource setVersionedItems:recipients];
+			self.recipients = [OCIdentity identities:recipients rankedBySearchTerm:self.searchTerm];
+			[recipientsDataSource setVersionedItems:self.recipients];
 
 			if ((self.delegate!=nil) && [self.delegate respondsToSelector:@selector(searchControllerHasNewResults:error:)])
 			{

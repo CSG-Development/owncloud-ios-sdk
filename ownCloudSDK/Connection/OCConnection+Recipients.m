@@ -159,7 +159,7 @@ static const NSUInteger OCGraphIdentitySearchMinLength = 3;
 		}
 		#endif /* OC_LEGACY_SUPPORT */
 
-		completionHandler(combinedError, (combinedError == nil) ? resultIdentities : nil, YES);
+		completionHandler(combinedError, (combinedError == nil) ? [OCIdentity identities:resultIdentities rankedBySearchTerm:searchTerm] : nil, YES);
 	});
 
 	return (combinedProgress);
@@ -181,7 +181,9 @@ static const NSUInteger OCGraphIdentitySearchMinLength = 3;
 			return;
 		}
 
-		[self _enrichIdentitiesWithGraphIDs:recipients completionHandler:completionHandler];
+		[self _enrichIdentitiesWithGraphIDs:recipients completionHandler:^(NSError * _Nullable enrichError, NSArray<OCIdentity *> * _Nullable resolvedIdentities, BOOL enrichFinished) {
+			completionHandler(enrichError, (enrichError == nil) ? [OCIdentity identities:resolvedIdentities rankedBySearchTerm:searchTerm] : resolvedIdentities, enrichFinished);
+		}];
 	}]);
 }
 
@@ -189,13 +191,21 @@ static const NSUInteger OCGraphIdentitySearchMinLength = 3;
 {
 	NSProgress *combinedProgress = NSProgress.indeterminateProgress;
 	dispatch_group_t retrievalGroup = dispatch_group_create();
-	NSMutableArray<OCIdentity *> *resolvedIdentities = [NSMutableArray new];
+	NSMutableArray<OCIdentity *> *resolvedIdentities = [[NSMutableArray alloc] initWithCapacity:identities.count];
 
-	for (OCIdentity *identity in identities)
+	// Preserve input order: Graph lookups complete concurrently and must not reshuffle matches.
+	for (NSUInteger i = 0; i < identities.count; i++)
 	{
+		[resolvedIdentities addObject:identities[i]];
+	}
+
+	for (NSUInteger index = 0; index < identities.count; index++)
+	{
+		OCIdentity *identity = identities[index];
 		OCUser *user = identity.user;
 		OCGroup *group = identity.group;
 		NSProgress *retrieveProgress = nil;
+		NSUInteger capturedIndex = index;
 
 		if (user != nil)
 		{
@@ -203,9 +213,6 @@ static const NSUInteger OCGraphIdentitySearchMinLength = 3;
 
 			if (userID.length == 0)
 			{
-				@synchronized(resolvedIdentities) {
-					[resolvedIdentities addObject:identity];
-				}
 				continue;
 			}
 
@@ -220,7 +227,7 @@ static const NSUInteger OCGraphIdentitySearchMinLength = 3;
 				}
 
 				@synchronized(resolvedIdentities) {
-					[resolvedIdentities addObject:resolvedIdentity];
+					resolvedIdentities[capturedIndex] = resolvedIdentity;
 				}
 				dispatch_group_leave(retrievalGroup);
 			}];
@@ -238,16 +245,10 @@ static const NSUInteger OCGraphIdentitySearchMinLength = 3;
 				}
 
 				@synchronized(resolvedIdentities) {
-					[resolvedIdentities addObject:resolvedIdentity];
+					resolvedIdentities[capturedIndex] = resolvedIdentity;
 				}
 				dispatch_group_leave(retrievalGroup);
 			}];
-		}
-		else
-		{
-			@synchronized(resolvedIdentities) {
-				[resolvedIdentities addObject:identity];
-			}
 		}
 
 		if (retrieveProgress != nil)
@@ -267,8 +268,9 @@ static const NSUInteger OCGraphIdentitySearchMinLength = 3;
 - (nullable NSProgress *)_retrieveUsersForSearchTerm:(NSString *)searchTerm maximumResultCount:(NSUInteger)maximumResultCount completionHandler:(OCConnectionRecipientsRetrievalCompletionHandler)completionHandler
 {
 	return ([self requestODataAtURL:[self URLForEndpoint:OCConnectionEndpointIDGraphUsers options:nil] requireSignals:[NSSet setWithObject:OCConnectionSignalIDAuthenticationAvailable] selectEntityID:nil selectProperties:nil filterString:nil parameters:@{
-		@"$search" : [self _graphSearchParameterForTerm:searchTerm],
-		@"$orderby" : @"displayName"
+		// Do not $orderby displayName: Graph $search is a contains match, so alphabetical
+		// display names bury prefix hits (e.g. "Noveo" under "Aleksandra" for query "Nov").
+		@"$search" : [self _graphSearchParameterForTerm:searchTerm]
 	} entityClass:GAUser.class options:nil completionHandler:^(NSError * _Nullable error, id  _Nullable response) {
 		NSMutableArray<OCIdentity *> *ocIdentities = nil;
 
@@ -307,8 +309,7 @@ static const NSUInteger OCGraphIdentitySearchMinLength = 3;
 - (nullable NSProgress *)_retrieveGroupsForSearchTerm:(nullable NSString *)searchTerm maximumResultCount:(NSUInteger)maximumResultCount completionHandler:(OCConnectionRecipientsRetrievalCompletionHandler)completionHandler
 {
 	return ([self requestODataAtURL:[self URLForEndpoint:OCConnectionEndpointIDGraphGroups options:nil] requireSignals:[NSSet setWithObject:OCConnectionSignalIDAuthenticationAvailable] selectEntityID:nil selectProperties:nil filterString:nil parameters:@{
-		@"$search" : [self _graphSearchParameterForTerm:searchTerm],
-		@"$orderby" : @"displayName"
+		@"$search" : [self _graphSearchParameterForTerm:searchTerm]
 	} entityClass:GAGroup.class options:nil completionHandler:^(NSError * _Nullable error, id  _Nullable response) {
 		NSMutableArray<OCIdentity *> *ocIdentities = nil;
 

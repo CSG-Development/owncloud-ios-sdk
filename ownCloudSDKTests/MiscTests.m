@@ -875,4 +875,57 @@
 
 }
 
+#pragma mark - Recipient search ranking
+
+- (OCIdentity *)_identityWithUserName:(NSString *)userName displayName:(NSString *)displayName email:(NSString *)email
+{
+	OCUser *user = [OCUser userWithUserName:userName displayName:displayName];
+	user.emailAddress = email;
+	return ([OCIdentity identityWithUser:user]);
+}
+
+- (void)testIdentitySearchRankingPrioritizesClosestUsername
+{
+	// Graph $search is a contains match and was previously ordered by displayName, so
+	// "Nov" listed Aleksandra / Andrey / Maksim (email @noveo) above the Noveo account.
+	OCIdentity *aleksandra = [self _identityWithUserName:@"aleksandra" displayName:@"Aleksandra" email:@"aleksandra@noveo.com"];
+	OCIdentity *andrey = [self _identityWithUserName:@"andrey" displayName:@"Andrey Ž" email:@"andrey@noveo.com"];
+	OCIdentity *maksim = [self _identityWithUserName:@"maksim" displayName:@"Maksim Vagner" email:@"maksim@noveo.com"];
+	OCIdentity *christophe = [self _identityWithUserName:@"christophe" displayName:@"Christophe" email:@"christophe@example.com"];
+	OCIdentity *noveo = [self _identityWithUserName:@"noveo" displayName:@"Noveo" email:@"noveo@noveo.com"];
+
+	NSArray<OCIdentity *> *ranked = [OCIdentity identities:@[ aleksandra, andrey, maksim, christophe, noveo ] rankedBySearchTerm:@"Nov"];
+
+	XCTAssertEqual(ranked.firstObject, noveo, @"Closest username/display-name match must appear first, not alphabetical displayName order");
+	XCTAssertEqual(ranked.lastObject, christophe, @"Identities that only fail to match the term should sort last");
+}
+
+- (void)testIdentitySearchRankingPrefixBeatsWordMatchAndDiacritics
+{
+	OCIdentity *sebastien = [self _identityWithUserName:@"sebastien" displayName:@"Sébastien" email:nil];
+	OCIdentity *aleksandra = [self _identityWithUserName:@"aleksandra" displayName:@"Aleksandra" email:nil];
+	OCIdentity *andrey = [self _identityWithUserName:@"andrey" displayName:@"Andrey Ž" email:nil];
+	OCIdentity *sergeiNovak = [self _identityWithUserName:@"sergei" displayName:@"Sergei Novak" email:nil];
+
+	NSArray<OCIdentity *> *rankedSe = [OCIdentity identities:@[ aleksandra, andrey, sebastien ] rankedBySearchTerm:@"Se"];
+	XCTAssertEqual(rankedSe.firstObject, sebastien, @"Prefix match must ignore diacritics and outrank unrelated names");
+
+	NSArray<OCIdentity *> *rankedNov = [OCIdentity identities:@[ aleksandra, sebastien, sergeiNovak ] rankedBySearchTerm:@"Nov"];
+	XCTAssertEqual(rankedNov.firstObject, sergeiNovak, @"Word-prefix on display name should still outrank non-matches");
+}
+
+- (void)testIdentitySearchRankingLeavesSingleOrEmptyTermUnchanged
+{
+	OCIdentity *noveo = [self _identityWithUserName:@"noveo" displayName:@"Noveo" email:nil];
+	OCIdentity *aleksandra = [self _identityWithUserName:@"aleksandra" displayName:@"Aleksandra" email:nil];
+	NSArray<OCIdentity *> *single = @[ noveo ];
+	NSArray<OCIdentity *> *pair = @[ noveo, aleksandra ];
+
+	XCTAssertEqual([OCIdentity identities:single rankedBySearchTerm:@"Nov"], single);
+
+	NSArray<OCIdentity *> *unchanged = [OCIdentity identities:pair rankedBySearchTerm:@"  "];
+	XCTAssertEqual(unchanged, pair);
+	XCTAssertEqualObjects(unchanged.firstObject.user.userName, @"noveo");
+}
+
 @end

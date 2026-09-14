@@ -52,6 +52,9 @@ typedef NS_ENUM(NSUInteger, OCIdentityMatchType) {
 
 - (instancetype)withSearchResultName:(nullable NSString *)searchResultName;
 
+//! Reorders identities so closer matches to searchTerm appear first: exact, then prefix, then word-prefix, then substring — preferring username/display name over email. Comparison is case- and diacritic-insensitive. Returns identities unchanged when searchTerm is empty.
++ (nullable NSArray<OCIdentity *> *)identities:(nullable NSArray<OCIdentity *> *)identities rankedBySearchTerm:(nullable NSString *)searchTerm;
+
 @end
 
 // NSCoding compatibility shim following OCRecipient -> OCIdentity refactoring

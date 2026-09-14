@@ -81,6 +81,7 @@
 + (instancetype)userWithGraphUser:(GAUser *)gaUser
 {
 	OCUser *user = [self userWithGraphDisplayname:gaUser.displayName identifier:gaUser.identifier userType:gaUser.userType userName:([gaUser.onPremisesSamAccountName isEqual:@""] ? nil : gaUser.onPremisesSamAccountName)];
+	user.emailAddress = ([gaUser.mail isEqual:@""] ? nil : gaUser.mail);
 
 	if (gaUser.memberOf.count > 0)
 	{

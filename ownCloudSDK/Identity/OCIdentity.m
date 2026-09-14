@@ -51,6 +51,146 @@
 	return (self);
 }
 
+#pragma mark - Search ranking
+
+typedef struct {
+	NSInteger kind;		// 0 exact, 1 prefix, 2 word-exact, 3 word-prefix, 4 contains, 100 none
+	NSInteger field;	// 0 username, 1 display name, 2 email / additional info
+	NSInteger position;
+	NSInteger length;
+} OCIdentitySearchMatch;
+
+static const NSInteger OCIdentitySearchMatchKindNone = 100;
+static const NSStringCompareOptions OCIdentitySearchCompareOptions = (NSCaseInsensitiveSearch | NSDiacriticInsensitiveSearch | NSWidthInsensitiveSearch);
+
+static OCIdentitySearchMatch OCIdentitySearchMatchMake(NSInteger kind, NSInteger field, NSInteger position, NSInteger length)
+{
+	OCIdentitySearchMatch match = { .kind = kind, .field = field, .position = position, .length = length };
+	return (match);
+}
+
+static BOOL OCIdentitySearchMatchBetter(OCIdentitySearchMatch candidate, OCIdentitySearchMatch best)
+{
+	if (candidate.kind != best.kind) { return (candidate.kind < best.kind); }
+	if (candidate.field != best.field) { return (candidate.field < best.field); }
+	if (candidate.position != best.position) { return (candidate.position < best.position); }
+	if (candidate.length != best.length) { return (candidate.length < best.length); }
+	return (NO);
+}
+
+static void OCIdentitySearchConsiderString(NSString *value, NSString *term, NSInteger field, BOOL allowWordMatch, OCIdentitySearchMatch *best)
+{
+	if (value.length == 0)
+	{
+		return;
+	}
+
+	NSInteger valueLength = (NSInteger)value.length;
+
+	if ([value compare:term options:OCIdentitySearchCompareOptions] == NSOrderedSame)
+	{
+		OCIdentitySearchMatch candidate = OCIdentitySearchMatchMake(0, field, 0, valueLength);
+		if (OCIdentitySearchMatchBetter(candidate, *best)) { *best = candidate; }
+		return;
+	}
+
+	NSRange prefixRange = [value rangeOfString:term options:(OCIdentitySearchCompareOptions | NSAnchoredSearch)];
+	if (prefixRange.location != NSNotFound)
+	{
+		OCIdentitySearchMatch candidate = OCIdentitySearchMatchMake(1, field, 0, valueLength);
+		if (OCIdentitySearchMatchBetter(candidate, *best)) { *best = candidate; }
+		return;
+	}
+
+	if (allowWordMatch)
+	{
+		[value enumerateSubstringsInRange:NSMakeRange(0, value.length) options:NSStringEnumerationByWords usingBlock:^(NSString * _Nullable substring, NSRange substringRange, NSRange enclosingRange, BOOL * _Nonnull stop) {
+			if (substring.length == 0) { return; }
+
+			if ([substring compare:term options:OCIdentitySearchCompareOptions] == NSOrderedSame)
+			{
+				OCIdentitySearchMatch candidate = OCIdentitySearchMatchMake(2, field, (NSInteger)substringRange.location, (NSInteger)substring.length);
+				if (OCIdentitySearchMatchBetter(candidate, *best)) { *best = candidate; }
+				*stop = YES;
+				return;
+			}
+
+			NSRange wordPrefixRange = [substring rangeOfString:term options:(OCIdentitySearchCompareOptions | NSAnchoredSearch)];
+			if (wordPrefixRange.location != NSNotFound)
+			{
+				OCIdentitySearchMatch candidate = OCIdentitySearchMatchMake(3, field, (NSInteger)substringRange.location, (NSInteger)substring.length);
+				if (OCIdentitySearchMatchBetter(candidate, *best)) { *best = candidate; }
+			}
+		}];
+
+		if (best->kind <= 3)
+		{
+			return;
+		}
+	}
+
+	NSRange containsRange = [value rangeOfString:term options:OCIdentitySearchCompareOptions];
+	if (containsRange.location != NSNotFound)
+	{
+		OCIdentitySearchMatch candidate = OCIdentitySearchMatchMake(4, field, (NSInteger)containsRange.location, valueLength);
+		if (OCIdentitySearchMatchBetter(candidate, *best)) { *best = candidate; }
+	}
+}
+
+static OCIdentitySearchMatch OCIdentitySearchMatchForIdentity(OCIdentity *identity, NSString *term)
+{
+	OCIdentitySearchMatch best = OCIdentitySearchMatchMake(OCIdentitySearchMatchKindNone, 99, NSIntegerMax, NSIntegerMax);
+
+	OCIdentitySearchConsiderString(identity.user.userName, term, 0, NO, &best);
+	OCIdentitySearchConsiderString(identity.group.identifier, term, 0, NO, &best);
+	OCIdentitySearchConsiderString(identity.user.displayName, term, 1, YES, &best);
+	OCIdentitySearchConsiderString(identity.group.name, term, 1, YES, &best);
+	OCIdentitySearchConsiderString(identity.user.emailAddress, term, 2, NO, &best);
+	OCIdentitySearchConsiderString(identity.searchResultName, term, 2, NO, &best);
+
+	return (best);
+}
+
+static NSInteger OCIdentitySearchMatchTypeRank(OCIdentityMatchType matchType)
+{
+	switch (matchType)
+	{
+		case OCIdentityMatchTypeExact:		return (0);
+		case OCIdentityMatchTypeAdditional:	return (1);
+		case OCIdentityMatchTypeUnknown:
+		default:				return (2);
+	}
+}
+
++ (NSArray<OCIdentity *> *)identities:(NSArray<OCIdentity *> *)identities rankedBySearchTerm:(NSString *)searchTerm
+{
+	NSString *term = [searchTerm stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
+
+	if ((identities.count < 2) || (term.length == 0))
+	{
+		return (identities);
+	}
+
+	return ([identities sortedArrayUsingComparator:^NSComparisonResult(OCIdentity *identity1, OCIdentity *identity2) {
+		OCIdentitySearchMatch match1 = OCIdentitySearchMatchForIdentity(identity1, term);
+		OCIdentitySearchMatch match2 = OCIdentitySearchMatchForIdentity(identity2, term);
+
+		if (match1.kind != match2.kind) { return ((match1.kind < match2.kind) ? NSOrderedAscending : NSOrderedDescending); }
+		if (match1.field != match2.field) { return ((match1.field < match2.field) ? NSOrderedAscending : NSOrderedDescending); }
+
+		NSInteger type1 = OCIdentitySearchMatchTypeRank(identity1.matchType);
+		NSInteger type2 = OCIdentitySearchMatchTypeRank(identity2.matchType);
+		if (type1 != type2) { return ((type1 < type2) ? NSOrderedAscending : NSOrderedDescending); }
+
+		if (match1.position != match2.position) { return ((match1.position < match2.position) ? NSOrderedAscending : NSOrderedDescending); }
+		if (match1.length != match2.length) { return ((match1.length < match2.length) ? NSOrderedAscending : NSOrderedDescending); }
+
+		NSString *name1 = identity1.displayName ?: identity1.user.userName ?: @"";
+		NSString *name2 = identity2.displayName ?: identity2.user.userName ?: @"";
+		return ([name1 localizedStandardCompare:name2]);
+	}]);
+}
+
 - (NSString *)identifier
 {
 	switch (_type)
