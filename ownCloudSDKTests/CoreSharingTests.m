@@ -345,7 +345,7 @@
 
 					[core startQuery:shareQuery];
 
-					[core createShare:[OCShare shareWithPublicLinkToLocation:shareItem.location linkName:initialName permissions:OCSharePermissionsMaskRead password:nil expiration:nil] options:nil completionHandler:^(NSError * _Nullable error, OCShare * _Nullable newShare) {
+					[core createShare:[OCShare shareWithPublicLinkToLocation:shareItem.location linkName:initialName permissions:@[ OCSharePermission.readPermission ] password:nil expiration:nil] options:nil completionHandler:^(NSError * _Nullable error, OCShare * _Nullable newShare) {
 						OCLogDebug(@"Created share: %@, error: %@", newShare, error);
 
 						XCTAssert(error == nil);
@@ -434,7 +434,7 @@
 
 				if (shareItem != nil)
 				{
-					[core createShare:[OCShare shareWithPublicLinkToLocation:shareItem.location linkName:initialName permissions:OCSharePermissionsMaskRead password:nil expiration:nil] options:nil completionHandler:^(NSError * _Nullable error, OCShare * _Nullable newShare) {
+					[core createShare:[OCShare shareWithPublicLinkToLocation:shareItem.location linkName:initialName permissions:@[ OCSharePermission.readPermission ] password:nil expiration:nil] options:nil completionHandler:^(NSError * _Nullable error, OCShare * _Nullable newShare) {
 						OCLogDebug(@"Created share: %@, error: %@", newShare, error);
 
 						XCTAssert(error == nil);
@@ -548,7 +548,7 @@
 
 				if (shareItem != nil)
 				{
-					[core createShare:[OCShare shareWithPublicLinkToLocation:shareItem.location linkName:initialName permissions:OCSharePermissionsMaskRead password:nil expiration:nil] options:nil completionHandler:^(NSError * _Nullable error, OCShare * _Nullable newShare) {
+					[core createShare:[OCShare shareWithPublicLinkToLocation:shareItem.location linkName:initialName permissions:@[ OCSharePermission.readPermission ] password:nil expiration:nil] options:nil completionHandler:^(NSError * _Nullable error, OCShare * _Nullable newShare) {
 						OCLogDebug(@"Created share: %@, error: %@", newShare, error);
 
 						XCTAssert(error == nil);
@@ -566,7 +566,7 @@
 								[expectInitialShareQueryResults fulfill];
 								expectInitialShareQueryResults = nil;
 
-								[core.connection createShare:[OCShare shareWithPublicLinkToLocation:shareItem.location linkName:secondName permissions:OCSharePermissionsMaskRead password:nil expiration:nil] options:nil resultTarget:[OCEventTarget eventTargetWithEphermalEventHandlerBlock:^(OCEvent * _Nonnull event, id  _Nonnull sender) {
+								[core.connection createShare:[OCShare shareWithPublicLinkToLocation:shareItem.location linkName:secondName permissions:@[ OCSharePermission.readPermission ] password:nil expiration:nil] options:nil resultTarget:[OCEventTarget eventTargetWithEphermalEventHandlerBlock:^(OCEvent * _Nonnull event, id  _Nonnull sender) {
 									createdSecondShare = (OCShare *)event.result;
 
 									[core reloadQuery:query]; // Reload query so that the core gets to compare existing results with fresh results and include the second created one
@@ -666,7 +666,7 @@
 
 				if (shareItem != nil)
 				{
-					[core createShare:[OCShare shareWithPublicLinkToLocation:shareItem.location linkName:initialName permissions:OCSharePermissionsMaskRead password:nil expiration:nil] options:nil completionHandler:^(NSError * _Nullable error, OCShare * _Nullable newShare) {
+					[core createShare:[OCShare shareWithPublicLinkToLocation:shareItem.location linkName:initialName permissions:@[ OCSharePermission.readPermission ] password:nil expiration:nil] options:nil completionHandler:^(NSError * _Nullable error, OCShare * _Nullable newShare) {
 						OCLogDebug(@"Created share: %@, error: %@", newShare, error);
 
 						XCTAssert(error == nil);
@@ -816,7 +816,7 @@
 
 						XCTAssert(query.queryResults.count == 0);
 
-						[core.connection createShare:[OCShare shareWithPublicLinkToLocation:shareItem.location linkName:initialName permissions:OCSharePermissionsMaskRead password:nil expiration:nil] options:nil resultTarget:[OCEventTarget eventTargetWithEphermalEventHandlerBlock:^(OCEvent * _Nonnull event, id  _Nonnull sender) {
+						[core.connection createShare:[OCShare shareWithPublicLinkToLocation:shareItem.location linkName:initialName permissions:@[ OCSharePermission.readPermission ] password:nil expiration:nil] options:nil resultTarget:[OCEventTarget eventTargetWithEphermalEventHandlerBlock:^(OCEvent * _Nonnull event, id  _Nonnull sender) {
 							createdShare = (OCShare *)event.result;
 
 							OCLogDebug(@"Created share: %@, error: %@", createdShare, error);
@@ -851,7 +851,7 @@
 	__block OCCore *core = nil;
 
 	[remoteConnection connectWithCompletionHandler:^(NSError *error, OCIssue *issue) {
-		[remoteConnection createShare:[OCShare shareWithRecipient:[OCIdentity identityWithUser:[OCUser userWithUserName:[OCTestTarget.userLogin stringByAppendingFormat:@"@%@", OCTestTarget.userBookmark.url.host] displayName:nil]] location:[OCLocation legacyRootPath:@"/Photos/"] permissions:OCSharePermissionsMaskRead expiration:nil] options:nil resultTarget:[OCEventTarget eventTargetWithEphermalEventHandlerBlock:^(OCEvent * _Nonnull event, id  _Nonnull sender) {
+		[remoteConnection createShare:[OCShare shareWithRecipient:[OCIdentity identityWithUser:[OCUser userWithUserName:[OCTestTarget.userLogin stringByAppendingFormat:@"@%@", OCTestTarget.userBookmark.url.host] displayName:nil]] location:[OCLocation legacyRootPath:@"/Photos/"] permissions:@[ OCSharePermission.readPermission ] expiration:nil] options:nil resultTarget:[OCEventTarget eventTargetWithEphermalEventHandlerBlock:^(OCEvent * _Nonnull event, id  _Nonnull sender) {
 			XCTAssert(event.error == nil);
 			XCTAssert(event.result != nil);
 
@@ -987,7 +987,7 @@
 								XCTAssert(((shareItem.shareTypesMask & OCShareTypesMaskLink) == 0), @"Item %@ on test server may not already be shared by a link", item);
 							}
 
-							[core createShare:[OCShare shareWithPublicLinkToLocation:shareItem.location linkName:initialName permissions:OCSharePermissionsMaskRead password:nil expiration:nil] options:nil completionHandler:^(NSError * _Nullable error, OCShare * _Nullable newShare) {
+							[core createShare:[OCShare shareWithPublicLinkToLocation:shareItem.location linkName:initialName permissions:@[ OCSharePermission.readPermission ] password:nil expiration:nil] options:nil completionHandler:^(NSError * _Nullable error, OCShare * _Nullable newShare) {
 								XCTAssert(error == nil);
 								XCTAssert(newShare != nil);
 

@@ -36,7 +36,7 @@
 		XCTAssert(issue==nil);
 
 		[connection retrieveItemListAtLocation:OCLocation.legacyRootLocation depth:1 options:nil completionHandler:^(NSError *error, NSArray<OCItem *> *items) {
-			OCShare *createShare = [OCShare shareWithPublicLinkToLocation:items[1].location linkName:@"iOS SDK CI Share" permissions:OCSharePermissionsMaskRead password:@"test" expiration:[NSDate dateWithTimeIntervalSinceNow:24*60*60 * 2]];
+			OCShare *createShare = [OCShare shareWithPublicLinkToLocation:items[1].location linkName:@"iOS SDK CI Share" permissions:@[ OCSharePermission.readPermission ] password:@"test" expiration:[NSDate dateWithTimeIntervalSinceNow:24*60*60 * 2]];
 
 			[expectList fulfill];
 
@@ -84,7 +84,7 @@
 
 					if (error == nil)
 					{
-						[connection retrieveSharesWithScope:OCShareScopeSharedByUser forItem:nil options:nil completionHandler:^(NSError *error, NSArray<OCShare *> *shares) {
+						[connection retrieveSharesWithScope:OCShareScopeSharedByUser forItem:nil options:nil completionHandler:^(NSError *error, NSArray<OCShareActionID> *allowedPermissionActions, NSArray<OCShareRole *> *allowedRoles, NSArray<OCShare *> *shares) {
 							OCLogDebug(@"retrieveSharesWithScope: error=%@, shares=%@", error, shares);
 
 							[expectSharesRetrieved fulfill];
@@ -154,10 +154,10 @@
 		XCTAssert(issue==nil);
 
 		[connection retrieveItemListAtLocation:OCLocation.legacyRootLocation depth:1 options:nil completionHandler:^(NSError *error, NSArray<OCItem *> *items) {
-			OCShare *passwordLessShare = [OCShare shareWithPublicLinkToLocation:items[1].location linkName:@"iOS SDK CI Share" permissions:OCSharePermissionsMaskRead password:nil expiration:[NSDate dateWithTimeIntervalSinceNow:24*60*60 * 2]];
+			OCShare *passwordLessShare = [OCShare shareWithPublicLinkToLocation:items[1].location linkName:@"iOS SDK CI Share" permissions:@[ OCSharePermission.readPermission ] password:nil expiration:[NSDate dateWithTimeIntervalSinceNow:24*60*60 * 2]];
 			XCTAssert(!passwordLessShare.protectedByPassword);
 
-			OCShare *createShare = [OCShare shareWithPublicLinkToLocation:items[1].location linkName:@"iOS SDK CI Share" permissions:OCSharePermissionsMaskRead password:@"test" expiration:[NSDate dateWithTimeIntervalSinceNow:24*60*60 * 2]];
+			OCShare *createShare = [OCShare shareWithPublicLinkToLocation:items[1].location linkName:@"iOS SDK CI Share" permissions:@[ OCSharePermission.readPermission ] password:@"test" expiration:[NSDate dateWithTimeIntervalSinceNow:24*60*60 * 2]];
 			XCTAssert(createShare.protectedByPassword);
 
 			[expectList fulfill];
@@ -275,7 +275,7 @@
 			OCItem *shareItem = items.lastObject;
 			OCItem *rootItem = items.firstObject;
 
-			OCShare *createShare = [OCShare shareWithRecipient:[OCIdentity identityWithUser:[OCUser userWithUserName:OCTestTarget.userLogin displayName:nil]] location:shareItem.location permissions:OCSharePermissionsMaskRead expiration:nil];
+			OCShare *createShare = [OCShare shareWithRecipient:[OCIdentity identityWithUser:[OCUser userWithUserName:OCTestTarget.userLogin displayName:nil]] location:shareItem.location permissions:@[ OCSharePermission.readPermission ] expiration:nil];
 
 			[expectList fulfill];
 
@@ -299,7 +299,7 @@
 
 				[expectShareCreated fulfill];
 
-				[connection retrieveSharesWithScope:OCShareScopeItem forItem:shareItem options:nil completionHandler:^(NSError * _Nullable error, NSArray<OCShare *> * _Nullable shares) {
+				[connection retrieveSharesWithScope:OCShareScopeItem forItem:shareItem options:nil completionHandler:^(NSError * _Nullable error, NSArray<OCShareActionID> * _Nullable allowedPermissionActions, NSArray<OCShareRole *> * _Nullable allowedRoles, NSArray<OCShare *> * _Nullable shares) {
 					XCTAssert(error==nil);
 					XCTAssert(shares.count > 0);
 
@@ -313,7 +313,7 @@
 						}
 					}
 
-					[connection retrieveSharesWithScope:OCShareScopeSubItems forItem:rootItem options:nil completionHandler:^(NSError * _Nullable error, NSArray<OCShare *> * _Nullable shares) {
+					[connection retrieveSharesWithScope:OCShareScopeSubItems forItem:rootItem options:nil completionHandler:^(NSError * _Nullable error, NSArray<OCShareActionID> * _Nullable allowedPermissionActions, NSArray<OCShareRole *> * _Nullable allowedRoles, NSArray<OCShare *> * _Nullable shares) {
 						OCLog(@"Retrieved shares of %@: %@", rootItem.path, shares);
 
 						for (OCShare *share in shares)
@@ -325,7 +325,7 @@
 						}
 
 						[recipientConnection connectWithCompletionHandler:^(NSError *error, OCIssue *issue) {
-							[recipientConnection retrieveSharesWithScope:OCShareScopeSharedWithUser forItem:nil options:nil completionHandler:^(NSError * _Nullable error, NSArray<OCShare *> * _Nullable shares) {
+							[recipientConnection retrieveSharesWithScope:OCShareScopeSharedWithUser forItem:nil options:nil completionHandler:^(NSError * _Nullable error, NSArray<OCShareActionID> * _Nullable allowedPermissionActions, NSArray<OCShareRole *> * _Nullable allowedRoles, NSArray<OCShare *> * _Nullable shares) {
 								XCTAssert(error == nil);
 								XCTAssert(shares.count > 0);
 
@@ -343,7 +343,7 @@
 											[connection deleteShare:newShare resultTarget:[OCEventTarget eventTargetWithEphermalEventHandlerBlock:^(OCEvent * _Nonnull event, id  _Nonnull sender) {
 												XCTAssert(event.error == nil);
 
-												[recipientConnection retrieveSharesWithScope:OCShareScopeSharedWithUser forItem:nil options:nil completionHandler:^(NSError * _Nullable error, NSArray<OCShare *> * _Nullable shares) {
+												[recipientConnection retrieveSharesWithScope:OCShareScopeSharedWithUser forItem:nil options:nil completionHandler:^(NSError * _Nullable error, NSArray<OCShareActionID> * _Nullable allowedPermissionActions, NSArray<OCShareRole *> * _Nullable allowedRoles, NSArray<OCShare *> * _Nullable shares) {
 													XCTAssert(error==nil);
 
 													OCLog(@"Recipient shares after deletion: %@", shares);
@@ -381,7 +381,7 @@
 												OCLogDebug(@"Accepted with event.result=%@, .error=%@", event.result, event.error);
 
 												// Retrieve shares again ..
-												[recipientConnection retrieveSharesWithScope:OCShareScopeSharedWithUser forItem:nil options:nil completionHandler:^(NSError * _Nullable error, NSArray<OCShare *> * _Nullable shares) {
+												[recipientConnection retrieveSharesWithScope:OCShareScopeSharedWithUser forItem:nil options:nil completionHandler:^(NSError * _Nullable error, NSArray<OCShareActionID> * _Nullable allowedPermissionActions, NSArray<OCShareRole *> * _Nullable allowedRoles, NSArray<OCShare *> * _Nullable shares) {
 													for (OCShare *share in shares)
 													{
 														if ([share.identifier isEqual:newShare.identifier])
@@ -396,7 +396,7 @@
 														OCLogDebug(@"Rejected with event.result=%@, .error=%@", event.result, event.error);
 
 														// Retrieve shares again ..
-														[recipientConnection retrieveSharesWithScope:OCShareScopeSharedWithUser forItem:nil options:nil completionHandler:^(NSError * _Nullable error, NSArray<OCShare *> * _Nullable shares) {
+														[recipientConnection retrieveSharesWithScope:OCShareScopeSharedWithUser forItem:nil options:nil completionHandler:^(NSError * _Nullable error, NSArray<OCShareActionID> * _Nullable allowedPermissionActions, NSArray<OCShareRole *> * _Nullable allowedRoles, NSArray<OCShare *> * _Nullable shares) {
 															for (OCShare *share in shares)
 															{
 																if ([share.identifier isEqual:newShare.identifier])
@@ -463,7 +463,7 @@
 			OCItem *shareItem = items.lastObject;
 			OCItem *rootItem = items.firstObject;
 
-			OCShare *createShare = [OCShare shareWithRecipient:[OCIdentity identityWithUser:[OCUser userWithUserName:OCTestTarget.userLogin displayName:nil]] location:shareItem.location permissions:OCSharePermissionsMaskRead|OCSharePermissionsMaskShare expiration:nil];
+			OCShare *createShare = [OCShare shareWithRecipient:[OCIdentity identityWithUser:[OCUser userWithUserName:OCTestTarget.userLogin displayName:nil]] location:shareItem.location permissions:@[ OCSharePermission.readPermission, OCSharePermission.sharePermission ] expiration:nil];
 
 			[expectList fulfill];
 
@@ -487,7 +487,7 @@
 
 				[expectShareCreated fulfill];
 
-				[connection retrieveSharesWithScope:OCShareScopeItem forItem:shareItem options:nil completionHandler:^(NSError * _Nullable error, NSArray<OCShare *> * _Nullable shares) {
+				[connection retrieveSharesWithScope:OCShareScopeItem forItem:shareItem options:nil completionHandler:^(NSError * _Nullable error, NSArray<OCShareActionID> * _Nullable allowedPermissionActions, NSArray<OCShareRole *> * _Nullable allowedRoles, NSArray<OCShare *> * _Nullable shares) {
 					XCTAssert(error==nil);
 					XCTAssert(shares.count > 0);
 
@@ -501,7 +501,7 @@
 						}
 					}
 
-					[connection retrieveSharesWithScope:OCShareScopeSubItems forItem:rootItem options:nil completionHandler:^(NSError * _Nullable error, NSArray<OCShare *> * _Nullable shares) {
+					[connection retrieveSharesWithScope:OCShareScopeSubItems forItem:rootItem options:nil completionHandler:^(NSError * _Nullable error, NSArray<OCShareActionID> * _Nullable allowedPermissionActions, NSArray<OCShareRole *> * _Nullable allowedRoles, NSArray<OCShare *> * _Nullable shares) {
 						OCLog(@"Retrieved shares of %@: %@", rootItem.path, shares);
 
 						for (OCShare *share in shares)
@@ -513,7 +513,7 @@
 						}
 
 						[recipientConnection connectWithCompletionHandler:^(NSError *error, OCIssue *issue) {
-							[recipientConnection retrieveSharesWithScope:OCShareScopeSharedWithUser forItem:nil options:nil completionHandler:^(NSError * _Nullable error, NSArray<OCShare *> * _Nullable shares) {
+							[recipientConnection retrieveSharesWithScope:OCShareScopeSharedWithUser forItem:nil options:nil completionHandler:^(NSError * _Nullable error, NSArray<OCShareActionID> * _Nullable allowedPermissionActions, NSArray<OCShareRole *> * _Nullable allowedRoles, NSArray<OCShare *> * _Nullable shares) {
 								XCTAssert(error == nil);
 								XCTAssert(shares.count > 0);
 
@@ -527,7 +527,7 @@
 									{
 										[expectRecipientSharesContainNewShare fulfill];
 
-										OCShare *createReshare = [OCShare shareWithRecipient:[OCIdentity identityWithUser:[OCUser userWithUserName:OCTestTarget.demoLogin displayName:nil]] location:share.itemLocation permissions:OCSharePermissionsMaskRead|OCSharePermissionsMaskShare expiration:nil];
+										OCShare *createReshare = [OCShare shareWithRecipient:[OCIdentity identityWithUser:[OCUser userWithUserName:OCTestTarget.demoLogin displayName:nil]] location:share.itemLocation permissions:@[ OCSharePermission.readPermission, OCSharePermission.sharePermission ] expiration:nil];
 
 										[recipientConnection createShare:createReshare options:nil resultTarget:[OCEventTarget eventTargetWithEphermalEventHandlerBlock:^(OCEvent * _Nonnull event, id  _Nonnull sender) {
 											OCShare *newReshare = (OCShare *)event.result;
@@ -537,7 +537,7 @@
 
 											OCLog(@"Created re-share: %@", newReshare);
 
-											[connection retrieveSharesWithScope:OCShareScopeItemWithReshares forItem:shareItem options:nil completionHandler:^(NSError * _Nullable error, NSArray<OCShare *> * _Nullable shares) {
+											[connection retrieveSharesWithScope:OCShareScopeItemWithReshares forItem:shareItem options:nil completionHandler:^(NSError * _Nullable error, NSArray<OCShareActionID> * _Nullable allowedPermissionActions, NSArray<OCShareRole *> * _Nullable allowedRoles, NSArray<OCShare *> * _Nullable shares) {
 
 												XCTAssert(error==nil);
 												XCTAssert(shares!=nil);
@@ -558,7 +558,7 @@
 												}
 
 												[reshareRecipientConnection connectWithCompletionHandler:^(NSError *error, OCIssue *issue) {
-													[reshareRecipientConnection retrieveSharesWithScope:OCShareScopeSharedWithUser forItem:nil options:nil completionHandler:^(NSError * _Nullable error, NSArray<OCShare *> * _Nullable shares) {
+													[reshareRecipientConnection retrieveSharesWithScope:OCShareScopeSharedWithUser forItem:nil options:nil completionHandler:^(NSError * _Nullable error, NSArray<OCShareActionID> * _Nullable allowedPermissionActions, NSArray<OCShareRole *> * _Nullable allowedRoles, NSArray<OCShare *> * _Nullable shares) {
 														XCTAssert(error==nil);
 														XCTAssert(shares!=nil);
 
@@ -576,7 +576,7 @@
 															[connection deleteShare:newShare resultTarget:[OCEventTarget eventTargetWithEphermalEventHandlerBlock:^(OCEvent * _Nonnull event, id  _Nonnull sender) {
 																XCTAssert(event.error == nil);
 
-																[recipientConnection retrieveSharesWithScope:OCShareScopeSharedWithUser forItem:nil options:nil completionHandler:^(NSError * _Nullable error, NSArray<OCShare *> * _Nullable shares) {
+																[recipientConnection retrieveSharesWithScope:OCShareScopeSharedWithUser forItem:nil options:nil completionHandler:^(NSError * _Nullable error, NSArray<OCShareActionID> * _Nullable allowedPermissionActions, NSArray<OCShareRole *> * _Nullable allowedRoles, NSArray<OCShare *> * _Nullable shares) {
 																	XCTAssert(error==nil);
 
 																	OCLog(@"Recipient shares after deletion: %@", shares);
@@ -653,7 +653,7 @@
 		NSString *remoteUserIDFull = [remoteUser stringByAppendingFormat:@"@%@", remoteHost];
 
 		[connection retrieveItemListAtLocation:OCLocation.legacyRootLocation depth:1 options:nil completionHandler:^(NSError *error, NSArray<OCItem *> *items) {
-			OCShare *createShare = [OCShare shareWithRecipient:[OCIdentity identityWithUser:[OCUser userWithUserName:remoteUserIDFull displayName:nil]] location:items[1].location permissions:OCSharePermissionsMaskRead expiration:nil];
+			OCShare *createShare = [OCShare shareWithRecipient:[OCIdentity identityWithUser:[OCUser userWithUserName:remoteUserIDFull displayName:nil]] location:items[1].location permissions:@[ OCSharePermission.readPermission ] expiration:nil];
 
 			[expectList fulfill];
 
@@ -680,7 +680,7 @@
 
 				[expectShareCreated fulfill];
 
-				[connection retrieveSharesWithScope:OCShareScopeSharedByUser forItem:nil options:nil completionHandler:^(NSError * _Nullable error, NSArray<OCShare *> * _Nullable shares) {
+				[connection retrieveSharesWithScope:OCShareScopeSharedByUser forItem:nil options:nil completionHandler:^(NSError * _Nullable error, NSArray<OCShareActionID> * _Nullable allowedPermissionActions, NSArray<OCShareRole *> * _Nullable allowedRoles, NSArray<OCShare *> * _Nullable shares) {
 					XCTAssert(error==nil);
 					XCTAssert(shares.count > 0);
 
@@ -695,7 +695,7 @@
 					}
 
 					[recipientConnection connectWithCompletionHandler:^(NSError *error, OCIssue *issue) {
-						[recipientConnection retrieveSharesWithScope:OCShareScopePendingCloudShares forItem:nil options:nil completionHandler:^(NSError * _Nullable error, NSArray<OCShare *> * _Nullable shares) {
+						[recipientConnection retrieveSharesWithScope:OCShareScopePendingCloudShares forItem:nil options:nil completionHandler:^(NSError * _Nullable error, NSArray<OCShareActionID> * _Nullable allowedPermissionActions, NSArray<OCShareRole *> * _Nullable allowedRoles, NSArray<OCShare *> * _Nullable shares) {
 							XCTAssert(error == nil);
 							XCTAssert(shares.count > 0);
 
@@ -717,7 +717,7 @@
 
 										sleep(2); // Apparently accepted shares /can/ be slow to be updated :-/
 
-										[recipientConnection retrieveSharesWithScope:OCShareScopeAcceptedCloudShares forItem:nil options:nil completionHandler:^(NSError * _Nullable error, NSArray<OCShare *> * _Nullable shares) {
+										[recipientConnection retrieveSharesWithScope:OCShareScopeAcceptedCloudShares forItem:nil options:nil completionHandler:^(NSError * _Nullable error, NSArray<OCShareActionID> * _Nullable allowedPermissionActions, NSArray<OCShareRole *> * _Nullable allowedRoles, NSArray<OCShare *> * _Nullable shares) {
 											OCShare *deleteShare = nil;
 
 											XCTAssert(error==nil);
@@ -742,7 +742,7 @@
 
 													sleep(2); // Apparently accepted shares /can/ be slow to be updated :-/
 
-													[recipientConnection retrieveSharesWithScope:OCShareScopeAcceptedCloudShares forItem:nil options:nil completionHandler:^(NSError * _Nullable error, NSArray<OCShare *> * _Nullable shares) {
+													[recipientConnection retrieveSharesWithScope:OCShareScopeAcceptedCloudShares forItem:nil options:nil completionHandler:^(NSError * _Nullable error, NSArray<OCShareActionID> * _Nullable allowedPermissionActions, NSArray<OCShareRole *> * _Nullable allowedRoles, NSArray<OCShare *> * _Nullable shares) {
 														XCTAssert(error==nil);
 
 														OCLog(@"Accepted shares: %@", shares);
@@ -811,7 +811,7 @@
 //			OCItem *shareItem = items.lastObject;
 			OCItem *rootItem = items.firstObject;
 
-			OCShare *createRootShare = [OCShare shareWithRecipient:[OCIdentity identityWithUser:[OCUser userWithUserName:OCTestTarget.userLogin displayName:nil]] location:rootItem.location permissions:OCSharePermissionsMaskRead expiration:nil];
+			OCShare *createRootShare = [OCShare shareWithRecipient:[OCIdentity identityWithUser:[OCUser userWithUserName:OCTestTarget.userLogin displayName:nil]] location:rootItem.location permissions:@[ OCSharePermission.readPermission ] expiration:nil];
 
 			[expectList fulfill];
 
@@ -826,7 +826,7 @@
 			// Retrieve shares for item without item
 			dispatch_group_enter(waitForCompletion);
 
-			[connection retrieveSharesWithScope:OCShareScopeItem forItem:nil options:nil completionHandler:^(NSError * _Nullable error, NSArray<OCShare *> * _Nullable shares) {
+			[connection retrieveSharesWithScope:OCShareScopeItem forItem:nil options:nil completionHandler:^(NSError * _Nullable error, NSArray<OCShareActionID> * _Nullable allowedPermissionActions, NSArray<OCShareRole *> * _Nullable allowedRoles, NSArray<OCShare *> * _Nullable shares) {
 				XCTAssert(error != nil); // Scope requires item
 				XCTAssert([error isOCErrorWithCode:OCErrorInsufficientParameters]);
 				dispatch_group_leave(waitForCompletion);
@@ -838,7 +838,7 @@
 
 			dispatch_group_enter(waitForCompletion);
 
-			[connection retrieveSharesWithScope:OCShareScopeItem forItem:nonexistantItem options:nil completionHandler:^(NSError * _Nullable error, NSArray<OCShare *> * _Nullable shares) {
+			[connection retrieveSharesWithScope:OCShareScopeItem forItem:nonexistantItem options:nil completionHandler:^(NSError * _Nullable error, NSArray<OCShareActionID> * _Nullable allowedPermissionActions, NSArray<OCShareRole *> * _Nullable allowedRoles, NSArray<OCShare *> * _Nullable shares) {
 				XCTAssert(error != nil); // Scope requires item
 				XCTAssert([error isOCErrorWithCode:OCErrorShareItemNotFound]);
 				dispatch_group_leave(waitForCompletion);
@@ -873,7 +873,7 @@
 		XCTAssert(issue==nil);
 
 		[connection retrieveItemListAtLocation:OCLocation.legacyRootLocation depth:1 options:nil completionHandler:^(NSError *error, NSArray<OCItem *> *items) {
-			[connection createShare:[OCShare shareWithPublicLinkToLocation:items[1].location linkName:@"iOS SDK CI" permissions:OCSharePermissionsMaskRead password:@"test" expiration:[NSDate dateWithTimeIntervalSinceNow:24*60*60 * 2]] options:nil resultTarget:[OCEventTarget eventTargetWithEphermalEventHandlerBlock:^(OCEvent * _Nonnull event, id  _Nonnull sender) {
+			[connection createShare:[OCShare shareWithPublicLinkToLocation:items[1].location linkName:@"iOS SDK CI" permissions:@[ OCSharePermission.readPermission ] password:@"test" expiration:[NSDate dateWithTimeIntervalSinceNow:24*60*60 * 2]] options:nil resultTarget:[OCEventTarget eventTargetWithEphermalEventHandlerBlock:^(OCEvent * _Nonnull event, id  _Nonnull sender) {
 				OCLog(@"error=%@, newShare=%@", event.error, event.result);
 
 				[expectShareCreated fulfill];
@@ -883,7 +883,7 @@
 
 					if (error == nil)
 					{
-						[connection retrieveSharesWithScope:OCShareScopeSharedByUser forItem:nil options:nil completionHandler:^(NSError *error, NSArray<OCShare *> *shares) {
+						[connection retrieveSharesWithScope:OCShareScopeSharedByUser forItem:nil options:nil completionHandler:^(NSError *error, NSArray<OCShareActionID> *allowedPermissionActions, NSArray<OCShareRole *> *allowedRoles, NSArray<OCShare *> *shares) {
 							OCLogDebug(@"error=%@, shares=%@", error, shares);
 
 							[expectSharesRetrieved fulfill];
@@ -1054,7 +1054,7 @@
 
 				[expectFolderCreated fulfill];
 
-				[connection createShare:[OCShare shareWithPublicLinkToLocation:newFolderItem.location linkName:@"iOS SDK CI" permissions:OCSharePermissionsMaskRead password:@"test" expiration:[NSDate dateWithTimeIntervalSinceNow:24*60*60 * 2]] options:nil resultTarget:[OCEventTarget eventTargetWithEphermalEventHandlerBlock:^(OCEvent * _Nonnull event, id  _Nonnull sender) {
+				[connection createShare:[OCShare shareWithPublicLinkToLocation:newFolderItem.location linkName:@"iOS SDK CI" permissions:@[ OCSharePermission.readPermission ] password:@"test" expiration:[NSDate dateWithTimeIntervalSinceNow:24*60*60 * 2]] options:nil resultTarget:[OCEventTarget eventTargetWithEphermalEventHandlerBlock:^(OCEvent * _Nonnull event, id  _Nonnull sender) {
 					OCLog(@"error=%@, newShare=%@", event.error, event.result);
 
 					XCTAssert(event.error == nil);
