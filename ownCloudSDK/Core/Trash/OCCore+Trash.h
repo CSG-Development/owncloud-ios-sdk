@@ -51,6 +51,9 @@ typedef void(^OCCoreTrashDownloadResultHandler)(NSError * _Nullable error, NSURL
 - (void)removeTrashedItemFromCache:(OCItem *)item
 		 completionHandler:(void (^ _Nullable)(NSError * _Nullable error))completionHandler;
 
+/// Items queued for permanent deletion stay hidden until the server listing no longer contains them.
+- (NSArray<OCItem *> *)trashItemsByHidingPendingPermanentDeletions:(NSArray<OCItem *> *)items;
+
 @end
 
 NS_ASSUME_NONNULL_END

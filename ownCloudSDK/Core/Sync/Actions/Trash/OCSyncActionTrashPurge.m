@@ -13,6 +13,11 @@
 #import "OCMacros.h"
 #import "NSError+OCError.h"
 
+@interface OCCore (TrashPurgeTombstone)
+- (void)noteTrashPurgeScheduledForItem:(OCItem *)item;
+- (void)noteTrashPurgeCancelledForItem:(OCItem *)item;
+@end
+
 @implementation OCSyncActionTrashPurge
 
 OCSYNCACTION_REGISTER_ISSUETEMPLATES
@@ -41,6 +46,8 @@ OCSYNCACTION_REGISTER_ISSUETEMPLATES
 		[self.core.vault.database removeTrashCacheItem:self.localItem completionHandler:^(OCDatabase *db, NSError *error) {
 			if (error != nil) {
 				syncContext.error = error;
+			} else {
+				[self.core noteTrashPurgeScheduledForItem:self.localItem];
 			}
 
 			OCSyncExecDone(trashPreflight);
@@ -50,6 +57,8 @@ OCSYNCACTION_REGISTER_ISSUETEMPLATES
 
 - (void)descheduleWithContext:(OCSyncContext *)syncContext
 {
+	[self.core noteTrashPurgeCancelledForItem:self.localItem];
+
 	OCSyncExec(trashDeschedule, {
 		[self.core.vault.database addTrashCacheItems:@[ self.localItem ]
 				     parentTrashPath:self.parentTrashPath

@@ -194,13 +194,20 @@
 	for (OCItem *item in items) {
 		NSString *trashPath = [OCDatabase normalizedTrashPath:item.path];
 
-		if (trashPath.length == 0) { continue; }
+		// Match the row by path or file id. The cached drive id can differ from the
+		// item's drive id after a server listing, which previously left the row in place.
+		if (trashPath.length > 0) {
+			[queries addObject:[OCSQLiteQuery query:@"DELETE FROM trashMetaData WHERE trashPath=?" withParameters:@[ trashPath ] resultHandler:nil]];
+		}
 
-		NSDictionary *where = ((item.driveID == nil) ?
-				       @{ @"trashPath" : trashPath, @"driveID" : NSNull.null } :
-				       @{ @"trashPath" : trashPath, @"driveID" : item.driveID });
+		if (item.fileID.length > 0) {
+			[queries addObject:[OCSQLiteQuery query:@"DELETE FROM trashMetaData WHERE fileID=?" withParameters:@[ item.fileID ] resultHandler:nil]];
+		}
+	}
 
-		[queries addObject:[OCSQLiteQuery queryDeletingRowsWhere:where fromTable:OCDatabaseTableNameTrashMetaData completionHandler:nil]];
+	if (queries.count == 0) {
+		completionHandler(self, nil);
+		return;
 	}
 
 	[self.sqlDB executeTransaction:[OCSQLiteTransaction transactionWithQueries:queries type:OCSQLiteTransactionTypeDeferred completionHandler:^(OCSQLiteDB *db, OCSQLiteTransaction *transaction, NSError *txnError) {

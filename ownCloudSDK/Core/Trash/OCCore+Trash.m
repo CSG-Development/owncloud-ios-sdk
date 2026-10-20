@@ -24,11 +24,228 @@
 #import "OCTrashPendingItems.h"
 #import "OCSyncActionTrashRestore.h"
 #import "OCSyncActionTrashPurge.h"
+#import "OCSyncRecord.h"
 #import "OCLogger.h"
 #import "OCMacros.h"
 #import "NSError+OCError.h"
+#import <objc/runtime.h>
+
+static const void *OCCorePendingTrashPurgeItemsKey = &OCCorePendingTrashPurgeItemsKey;
+static const void *OCCorePendingTrashPurgeLockKey = &OCCorePendingTrashPurgeLockKey;
+
+static NSString *OCTrashIdentityPath(NSString *path)
+{
+	return ([OCDatabase normalizedTrashPath:path]);
+}
+
+static BOOL OCTrashItemMatchesPurgedItem(OCItem *item, OCItem *purgedItem)
+{
+	if (item == nil || purgedItem == nil) { return (NO); }
+
+	NSString *itemPath = OCTrashIdentityPath(item.path);
+	NSString *purgedPath = OCTrashIdentityPath(purgedItem.path);
+
+	if ((itemPath.length > 0) && (purgedPath.length > 0) && [itemPath isEqualToString:purgedPath]) {
+		return (YES);
+	}
+
+	if ((item.fileID.length > 0) && (purgedItem.fileID.length > 0) && [item.fileID isEqualToString:purgedItem.fileID]) {
+		return (YES);
+	}
+
+	if ((item.eTag.length > 0) && (purgedItem.eTag.length > 0) && [item.eTag isEqualToString:purgedItem.eTag]) {
+		return (YES);
+	}
+
+	NSString *itemLeaf = itemPath.lastPathComponent;
+	NSString *purgedLeaf = purgedPath.lastPathComponent;
+
+	if ((item.fileID.length > 0) && (purgedLeaf.length > 0) && [item.fileID isEqualToString:purgedLeaf]) {
+		return (YES);
+	}
+
+	if ((purgedItem.fileID.length > 0) && (itemLeaf.length > 0) && [purgedItem.fileID isEqualToString:itemLeaf]) {
+		return (YES);
+	}
+
+	return (NO);
+}
 
 @implementation OCCore (Trash)
+
+- (NSLock *)_pendingTrashPurgeLock
+{
+	@synchronized (self) {
+		NSLock *lock = objc_getAssociatedObject(self, OCCorePendingTrashPurgeLockKey);
+
+		if (lock == nil) {
+			lock = [NSLock new];
+			objc_setAssociatedObject(self, OCCorePendingTrashPurgeLockKey, lock, OBJC_ASSOCIATION_RETAIN);
+		}
+
+		return (lock);
+	}
+}
+
+- (void)_mutatePendingTrashPurges:(void (^)(NSMutableArray<OCItem *> *items))block
+{
+	if (block == nil) { return; }
+
+	NSLock *lock = [self _pendingTrashPurgeLock];
+	[lock lock];
+
+	NSMutableArray<OCItem *> *items = objc_getAssociatedObject(self, OCCorePendingTrashPurgeItemsKey);
+
+	if (items == nil) {
+		items = [NSMutableArray new];
+		objc_setAssociatedObject(self, OCCorePendingTrashPurgeItemsKey, items, OBJC_ASSOCIATION_RETAIN);
+	}
+
+	block(items);
+	[lock unlock];
+}
+
+- (NSArray<OCItem *> *)_pendingTrashPurgeSnapshot
+{
+	__block NSArray<OCItem *> *snapshot = nil;
+
+	[self _mutatePendingTrashPurges:^(NSMutableArray<OCItem *> *items) {
+		snapshot = [items copy];
+	}];
+
+	return (snapshot ?: @[]);
+}
+
+- (OCItem *)_trashPurgeSnapshotOfItem:(OCItem *)item
+{
+	if (item == nil) { return (nil); }
+
+	OCItem *snapshot = [OCItem itemFromSerializedData:[item serializedData]];
+
+	return (snapshot ?: item);
+}
+
+- (void)noteTrashPurgeScheduledForItem:(OCItem *)item
+{
+	OCItem *snapshot = [self _trashPurgeSnapshotOfItem:item];
+
+	if (snapshot == nil) { return; }
+
+	[self _mutatePendingTrashPurges:^(NSMutableArray<OCItem *> *items) {
+		for (OCItem *existing in items) {
+			if (OCTrashItemMatchesPurgedItem(existing, snapshot)) {
+				return;
+			}
+		}
+
+		[items addObject:snapshot];
+	}];
+}
+
+- (void)noteTrashPurgeCancelledForItem:(OCItem *)item
+{
+	if (item == nil) { return; }
+
+	[self _mutatePendingTrashPurges:^(NSMutableArray<OCItem *> *items) {
+		NSIndexSet *indexes = [items indexesOfObjectsPassingTest:^BOOL(OCItem *existing, NSUInteger idx, BOOL *stop) {
+			return (OCTrashItemMatchesPurgedItem(existing, item));
+		}];
+
+		if (indexes.count > 0) {
+			[items removeObjectsAtIndexes:indexes];
+		}
+	}];
+
+	[NSNotificationCenter.defaultCenter postNotificationName:@"OCTrashPendingPurgeCancelled" object:self userInfo:@{ @"item" : item }];
+}
+
+- (void)_absorbPendingTrashPurgeRecords:(NSArray<OCSyncRecord *> *)records
+{
+	for (OCSyncRecord *record in records) {
+		[self noteTrashPurgeScheduledForItem:record.action.localItem];
+	}
+}
+
+- (void)_retrievePendingTrashPurgeRecords:(void (^)(NSArray<OCSyncRecord *> *records))completionHandler
+{
+	[self.vault.database retrieveSyncRecordsForPath:nil action:OCSyncActionIdentifierTrashPurge inProgressSince:nil completionHandler:^(OCDatabase *db, NSError *error, NSArray<OCSyncRecord *> *syncRecords) {
+		if (completionHandler != nil) {
+			completionHandler(syncRecords ?: @[]);
+		}
+	}];
+}
+
+- (BOOL)_trashItem:(OCItem *)item isPendingPermanentDeletion:(NSArray<OCItem *> *)pendingItems
+{
+	for (OCItem *pendingItem in pendingItems) {
+		if (OCTrashItemMatchesPurgedItem(item, pendingItem)) {
+			return (YES);
+		}
+	}
+
+	return (NO);
+}
+
+- (NSArray<OCItem *> *)trashItemsByHidingPendingPermanentDeletions:(NSArray<OCItem *> *)items
+{
+	NSArray<OCItem *> *pendingItems = [self _pendingTrashPurgeSnapshot];
+
+	if (pendingItems.count == 0 || items.count == 0) {
+		return (items ?: @[]);
+	}
+
+	NSMutableArray<OCItem *> *visibleItems = [NSMutableArray arrayWithCapacity:items.count];
+	NSUInteger hiddenCount = 0;
+
+	for (OCItem *item in items) {
+		if ([self _trashItem:item isPendingPermanentDeletion:pendingItems]) {
+			hiddenCount += 1;
+		} else {
+			[visibleItems addObject:item];
+		}
+	}
+
+	if (hiddenCount > 0) {
+		OCLogDebug(@"[Trash] hid %lu item(s) with a pending permanent deletion", (unsigned long)hiddenCount);
+	}
+
+	return (visibleItems);
+}
+
+- (void)_dropConfirmedTrashPurgesForServerItems:(NSArray<OCItem *> *)serverItems
+				parentTrashPath:(NSString *)parentTrashPath
+				  protectedItems:(NSArray<OCItem *> *)protectedItems
+{
+	NSString *folderPath = parentTrashPath ?: @"";
+
+	[self _mutatePendingTrashPurges:^(NSMutableArray<OCItem *> *items) {
+		NSIndexSet *indexes = [items indexesOfObjectsPassingTest:^BOOL(OCItem *pendingItem, NSUInteger idx, BOOL *stop) {
+			NSString *pendingParentPath = [OCDatabase parentTrashPathForItem:pendingItem] ?: @"";
+
+			if (![pendingParentPath isEqualToString:folderPath]) {
+				return (NO);
+			}
+
+			for (OCItem *protectedItem in protectedItems) {
+				if (OCTrashItemMatchesPurgedItem(pendingItem, protectedItem)) {
+					return (NO);
+				}
+			}
+
+			for (OCItem *serverItem in serverItems) {
+				if (OCTrashItemMatchesPurgedItem(serverItem, pendingItem)) {
+					return (NO);
+				}
+			}
+
+			return (YES);
+		}];
+
+		if (indexes.count > 0) {
+			[items removeObjectsAtIndexes:indexes];
+		}
+	}];
+}
 
 - (OCDriveID)_trashDriveIDForFolderItem:(nullable OCItem *)folderItem items:(nullable NSArray<OCItem *> *)items
 {
@@ -56,10 +273,15 @@
 {
 	NSString *parentTrashPath = [self _parentTrashPathForFolderItem:folderItem];
 
-	[self.vault.database retrieveTrashCacheItemsWithParentTrashPath:parentTrashPath driveID:driveID completionHandler:^(OCDatabase *db, NSError *error, OCSyncAnchor syncAnchor, NSArray<OCItem *> *items) {
-		if (completionHandler != nil) {
-			completionHandler(error, items, YES);
-		}
+	[self _retrievePendingTrashPurgeRecords:^(NSArray<OCSyncRecord *> *records) {
+		[self _absorbPendingTrashPurgeRecords:records];
+
+		[self.vault.database retrieveTrashCacheItemsWithParentTrashPath:parentTrashPath driveID:driveID completionHandler:^(OCDatabase *db, NSError *error, OCSyncAnchor syncAnchor, NSArray<OCItem *> *items) {
+			if (completionHandler != nil) {
+				NSArray<OCItem *> *visibleItems = (error == nil) ? [self trashItemsByHidingPendingPermanentDeletions:(items ?: @[])] : items;
+				completionHandler(error, visibleItems, YES);
+			}
+		}];
 	}];
 }
 
@@ -97,26 +319,46 @@
 						return;
 					}
 
-					void (^replaceCache)(void) = ^{
-						[self.vault.database replaceTrashCacheItems:(serverItems ?: @[])
-									      parentTrashPath:parentTrashPath
-										      driveID:resolvedDriveID
-									    completionHandler:^(OCDatabase *db, NSError *cacheError) {
-							if (completionHandler != nil) {
-								completionHandler(cacheError, serverItems, NO);
-							}
-						}];
-					};
+					[self _retrievePendingTrashPurgeRecords:^(NSArray<OCSyncRecord *> *records) {
+						NSMutableArray<OCItem *> *protectedItems = [NSMutableArray new];
 
-					if (parentTrashPath.length == 0) {
-						[self.vault.database removePendingTrashCacheItemsMatchingServerItems:(serverItems ?: @[])
-											     driveID:resolvedDriveID
-										       completionHandler:^(OCDatabase *db, NSError *reconcileError) {
+						for (OCSyncRecord *record in records) {
+							if (record.action.localItem != nil) {
+								[protectedItems addObject:record.action.localItem];
+							}
+						}
+
+						[self _absorbPendingTrashPurgeRecords:records];
+
+						NSArray<OCItem *> *visibleItems = [self trashItemsByHidingPendingPermanentDeletions:(serverItems ?: @[])];
+
+						void (^replaceCache)(void) = ^{
+							[self.vault.database replaceTrashCacheItems:visibleItems
+										      parentTrashPath:parentTrashPath
+											      driveID:resolvedDriveID
+										    completionHandler:^(OCDatabase *db, NSError *cacheError) {
+								if (cacheError == nil) {
+									[self _dropConfirmedTrashPurgesForServerItems:(serverItems ?: @[])
+												       parentTrashPath:parentTrashPath
+													 protectedItems:protectedItems];
+								}
+
+								if (completionHandler != nil) {
+									completionHandler(cacheError, visibleItems, NO);
+								}
+							}];
+						};
+
+						if (parentTrashPath.length == 0) {
+							[self.vault.database removePendingTrashCacheItemsMatchingServerItems:(serverItems ?: @[])
+												     driveID:resolvedDriveID
+											       completionHandler:^(OCDatabase *db, NSError *reconcileError) {
+								replaceCache();
+							}];
+						} else {
 							replaceCache();
-						}];
-					} else {
-						replaceCache();
-					}
+						}
+					}];
 				}];
 			}];
 
@@ -162,9 +404,19 @@
 		return (nil);
 	}
 
+	[self noteTrashPurgeScheduledForItem:item];
+
 	return ([self _enqueueSyncRecordWithAction:[[OCSyncActionTrashPurge alloc] initWithItem:item]
 					  cancellable:NO
-			     preflightResultHandler:enqueueCompletionHandler
+			     preflightResultHandler:^(NSError *error) {
+		if (error != nil) {
+			[self noteTrashPurgeCancelledForItem:item];
+		}
+
+		if (enqueueCompletionHandler != nil) {
+			enqueueCompletionHandler(error);
+		}
+	}
 					 resultHandler:resultHandler]);
 }
 
