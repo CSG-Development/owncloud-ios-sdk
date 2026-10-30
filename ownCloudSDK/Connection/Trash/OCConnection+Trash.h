@@ -78,9 +78,26 @@ typedef void(^OCConnectionTrashDownloadCompletionHandler)(NSError * _Nullable er
 
 - (nullable NSProgress *)restoreTrashedItem:(OCItem *)item completionHandler:(OCConnectionTrashModificationCompletionHandler)completionHandler;
 
+/**
+ * Restores a trashed item to a files path.
+ * Pass nil for relativeFilesPath to use the item's original location.
+ * When a path is provided, the restore is a WebDAV MOVE so Replace (overwrite YES)
+ * and Keep both (overwrite NO, unique path) can complete a name conflict.
+ */
+- (nullable NSProgress *)restoreTrashedItem:(OCItem *)item
+			toRelativeFilesPath:(nullable NSString *)relativeFilesPath
+				  overwrite:(BOOL)overwrite
+			  completionHandler:(OCConnectionTrashModificationCompletionHandler)completionHandler;
+
 - (nullable OCProgress *)restoreTrashedItem:(OCItem *)item resultTarget:(OCEventTarget *)eventTarget;
 
 - (nullable NSProgress *)permanentlyDeleteTrashedItem:(OCItem *)item completionHandler:(OCConnectionTrashModificationCompletionHandler)completionHandler;
+
+/**
+ * Deletes one trash-bin entry by its trash URL.
+ * Unlike permanentlyDeleteTrashedItem:, this does not address the item by file ID, so a restored live file that reused that ID is left in place.
+ */
+- (nullable NSProgress *)deleteTrashedItemFromTrashBin:(OCItem *)item completionHandler:(OCConnectionTrashModificationCompletionHandler)completionHandler;
 
 - (nullable OCProgress *)permanentlyDeleteTrashedItem:(OCItem *)item resultTarget:(OCEventTarget *)eventTarget;
 

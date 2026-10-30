@@ -1210,12 +1210,24 @@ static NSString * const OCTrashPreviewRestoreFolderName = @".owncloud-ios-trash-
 
 - (nullable NSProgress *)restoreTrashedItem:(OCItem *)item completionHandler:(OCConnectionTrashModificationCompletionHandler)completionHandler
 {
+	return ([self restoreTrashedItem:item toRelativeFilesPath:nil overwrite:YES completionHandler:completionHandler]);
+}
+
+- (nullable NSProgress *)restoreTrashedItem:(OCItem *)item
+			toRelativeFilesPath:(nullable NSString *)relativeFilesPath
+				  overwrite:(BOOL)overwrite
+			  completionHandler:(OCConnectionTrashModificationCompletionHandler)completionHandler
+{
 	if (item == nil) {
 		completionHandler(OCError(OCErrorInvalidParameter));
 		return nil;
 	}
 
-	if (self.useDriveAPI && item.driveID.length > 0 && item.fileID.length > 0) {
+	// An explicit destination is a name-conflict resolution (Replace or Keep both)
+	// and must MOVE to that path. The Graph restore below always uses the original location.
+	BOOL resolvesNameConflict = (relativeFilesPath.length > 0);
+
+	if (!resolvesNameConflict && self.useDriveAPI && item.driveID.length > 0 && item.fileID.length > 0) {
 		NSURL *itemURL = [[[[self URLForEndpoint:OCConnectionEndpointIDGraphDrivePermissions options:nil]
 			URLByAppendingPathComponent:item.driveID]
 			URLByAppendingPathComponent:@"items"]
@@ -1244,22 +1256,23 @@ static NSString * const OCTrashPreviewRestoreFolderName = @".owncloud-ios-trash-
 	}
 
 	NSString *originalLocation = [item valueForLocalAttribute:OCLocalAttributeTrashOriginalLocation];
+	NSString *destinationPath = relativeFilesPath.length > 0 ? relativeFilesPath : originalLocation;
 	NSURL *trashItemURL = [self _trashItemURLForItem:item];
 	NSURL *filesRootURL = [self URLForEndpoint:OCConnectionEndpointIDWebDAVRoot options:@{
 		OCConnectionEndpointURLOptionDriveID : OCNullProtect(item.driveID)
 	}];
 
-	if (trashItemURL == nil || filesRootURL == nil || originalLocation.length == 0) {
+	if (trashItemURL == nil || filesRootURL == nil || destinationPath.length == 0) {
 		completionHandler(OCError(OCErrorInsufficientParameters));
 		return nil;
 	}
 
-	NSURL *destinationURL = [filesRootURL URLByAppendingPathComponent:originalLocation];
+	NSURL *destinationURL = [filesRootURL URLByAppendingPathComponent:destinationPath];
 	OCHTTPRequest *request = [OCHTTPRequest requestWithURL:trashItemURL];
 	request.method = OCHTTPMethodMOVE;
 	request.requiredSignals = [NSSet setWithObject:OCConnectionSignalIDAuthenticationAvailable];
 	[request setValue:[destinationURL absoluteString] forHeaderField:OCHTTPHeaderFieldNameDestination];
-	[request setValue:@"T" forHeaderField:OCHTTPHeaderFieldNameOverwrite];
+	[request setValue:(overwrite ? @"T" : @"F") forHeaderField:OCHTTPHeaderFieldNameOverwrite];
 
 	return [self sendRequest:request ephermalCompletionHandler:^(OCHTTPRequest *req, OCHTTPResponse *response, NSError *error) {
 		if (error != nil) {
@@ -1413,6 +1426,38 @@ static NSString * const OCTrashPreviewRestoreFolderName = @".owncloud-ios-trash-
 			completionHandler(nil);
 		} else if (response.status.code == OCHTTPStatusCodeNOT_FOUND) {
 			completionHandler(OCError(OCErrorResourceDoesNotExist));
+		} else {
+			completionHandler(response.bodyParsedAsDAVError ?: response.status.error ?: OCError(OCErrorInternal));
+		}
+	}];
+}
+
+- (nullable NSProgress *)deleteTrashedItemFromTrashBin:(OCItem *)item completionHandler:(OCConnectionTrashModificationCompletionHandler)completionHandler
+{
+	if (item == nil) {
+		completionHandler(OCError(OCErrorInvalidParameter));
+		return nil;
+	}
+
+	NSURL *trashItemURL = [self _trashItemURLForItem:item];
+	if (trashItemURL == nil) {
+		completionHandler(OCError(OCErrorInsufficientParameters));
+		return nil;
+	}
+
+	OCHTTPRequest *request = [OCHTTPRequest requestWithURL:trashItemURL];
+	request.method = OCHTTPMethodDELETE;
+	request.requiredSignals = [NSSet setWithObject:OCConnectionSignalIDAuthenticationAvailable];
+
+	return [self sendRequest:request ephermalCompletionHandler:^(OCHTTPRequest *req, OCHTTPResponse *response, NSError *error) {
+		if (error != nil) {
+			completionHandler(error);
+			return;
+		}
+		if (response.status.code == OCHTTPStatusCodeNO_CONTENT || response.status.isSuccess) {
+			completionHandler(nil);
+		} else if (response.status.code == OCHTTPStatusCodeNOT_FOUND) {
+			completionHandler(nil);
 		} else {
 			completionHandler(response.bodyParsedAsDAVError ?: response.status.error ?: OCError(OCErrorInternal));
 		}
